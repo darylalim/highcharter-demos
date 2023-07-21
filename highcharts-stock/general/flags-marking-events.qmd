@@ -1,0 +1,112 @@
+---
+title: "Stock Chart with Flags Marking Events Demo"
+---
+
+This is a demo of a stock chart with flags marking events.
+
+Highcharts Stock Demos: [Flags marking events](https://www.highcharts.com/demo/stock/flags-general)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+usd_eur <- getFX("USD/EUR", auto.assign = FALSE)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    x = JS("Date.UTC(2022, 12, 2)"),
+    title = "A",
+    text = "Some event with a description"
+  ),
+  list(
+    x = JS("Date.UTC(2022, 12, 15)"),
+    title = "B",
+    text = "Some event with a description"
+  ),
+  list(
+    x = JS("Date.UTC(2022, 12, 22)"),
+    title = "C",
+    text = "Some event with a description"
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A stock chart showing the USD to EUR exchange rate with flags marking events."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Flags marking events
+
+```{r}
+#| label: flags-marking-events
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 0
+  ) %>% 
+  hc_title(
+    text = "USD to EUR exchange rate"
+  ) %>% 
+  hc_tooltip(
+    style = list(
+      width = "200px"
+    ),
+    valueDecimals = 4,
+    shared = TRUE
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Exchange rate"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "USD to EUR",
+    data = usd_eur,
+    id = "dataseries"
+  ) %>% 
+  hc_add_series(
+    type = "flags",
+    data = df,
+    onSeries = "dataseries",
+    shape = "circlepin",
+    width = 16
+  )
+```

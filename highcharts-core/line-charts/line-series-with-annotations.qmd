@@ -1,0 +1,284 @@
+---
+title: "Line Chart with Annotations Demo"
+---
+
+This is a demo of a line chart with annotations.
+
+Highcharts Demos: [With annotations](https://www.highcharts.com/demo/annotations)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(readr)
+library(highcharter)
+```
+
+# Import data
+
+Data generated from [2017 Tour de France GPX/TCX files](http://www.bikeforums.net/professional-cycling-fans/1113087-2017-tour-de-france-gpx-tcx-files.html)
+
+```{r}
+#| label: import-data
+#| output: false
+
+df <- read_csv("data/elevation_data.csv")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+#| eval: false
+
+# Set language object options
+options(
+  highcharter.lang = list(
+    accessibility = list(
+      screenReaderSection = list(
+        annotations = list(
+          descriptionNoPoints = "{annotationText}, at distance {annotation.options.point.x}km, elevation {annotation.options.point.y} meters."
+        )
+      )
+    )
+  )
+)
+
+# Set chart options
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This line chart uses the Highcharts Annotations feature to place labels at various points of interest. The labels are responsive and will be hidden to avoid overlap on small screens. Image description: An annotated line chart illustrates the 8th stage of the 2017 Tour de France cycling race from the start point in Dole to the finish line at Station des Rousses. Altitude is plotted on the Y-axis, and distance is plotted on the X-axis. The line graph is interactive, and the user can trace the altitude level along the stage. The graph is shaded below the data line to visualize the mountainous altitudes encountered on the 187.5-kilometre stage. The three largest climbs are highlighted at Col de la Joux, Côte de Viry and the final 11.7-kilometer, 6.4% gradient climb to Montée de la Combe de Laisia Les Molunes which peaks at 1200 meters above sea level. The stage passes through the villages of Arbois, Montrond, Bonlieu, Chassal and Saint-Claude along the route.",
+      landmarkVerbosity = "one"
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Line chart with annotations
+
+```{r}
+#| label: line-series-with-annotations
+
+highchart() %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    zoomType = "x",
+    panning = TRUE,
+    panKey = "shift",
+    scrollablePlotArea = list(
+      minWidth = 600
+    )
+  ) %>%
+  hc_caption(
+    text = "This chart uses the Highcharts Annotations feature to place labels at various points of interest. The labels are responsive and will be hidden to avoid overlap on small screens."
+  ) %>% 
+  hc_title(
+    text = "2017 Tour de France Stage 8: Dole - Station des Rousses",
+    align = "left"
+  ) %>% 
+  hc_annotations(
+    list(
+      draggable = '',
+      labelOptions = list(
+        backgroundColor = "rgba(255, 255, 255, 0.5)",
+        verticalAlign = "top",
+        y = 15
+      ),
+      labels = list(
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 27.98,
+            y = 255
+          ),
+          text = "Arbois"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 45.5,
+            y = 611
+          ),
+          text = "Montrond"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 63,
+            y = 651
+          ),
+          text = "Mont-sur-Monnet"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 84,
+            y = 789
+          ),
+          x = -10,
+          text = "Bonlieu"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 129.5,
+            y = 382
+          ),
+          text = "Chassal"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 159,
+            y = 443
+          ),
+          text = "Saint-Claude"
+        )
+      )
+    ),
+    list(
+      draggable = '',
+      labels = list(
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 101.44,
+            y = 1026
+          ),
+          x = -30,
+          text = "Col de la Joux"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 138.5,
+            y = 748
+          ),
+          text = "Côte de Viry"
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 176.4,
+            y = 1202
+          ),
+          text = "Montée de la Combe <br>de Laisia Les Molunes"
+        )
+      )
+    ),
+    list(
+      draggable = '',
+      labelOptions = list(
+        shape = "connector",
+        align = "right",
+        justify = FALSE,
+        crop = TRUE,
+        style = list(
+          fontSize = "0.8em",
+          textOutline = "1px white"
+        )
+      ),
+      labels = list(
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 96.2,
+            y = 783
+          ),
+          text = "6.1 km climb <br>4.6% on avg."
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 134.5,
+            y = 540
+          ),
+          text = "7.6 km climb <br>5.2% on avg."
+        ),
+        list(
+          point = list(
+            xAxis = 0,
+            yAxis = 0,
+            x = 172.2,
+            y = 925
+          ),
+          text = "11.7 km climb <br>6.4% on avg."
+        )
+      )
+    )
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = "Distance"
+    ),
+    labels = list(
+      format = "{value} km"
+    ),
+    minRange = 5
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = FALSE
+    ),
+    startOnTick = TRUE,
+    endOnTick = FALSE,
+    maxPadding = 0.35,
+    labels = list(
+      format = "{value} m"
+    )
+  ) %>% 
+  hc_plotOptions(
+    area = list(
+      lineColor = "#544fc5",
+      color = "#00e272",
+      fillOpacity = 0.5,
+      marker = list(
+        enabled = FALSE
+      ),
+      threshold = NULL
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "Distance: {point.x:.1f} km<br>",
+    pointFormat = "{point.y} m a. s. l.",
+    shared = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "area",
+    hcaes(x = distance, y = elevation),
+    name = "Elevation"
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE
+  )
+```

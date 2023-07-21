@@ -1,0 +1,129 @@
+---
+title: "Map Bubble Series Demo"
+---
+
+This is a demo of a map bubble series.
+
+Highcharts Maps Demos: [Map bubble](https://www.highcharts.com/demo/maps/map-bubble)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(dplyr)
+library(readr)
+library(tidyr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/world-population.json") 
+```
+
+# Build data
+
+Kaggle data set: [Latitude and Longitude for Every Country and State](https://www.kaggle.com/datasets/paultimothymooney/latitude-and-longitude-for-every-country-and-state) by [Paul Mooney](https://www.kaggle.com/paultimothymooney)
+
+```{r}
+#| label: build-data
+
+# Turn JSON into tibble
+df %>% 
+  as_tibble() %>% 
+  rename(`iso-a3` = code3)
+
+# Read CSV file into a tibble
+world_lat_lon <- read_csv("data/world_country_and_usa_states_latitude_and_longitude_values.csv") %>% 
+  select(-c(country, usa_state_code, usa_state_latitude, usa_state_longitude, usa_state)) %>% 
+  rename(
+    code = country_code,
+    lat = latitude,
+    lon = longitude
+  )
+
+# Join data with world latitudes and longitudes
+df <- df %>% 
+  full_join(world_lat_lon)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "We see how China and India by far are the countries with the largest population."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Map bubble
+
+```{r}
+#| label: map-bubble
+
+hcmap(
+  map = "custom/world",
+  download_map_data = getOption("highcharter.download_map_data"),
+  name = "Countries",
+  color = "#E0E0E0",
+  enableMouseTracking = FALSE
+) %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "World population 2016 by country"
+  ) %>% 
+  hc_subtitle(
+    text = "Demo of Highcharts map with bubbles"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE,
+    buttonOptions = list(
+      verticalAlign = "bottom"
+    )
+  ) %>% 
+  hc_mapView(
+    fitToGeometry = list(
+      type = "Multipoint",
+      coordinates = list(
+        list(-164, 54), # Alaska west
+        list(-35, 84), # Greenland north
+        list(179, -38), # New Zealand east
+        list(-68, -55) # Chile south
+      )
+    )
+  ) %>%
+  hc_add_series(
+    type = "mapbubble",
+    name = "Population 2016",
+    data = df,
+    joinBy = c("iso-a3", "code3"),
+    minSize = 4,
+    maxSize = "12%",
+    tooltip = list(
+      pointFormat = "{point.code}: {point.z} thousands"
+    )
+  )
+```

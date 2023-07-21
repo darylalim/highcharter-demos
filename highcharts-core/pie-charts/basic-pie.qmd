@@ -1,0 +1,131 @@
+---
+title: "Pie Chart Demo"
+---
+
+This is a demo of a pie chart.
+
+Highcharts Demos: [Pie chart](https://www.highcharts.com/demo/pie-basic)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [NetMarketShare](https://netmarketshare.com)
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "Chrome",
+    y = 70.67,
+    sliced = TRUE,
+    selected = TRUE
+  ),
+  list(
+    name = "Edge",
+    y = 14.77
+  ),
+  list(
+    name = "Firefox",
+    y = 4.86
+  ),
+  list(
+    name = "Safari",
+    y = 2.63
+  ),
+  list(
+    name = "Internet Explorer",
+    y = 1.53
+  ),
+  list(
+    name = "Opera",
+    y = 1.40
+  ),
+  list(
+    name = "Sogou Explorer",
+    y = 0.84
+  ),
+  list(
+    name = "QQ",
+    y = 0.51
+  ),
+  list(
+    name = "Other",
+    y = 2.6
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Pie charts are very popular for showing a compact overview of a composition or comparison. While they can be harder to read than column charts, they remain a popular choice for small datasets.",
+      point = list(
+        valueSuffix = "%"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Pie chart
+
+```{r}
+#| label: basic-pie
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "pie",
+    plotBackgroundColor = NULL,
+    plotBorderWidth = NULL,
+    plotShadow = FALSE
+  ) %>% 
+  hc_title(
+    text = "Browser market shares in May, 2020",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "{series.name}: <b>{point.percentage:.1f}%</b>"
+  ) %>% 
+  hc_plotOptions(
+    pie = list(
+      allowPointSelect = TRUE,
+      cursor = "pointer",
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b>: {point.percentage:.1f} %"
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Brands",
+    colorByPoint = TRUE,
+    data = df)
+```

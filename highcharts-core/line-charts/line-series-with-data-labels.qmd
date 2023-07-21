@@ -1,0 +1,114 @@
+---
+title: "Line Chart with Data Labels Demo"
+---
+
+This is a demo of a line chart with data labels.
+
+Highcharts Demos: [With data labels](https://www.highcharts.com/demo/line-labels)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Wikipedia](https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  month = c(
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ),
+  Reggane = c(
+    16.0, 18.2, 23.1, 27.9, 32.2, 36.4, 
+    39.8, 38.4, 35.5, 29.2, 22.0, 17.8
+  ),
+  Tallinn = c(
+    -2.9, -3.6, -0.6, 4.8, 10.2, 14.5, 
+    17.6, 16.5, 12.0, 6.5, 2.0, -0.9
+  )
+) %>% 
+  pivot_longer(
+    cols = !month,
+    names_to = "city",
+    values_to = "temperature") %>% 
+  mutate(
+    month = as_factor(month),
+    city = as_factor(city)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This chart shows how data labels can be added to the data series. This can increase readability and comprehension for small datasets."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Line chart with data labels
+
+```{r}
+#| label: line-series-with-data-labels
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Monthly Average Temperature"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature'>Wikipedia.com</a>"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Temperature (°C)"
+    )
+  ) %>% 
+  hc_plotOptions(
+    line = list(
+      dataLabels = list(
+        enabled = TRUE
+      ),
+      enableMouseTracking = FALSE
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "line",
+    hcaes(x = month, y = temperature, group = city)
+  )
+```

@@ -1,0 +1,130 @@
+---
+title: "Sankey Diagram Demo"
+---
+
+This is a demo of a sankey diagram.
+
+Highcharts Demos: [Sankey diagram](https://www.highcharts.com/demo/sankey-diagram)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Brazil", "Portugal", 5),
+  c("Brazil", "France", 1),
+  c("Brazil", "Spain", 1),
+  c("Brazil", "England", 1),
+  c("Canada", "Portugal", 1),
+  c("Canada", "France", 5),
+  c("Canada", "England", 1),
+  c("Mexico", "Portugal", 1),
+  c("Mexico", "France", 1),
+  c("Mexico", "Spain", 5),
+  c("Mexico", "England", 1),
+  c("USA", "Portugal", 1),
+  c("USA", "France", 1),
+  c("USA", "Spain", 1),
+  c("USA", "England", 5),
+  c("Portugal", "Angola", 2),
+  c("Portugal", "Senegal", 1),
+  c("Portugal", "Morocco", 1),
+  c("Portugal", "South Africa", 3),
+  c("France", "Angola", 1),
+  c("France", "Senegal", 3),
+  c("France", "Mali", 3),
+  c("France", "Morocco", 3),
+  c("France", "South Africa", 1),
+  c("Spain", "Senegal", 1),
+  c("Spain", "Morocco", 3),
+  c("Spain", "South Africa", 1),
+  c("England", "Angola", 1),
+  c("England", "Senegal", 1),
+  c("England", "Morocco", 2),
+  c("England", "South Africa", 7),
+  c("South Africa", "China", 5),
+  c("South Africa", "India", 1),
+  c("South Africa", "Japan", 3),
+  c("Angola", "China", 5),
+  c("Angola", "India", 1),
+  c("Angola", "Japan", 3),
+  c("Senegal", "China", 5),
+  c("Senegal", "India", 1),
+  c("Senegal", "Japan", 3),
+  c("Mali", "China", 5),
+  c("Mali", "India", 1),
+  c("Mali", "Japan", 3),
+  c("Morocco", "China", 5),
+  c("Morocco", "India", 1),
+  c("Morocco", "Japan", 3)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    from = V1, 
+    to = V2, 
+    weight = V3) %>% 
+  mutate(
+    weight = as.integer(weight)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Sankey charts are used to visualize data flow and volume between nodes. The wider lines indicate larger volumes.",
+      point = list(
+        valueDescriptionFormat = "{index}. {point.from} to {point.to}, {point.weight}."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Sankey diagram
+
+```{r}
+#| label: sankey-diagram
+
+highchartzero() %>% 
+  hc_add_dependency("modules/sankey.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Highcharter Sankey Diagram"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "sankey",
+    hcaes(from = from, to = to, weight = weight),
+    name = "Sankey demo series"
+  )
+```

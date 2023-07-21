@@ -1,0 +1,155 @@
+---
+title: "Network Graph with Styled Links and Nodes Demo"
+---
+
+This is a demo of a network graph with customized styled links per data series.
+
+Highcharts Docs: [Use Case 1](https://www.highcharts.com/docs/chart-and-series-types/network-graph#use-case-1)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+# K3 data
+k3 <- list(
+  c("A", "B"),
+  c("A", "C"),
+  c("B", "C")
+)
+
+# K4 data
+k4 <- list(
+  c("A", "B"),
+  c("A", "C"),
+  c("A", "D"),
+  c("B", "C"),
+  c("B", "D"),
+  c("C", "D")
+)
+
+# K8 data
+k8 <- list(
+  c("A", "B"),
+  c("A", "C"),
+  c("A", "D"),
+  c("A", "E"),
+  c("A", "F"),
+  c("A", "G"),
+
+  c("B", "C"),
+  c("B", "D"),
+  c("B", "E"),
+  c("B", "F"),
+  c("B", "G"),
+
+  c("C", "D"),
+  c("C", "E"),
+  c("C", "F"),
+  c("C", "G"),
+
+  c("D", "E"),
+  c("D", "F"),
+  c("D", "G"),
+
+  c("E", "F"),
+  c("E", "G"),
+
+  c("F", "G")
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph with customized styled links per data series."
+    )
+  )
+)
+```
+
+# Network graph with styled links and nodes
+
+```{r}
+#| label: network-graph-with-styled-links-nodes
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "networkgraph",
+    plotBorderWidth = 1
+  ) %>% 
+  hc_title(
+    text = "Network graph with styled links and nodes"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      keys = list("from", "to")
+    )
+  ) %>% 
+  hc_add_series(
+    name = "K3",
+    color = "#A53E32",
+    link = list(
+      width = 2,
+      color = "#A53E32",
+      length = 80,
+      dashStyle = "dash"
+    ),
+    marker = list(
+      fillColor = "#FFFFFF",
+      lineWidth = 2,
+      lineColor = "#A53E32"
+    ),
+    data = k3
+  ) %>% 
+  hc_add_series(
+    name = "K4",
+    color = "#131313",
+    link = list(
+      width = 2,
+      color = "#131313",
+      length = 80,
+      dashStyle = "dash"
+    ),
+    marker = list(
+      fillColor = "#FFFFFF",
+      lineWidth = 2,
+      lineColor = "#131313"
+    ),
+    data = k4
+  ) %>% 
+  hc_add_series(
+    name = "K8",
+    color = "#B5B5B5",
+    link = list(
+      width = 2,
+      color = "#B5B5B5",
+      length = 80,
+      dashStyle = "dash"
+    ),
+    marker = list(
+      fillColor = "#FFFFFF",
+      lineWidth = 2,
+      lineColor = "#B5B5B5"
+    ),
+    data = k8
+  )
+```

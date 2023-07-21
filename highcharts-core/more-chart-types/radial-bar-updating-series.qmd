@@ -1,0 +1,104 @@
+---
+title: "Radial Bar Chart with Updating Series Demo"
+---
+
+This is a demo of a radial bar chart constantly updating series (with color axis).
+
+Highcharts Docs: [Examples of use](https://www.highcharts.com/docs/chart-and-series-types/radial-bar-chart#examples-of-use)
+
+Highcharts Samples: [Updating points](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-polar/column-inverted-update)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A radial bar chart constantly updating series with color axis."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Radial bar chart updating series (with color axis)
+
+```{r}
+#| label: radial-bar-updating-series
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/coloraxis.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column",
+    inverted = TRUE,
+    polar = TRUE,
+    marginTop = 25,
+    events = list(
+      load = JS(
+        "function () {
+          var chart = this,
+              series = chart.series[0],
+              newData = [],
+              numberOfPoints;
+          
+          setInterval(function () {
+            numberOfPoints = series.points.length;
+            while (numberOfPoints--) {
+              newData.push(Math.round(Math.random() * 10));
+            }
+            series.update({
+              data: newData
+            });
+            newData.length = 0;
+          }, 1000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "Updating points"
+  ) %>% 
+  hc_colorAxis(
+    minColor = "#90ed7d"
+  ) %>% 
+  hc_xAxis(
+    tickInterval = 1,
+    labels = list(
+      y = 12
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    max = 10,
+    tickInterval = 1
+  ) %>% 
+  hc_add_series(
+    pointPadding = 0,
+    groupPadding = 0,
+    pointPlacement = "between",
+    data = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+  )
+```

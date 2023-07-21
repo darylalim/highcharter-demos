@@ -1,0 +1,85 @@
+---
+title: "Euler Diagram Demo"
+---
+
+This is a demo of an euler diagram.
+
+Highcharts Demos: [Euler diagram](https://www.highcharts.com/demo/euler-diagram)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A Venn diagram illustrating the difference between an Euler diagram and a Venn diagram. Interact with the sections in the chart for more information. The chart shows that a Venn diagram is a special case of an Euler diagram.",
+      point = list(
+        valueDescriptionFormat = "{point.name}: {point.longDescription}."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Euler diagram
+
+```{r}
+#| label: euler-diagram
+
+highchartzero() %>% 
+  hc_add_dependency("modules/venn.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_add_series(
+    type = "venn",
+    data = list(
+      list(
+        sets = list("A"),
+        value = 4,
+        name = "Euler diagrams",
+        longDescription = "An Euler diagram is a diagrammatic means of representing sets and their relationships. Unlike Venn diagrams, which show all possible relations between different sets, the Euler diagram shows only relevant relationships."
+      ),
+      list(
+        sets = list("B"),
+        value = 1,
+        name = "Venn diagrams",
+        longDescription = "In Venn diagrams the curves are overlapped in every possible way, showing all possible relations between the sets. They are thus a special case of Euler diagrams, which do not necessarily show all relations."
+      ),
+      list(
+        sets = list("A", "B"),
+        value = 1
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<span style='color:{point.color}'>\u2022</span> <span style='font-size: 14px'> {point.point.name}</span><br/>",
+    pointFormat = "{point.longDescription}<br><span style='font-size: 10px'>Source: Wikipedia</span>"
+  ) %>% 
+  hc_title(
+    text = "Relationship between Euler and Venn diagrams",
+    align = "left"
+  )
+```

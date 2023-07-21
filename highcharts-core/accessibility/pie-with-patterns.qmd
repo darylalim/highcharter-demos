@@ -1,0 +1,132 @@
+---
+title: "Pie Chart with Patterns Demo"
+---
+
+This is a demo of a pie chart with pattern fills.
+
+Highcharts Demos: [Accessible pie chart](https://www.highcharts.com/demo/accessible-pie)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Pie chart demonstrating some accessibility features of Highcharts. The chart shows which screen reader is used as the primary screen reader by the respondents, with NVDA currently being the most popular one. The JAWS screen reader is following closely behind."
+    )
+  )
+)
+```
+
+# Pie chart with pattern fills
+
+```{r}
+#| label: pie-with-patterns
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_add_dependency("modules/pattern-fill.js") %>% 
+  hc_add_dependency("themes/high-contrast-light.js") %>% 
+  hc_chart(
+    type = "pie"
+  ) %>% 
+  hc_title(
+    text = "Primary desktop/laptop screen readers",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: WebAIM. Click on point to visit official website",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = "%",
+    borderColor = "#8ae",
+    shape = "rect",
+    backgroundColor = "rgba(255, 255, 255, 0.94)",
+    followPointer = FALSE,
+    stickOnContact = TRUE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        connectorColor = "#777",
+        format = "<b>{point.name}</b>: {point.percentage:.1f} %"
+      ),
+      point = list(
+        events = list(
+          click = JS(
+            "function () {
+              window.location.href = this.website;
+            }"
+          )
+        )
+      ),
+      cursor = "pointer",
+      borderWidth = 3
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Screen reader usage",
+    data = list(
+      list(
+        name = "NVDA",
+        y = 40.6,
+        website = "https://www.nvaccess.org",
+        color = list(
+          patternIndex = 0
+        ),
+        accessibility = list(
+          description = "This is the most used desktop screen reader"
+        )
+      ),
+      list(
+        name = "JAWS",
+        y = 40.1,
+        website = "https://www.freedomscientific.com/Products/Blindness/JAWS",
+        color = list(
+          patternIndex = 1
+        )
+      ),
+      list(
+        name = "VoiceOver",
+        y = 12.9,
+        website = "http://www.apple.com/accessibility/osx/voiceover",
+        color = list(
+          patternIndex = 2
+        )
+      ),
+      list(
+        name = "ZoomText",
+        y = 2,
+        website = "http://www.zoomtext.com/products/zoomtext-magnifierreader",
+        color = list(
+          patternIndex = 3
+        )
+      ),
+      list(
+        name = "Other",
+        y = 4.4,
+        website = "http://www.disabled-world.com/assistivedevices/computer/screen-readers.php",
+        color = list(
+          patternIndex = 4
+        )
+      )
+    )
+  )
+```

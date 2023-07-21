@@ -1,0 +1,112 @@
+---
+title: "Variable Radius Pie Chart Demo"
+---
+
+This is a demo of a variable radius pie chart.
+
+Highcharts Demos: [Variable radius pie](https://www.highcharts.com/demo/variable-radius-pie)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [World Population Review](https://worldpopulationreview.com/country-rankings/countries-by-density)
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "Spain",
+    y = 505992,
+    z = 92
+  ),
+  list(
+    name = "France",
+    y = 551695,
+    z = 119
+  ),
+  list(
+    name = "Poland",
+    y = 312679,
+    z = 121
+  ),
+  list(
+    name = "Czech Republic",
+    y = 78865,
+    z = 136
+  ),
+  list(
+    name = "Italy",
+    y = 301336,
+    z = 136
+  ),
+  list(
+    name = "Switzerland",
+    y = 41284,
+    z = 213
+  ),
+  list(
+    name = "Germany",
+    y = 357114,
+    z = 235
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Variable radius pie charts can be used to visualize a second dimension in a pie chart. In this chart, the more densely populated countries are drawn further out, while the slice width is determined by the size of the country."
+    )
+  )
+)
+```
+
+# Variable radius pie chart
+
+```{r}
+#| label: variable-radius-pie
+
+highchartzero() %>% 
+  hc_add_dependency("modules/variable-pie.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "variablepie"
+  ) %>% 
+  hc_title(
+    text = "Countries compared by population density and total area, 2022",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "",
+    pointFormat = "<span style='color:{point.color}'>\u25CF</span> <b> {point.name}</b><br>Area (square km): <b>{point.y}</b><br>Population density (people per square km): <b>{point.z}</b><br>"
+  ) %>% 
+  hc_add_series(
+    minPointSize = 10,
+    innerSize = "20%",
+    zMin = 0,
+    name = "countries",
+    borderRadius = 5,
+    data = df
+  ) %>% 
+  hc_colors(
+    colors = c("#4caefe", "#3dc3e8", "#2dd9db", "#1feeaf", "#0ff3a0", "#00e887", "#23e274")
+  )
+```

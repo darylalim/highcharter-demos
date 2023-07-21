@@ -1,0 +1,114 @@
+---
+title: "Semi Circle Donut Chart Demo"
+---
+
+This is a demo of a semi circle donut chart.
+
+Highcharts Demos: [Semi circle donut](https://www.highcharts.com/demo/pie-semi-circle)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [NetMarketShare](https://netmarketshare.com/)
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list("Chrome", 73.86),
+  list("Edge", 11.97),
+  list("Firefox", 5.52),
+  list("Safari", 2.98),
+  list("Internet Explorer", 1.90),
+  list(
+    name = "Other",
+    y = 3.77,
+    dataLabels = list(
+      enabled = FALSE
+    )
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Pie chart showing a hollow semi-circle. This is a compact visualization, often used in dashboards.",
+      point = list(
+        valueSuffix = "%"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Semi circle donut chart
+
+```{r}
+#| label: semi-circle-donut
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    plotBackgroundColor = NULL,
+    plotBorderWidth = 0,
+    plotShadow = FALSE
+  ) %>% 
+  hc_title(
+    text = "Browser<br>shares<br>January<br>2022",
+    align = "center",
+    verticalAlign = "middle",
+    y = 60
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "{series.name}: <b>{point.percentage:.1f}%</b>"
+  ) %>% 
+  hc_plotOptions(
+    pie = list(
+      dataLabels = list(
+        enabled = TRUE,
+        distance = -50,
+        style = list(
+          fontWeight = "bold",
+          color = "white"
+        )
+      ),
+      startAngle = -90,
+      endAngle = 90,
+      center = c("50%", "75%"),
+      size = "110%"
+    )
+  ) %>% 
+  hc_add_series(
+    type = "pie",
+    name = "Browser share",
+    innerSize = "50%",
+    data = df
+  )
+```

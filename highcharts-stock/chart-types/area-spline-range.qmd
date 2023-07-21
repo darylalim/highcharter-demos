@@ -1,0 +1,72 @@
+---
+title: "Area Spline Range Stock Chart Demo"
+---
+
+This is a demo of an area spline range stock chart.
+
+Highcharts Stock Demos: [Area spline range](https://www.highcharts.com/demo/stock/areasplinerange)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/range.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "An area spline range stock chart showing temperature variation by day."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Area spline range
+
+```{r}
+#| label: area-spline-range
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 2
+  ) %>% 
+  hc_title(
+    text = "Temperature variation by day"
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = "°C"
+  ) %>% 
+  hc_add_series(
+    type = "areasplinerange",
+    name = "Temperatures",
+    data = df
+  )
+```

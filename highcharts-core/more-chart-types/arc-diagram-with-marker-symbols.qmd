@@ -1,0 +1,115 @@
+---
+title: "Arc Diagram with Marker Symbols Demo"
+---
+
+This is a demo of an arc diagram with marker symbols.
+
+Highcharts Docs: [Data structure](https://www.highcharts.com/docs/chart-and-series-types/arc-diagram#data-structure)
+
+Highcharts Samples: [Arc diagram with custom marker symbol](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-arcdiagram/marker-symbol)
+
+::: {.callout-note}
+Note the arc diagram series type requires Highcharts version 10.
+:::
+
+At this time, the development version of `highcharter` supports HighchartsJS 10.2.0.
+
+[Installation instructions](https://jkunst.com/highcharter/index.html#installation)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Brazil", "Portugal", 5),
+  c("Brazil", "France", 1),
+  c("Brazil", "Spain", 1),
+  c("Brazil", "England", 1),
+  c("Canada", "Portugal", 1),
+  c("Canada", "France", 5),
+  c("Canada", "England", 1)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    from = V1,
+    to = V2,
+    weight = V3
+  ) %>% 
+  mutate(
+    weight = as.integer(weight)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Arc diagram chart with the symbol of the data nodes shaped as triangles."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Arc diagram with marker symbols
+
+```{r}
+#| label: arc-diagram-with-marker-symbols
+
+highchartzero() %>% 
+  hc_add_dependency("modules/sankey.js") %>%
+  hc_add_dependency("modules/arc-diagram.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Highcharts Arc Diagram"
+  ) %>% 
+  hc_subtitle(
+    text = "Arc Diagram with marker symbols"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "arcdiagram",
+    hcaes(from = from, to = to, weight = weight),
+    linkWeight = 3,
+    marker = list(
+      symbol = "triangle",
+      lineWidth = 2,
+      lineColor = "white"
+    ),
+    centeredLinks = TRUE,
+    dataLabels = list(
+      format = "{point.fromNode.name} → {point.toNode.name}",
+      nodeFormat = "{point.name}",
+      color = "black",
+      linkTextPath = list(
+        enabled = TRUE
+      )
+    )
+  )
+```

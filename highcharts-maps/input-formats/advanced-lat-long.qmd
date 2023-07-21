@@ -1,0 +1,110 @@
+---
+title: "Advanced Latitude/Longitude Demo"
+---
+
+This is a demo of a map with latitude and longitude points.
+
+Highcharts Maps Demos: [Advanced lat/long](https://www.highcharts.com/demo/maps/latlon-advanced)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(jsonlite)
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/us-capitals.json") %>% 
+  as_tibble() %>% 
+  rename(z = population)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A basic map with latitude and longitude points."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Map with latitude and longitude points
+
+```{r}
+#| label: advanced-lat-long
+
+hcmap(
+  map = "countries/us/us-all",
+  download_map_data = getOption("highcharter.download_map_data"),
+  accessibility = list(
+    exposeAsGroupOnly = TRUE
+  ),
+  showInLegend = FALSE,
+  borderColor = "#606060",
+  nullColor = "rgba(200, 200, 200, 0.2)"
+) %>% 
+  hc_title(
+    text = "Highcharts Maps lon/lat demo"
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "{point.capital}, {point.parentState}<br>Lon: {point.lon}<br>Lat: {point.lat}<br>Population: {point.population}"
+  ) %>% 
+  hc_xAxis(
+    crosshair = list(
+      zIndex = 5,
+      dashStyle = "dot",
+      snap = FALSE,
+      color = "gray"
+    )
+  ) %>% 
+  hc_yAxis(
+    crosshair = list(
+      zIndex = 5,
+      dashStyle = "dot",
+      snap = FALSE,
+      color = "gray"
+    )
+  ) %>% 
+  hc_add_series(
+    type = "mapbubble",
+    dataLabels = list(
+      enabled = TRUE,
+      format = "{point.capital}"
+    ),
+    accessibility = list(
+      point = list(
+        valueDescriptionFormat = "{point.capital}, {point.parentState}. Population {point.population}. Latitude {point.lat:.2f}, longitude {point.lon:.2f}."
+      )
+    ),
+    name = "State capital cities",
+    data = df,
+    maxSize = "12%",
+    color = colors_v11[1]
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE
+  )
+```

@@ -1,0 +1,468 @@
+---
+title: "Network Graph with Euler and Verlet Integrations Demo"
+---
+
+This is a demo of a network graph comparing Euler and Verlet integrations.
+
+Highcharts Docs: [Use Case 2](https://www.highcharts.com/docs/chart-and-series-types/network-graph#use-case-2)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  c("abide", "by"),
+  c("account", "for"),
+  c("add", "up"),
+  c("allow", "for"),
+  c("apply", "for"),
+  c("back", "away"),
+  c("back", "down"),
+  c("back", "up"),
+  c("bank", "on"),
+  c("black", "out"),
+  c("block", "off"),
+  c("blow", "up"),
+  c("boot", "up"),
+  c("break", "away"),
+  c("break", "down"),
+  c("break", "into"),
+  c("break", "out"),
+  c("break", "up"),
+  c("bring", "up"),
+  c("brush", "up"),
+  c("bump", "into"),
+  c("burn", "out"),
+  c("call", "back"),
+  c("call", "off"),
+  c("calm", "down"),
+  c("carry", "on"),
+  c("carry", "out"),
+  c("check", "in"),
+  c("check", "out"),
+  c("clam", "up"),
+  c("clamp", "down on"),
+  c("count", "on"),
+  c("cut", "down on"),
+  c("cut", "out"),
+  c("die", "down"),
+  c("drag", "on"),
+  c("draw", "up"),
+  c("dress", "up"),
+  c("ease", "off"),
+  c("end", "in"),
+  c("end", "up"),
+  c("figure", "out"),
+  c("fill", "out"),
+  c("find", "out"),
+  c("focus", "on"),
+  c("get", "along"),
+  c("get", "at"),
+  c("get", "away"),
+  c("get", "by"),
+  c("get", "in"),
+  c("get", "into"),
+  c("get", "off"),
+  c("get", "on"),
+  c("get", "out"),
+  c("get", "over"),
+  c("get", "rid of"),
+  c("get", "together"),
+  c("get", "up"),
+  c("give", "in"),
+  c("give", "up"),
+  c("grow", "up"),
+  c("hand", "in"),
+  c("hand", "out"),
+  c("hang", "out"),
+  c("hang", "up"),
+  c("hold", "on"),
+  c("hurry", "up"),
+  c("iron", "out"),
+  c("join", "in"),
+  c("join", "up"),
+  c("keep", "on"),
+  c("keep", "up with"),
+  c("kick", "off"),
+  c("leave", "out"),
+  c("let", "down"),
+  c("look", "after"),
+  c("look", "down on"),
+  c("look", "on"),
+  c("look", "for"),
+  c("look", "forward to"),
+  c("look", "up to"),
+  c("make", "fun of"),
+  c("make", "up"),
+  c("mix", "up"),
+  c("move", "in"),
+  c("move", "out"),
+  c("nod", "off"),
+  c("own", "up"),
+  c("pass", "away"),
+  c("pass", "out"),
+  c("pay", "back"),
+  c("put", "off"),
+  c("put", "on"),
+  c("put", "out"),
+  c("put", "up"),
+  c("pick", "up"),
+  c("point", "out"),
+  c("rely", "on"),
+  c("rule", "out"),
+  c("run", "away"),
+  c("run", "into"),
+  c("run", "out of"),
+  c("set", "off"),
+  c("set", "up"),
+  c("show", "off"),
+  c("show", "up"),
+  c("shut", "up"),
+  c("sit", "down"),
+  c("stand", "up"),
+  c("take", "after"),
+  c("take", "care of"),
+  c("take", "off"),
+  c("take", "on"),
+  c("take", "out"),
+  c("tell", "off"),
+  c("think", "over"),
+  c("try", "on"),
+  c("turn", "down"),
+  c("use", "up"),
+  c("watch", "out"),
+  c("wear", "out"),
+  c("work", "out"),
+  c("wipe", "off")
+)
+```
+
+# Build nodes
+
+```{r}
+#| label: build-nodes
+
+nodes <- list(
+  list(
+    id = "for",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 2,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "up",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 15,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "back",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 2.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "away",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 2.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "down",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 5.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "on",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 7.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "out",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 13.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "off",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 6.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "break",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 3
+    )
+  ), 
+  list(
+    id = "into",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 2,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "in",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 4,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "get",
+    marker = list(
+      radius = 8.5
+    )
+  ), 
+  list(
+    id = "over",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "look",
+    marker = list(
+      radius = 3
+    )
+  ), 
+  list(
+    id = "put",
+    marker = list(
+      radius = 2
+    )
+  ), 
+  list(
+    id = "run",
+    marker = list(
+      radius = 1.5
+    )
+  ), 
+  list(
+    id = "take",
+    marker = list(
+      radius = 2.5
+    )
+  ), 
+  list(
+    id = "down on",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "keep",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "fun of",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "care of",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "by",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  ), 
+  list(
+    id = "out of",
+    dataLabels = list(
+      enabled = TRUE
+    ),
+    marker = list(
+      radius = 1.5,
+      fillColor = "red"
+    )
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph comparing Euler and Verlet integrations."
+    )
+  )
+)
+```
+
+# Build container 1
+
+```{r}
+#| label: build-container-1
+
+container_1 <- highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_chart(
+    type = "networkgraph",
+    plotBorderWidth = 1
+  ) %>% 
+  hc_title(
+    text = "Phrasal verbs"
+  ) %>% 
+  hc_subtitle(
+    text = "Integration: euler"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      layoutAlgorithm = list(
+        enableSimulation = TRUE,
+        integration = "euler",
+        linkLength = 10
+      ),
+      keys = list("from", "to"),
+      marker = list(
+        radius = 5,
+        lineWidth = 1
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    nodes = nodes,
+    data = df
+  )
+```
+
+# Build container 2
+
+```{r}
+#| label: build-container-2
+
+container_2 <- highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_chart(
+    type = "networkgraph",
+    plotBorderWidth = 1
+  ) %>% 
+  hc_title(
+    text = "Phrasal verbs"
+  ) %>% 
+  hc_subtitle(
+    text = "Integration: verlet"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      layoutAlgorithm = list(
+        enableSimulation = TRUE,
+        integration = "verlet",
+        linkLength = 30
+      ),
+      keys = list("from", "to"),
+      marker = list(
+        radius = 5,
+        lineWidth = 1
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    nodes = nodes,
+    data = df
+  )
+```
+
+# Network graph with Euler and Verlet integrations
+
+```{r}
+#| label: network-graph-euler-verlet-integrations
+
+# Lay out container 1 and container 2 into grid
+hw_grid(
+  container_1, container_2,
+  ncol = 2
+)
+```

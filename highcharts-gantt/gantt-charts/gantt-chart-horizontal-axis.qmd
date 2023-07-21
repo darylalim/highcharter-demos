@@ -1,0 +1,128 @@
+---
+title: "Gantt Chart with Custom Horizontal Axis Demo"
+---
+
+This is a demo of a Gantt chart with custom tick intervals on the horizontal axis.
+
+Highcharts Documentation: [Horizontal axis](https://www.highcharts.com/docs/gantt/gantt-axis-grid#horizontal-axis)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Test the automatic date interval logic of the horizontal axis in the below example, by dragging the navigators handlebars."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Gantt chart with custom tick intervals on horizontal axis
+
+```{r}
+#| label: gantt-chart-horizontal-axis
+
+highchartzero() %>% 
+  hc_add_dependency("modules/gantt.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Define tickInterval per Axis.grid"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      grid = list(
+        enabled = TRUE,
+        tickInterval = 1000 * 60 * 60 * 24 # Day
+      ), 
+      type = "datetime",
+      opposite = TRUE,
+      labels = list(
+        format = "{value:%w}" # day of the week
+      )
+    ), 
+    list(
+      grid = list(
+        enabled = TRUE,
+        tickInterval = 1000 * 60 * 60 * 24 * 7 # Week
+      ), 
+      type = "datetime",
+      opposite = TRUE,
+      linkedTo = 0,
+      labels = list(
+        format = "{value:%W}"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    type = "treegrid",
+    uniqueNames = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "gantt",
+    name = "Project 1",
+    data = list(
+      list(
+        name = "Start prototype",
+        start = JS("Date.UTC(2014, 10, 18)"),
+        end = JS("Date.UTC(2014, 10, 25)"),
+        completed = 0.25,
+        assignee = "Richards",
+        y = 0
+      ),
+      list(
+        name = "Test prototype",
+        start = JS("Date.UTC(2014, 10, 27)"),
+        end = JS("Date.UTC(2014, 10, 29)"),
+        assignee = "Richards",
+        y = 1
+      ),
+      list(
+        name = "Develop",
+        start = JS("Date.UTC(2014, 10, 20)"),
+        end = JS("Date.UTC(2014, 10, 25)"),
+        assignee = "Richards",
+        y = 2
+      ),
+      list(
+        name = "Run acceptance tests",
+        start = JS("Date.UTC(2014, 10, 23)"),
+        end = JS("Date.UTC(2014, 10, 26)"),
+        assignee = "Richards",
+        y = 3
+      )
+    )
+  )
+```

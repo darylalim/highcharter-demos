@@ -1,0 +1,80 @@
+---
+title: "Logarithmic Axis Demo"
+---
+
+This is a demo of a line chart with logarithmic axes.
+
+Highcharts Demos: [Logarithmic axis](https://www.highcharts.com/demo/line-log-axis)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This chart shows the use of a logarithmic y-axis. Logarithmic axes can be useful when dealing with data with spikes or large value gaps, as they allow variance in the smaller values to remain visible."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Line chart with logarithmic axes
+
+```{r}
+#| label: logarithmic-axis
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Logarithmic axis demo"
+  ) %>% 
+  hc_xAxis(
+    tickInterval = 1,
+    type = "logarithmic",
+    accessibility = list(
+      enabled = TRUE,
+      rangeDescription = "Range: 1 to 10"
+    )
+  ) %>% 
+  hc_yAxis(
+    type = "logarithmic",
+    minorTickInterval = 0.1,
+    accessibility = list(
+      enabled = TRUE,
+      rangeDescription = "Range: 0.1 to 1000"
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{series.name}</b><br>",
+    pointFormat = "x = {point.x}, y = {point.y}"
+  ) %>% 
+  hc_add_series(
+    data = c(1, 2, 4, 8, 16, 32, 64, 128, 256, 512),
+    type = "line",
+    pointStart = 1
+  )
+```

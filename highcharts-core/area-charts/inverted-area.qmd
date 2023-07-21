@@ -1,0 +1,129 @@
+---
+title: "Inverted Area Chart Demo"
+---
+
+This is a demo of an inverted area chart.
+
+Highcharts Demos: [Inverted axes](https://www.highcharts.com/demo/area-inverted)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Largest Companies by Market Cap](https://companiesmarketcap.com/)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  year = seq.int(from = 2014, to = 2021, by = 1),
+  Alibaba = c(11.44, 14.89, 21.40, 34.03, 51.52, 70.49, 94.46, 129.44),
+  `Meta (Facebook)` = c(11.49, 17.08, 26.88, 39.94, 55.01, 69.65, 84.17, 117.93)
+) %>% 
+  pivot_longer(
+    cols = !year,
+    names_to = "company",
+    values_to = "revenue"
+  ) %>% 
+  mutate(
+    year = as.integer(year),
+    company = as_factor(company)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This chart demonstrates an inverted area chart with a floating legend. Inverted charts can often be a good choice on smaller screens, as most users find it easier to scroll vertically to see more data compared to scrolling horizontally.",
+      keyboardNavigation = list(
+        seriesNavigation = list(
+          mode = "serialize"
+        )
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Inverted axes
+
+```{r}
+#| label: inverted-area
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "Alibaba and Meta (Facebook) revenue",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Revenue (billions USD)"
+    ),
+    labels = list(
+      format = "${text}"
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "right",
+    verticalAlign = "top",
+    x = -150,
+    y = 100,
+    floating = TRUE,
+    borderWidth = 1,
+    backgroundColor = "#FFFFFF"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = 2014
+    ),
+    area = list(
+      fillOpacity = 0.5
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "{point.x}<br>",
+    pointFormat = "&#8226; {series.name}: <b>${point.y} B</b>"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "area",
+    hcaes(x = year, y = revenue, group = company)
+  )
+```

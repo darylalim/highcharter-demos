@@ -1,0 +1,123 @@
+---
+title: "Funnel Chart Demo"
+---
+
+This is a demo of a funnel chart.
+
+Highcharts Demos: [Funnel chart](https://www.highcharts.com/demo/funnel)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  stage = c(
+    "Website visits", 
+    "Downloads", 
+    "Requested price list", 
+    "Invoice sent", 
+    "Finalized"
+  ),
+  unique_users = c(
+    15654, 4064, 1987, 976, 846
+  )
+) %>% 
+  mutate(
+    stage = as_factor(stage),
+    unique_users = as.integer(unique_users)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing a sales funnel. A funnel chart is often used to visualize data from stages of a process. Readers can quickly identify bottlenecks in the process by comparing the area size variation of each stage."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Funnel chart
+
+```{r}
+#| label: funnel-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/funnel.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Sales funnel"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.stage}</b> ({point.y:.0f})",
+        softConnector = TRUE
+      ),
+      center = c("40%", "50%"),
+      neckWidth = "30%",
+      neckHeight = "25%",
+      width = "80%"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "funnel", 
+    hcaes(x = stage, y = unique_users),
+    name = "Unique users"
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          plotOptions = list(
+            series = list(
+              dataLabels = list(
+                inside = TRUE
+              ),
+              center = c("50%", "50%"),
+              width = "100%"
+            )
+          )
+        )
+      )
+    )
+  )
+```

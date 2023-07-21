@@ -1,0 +1,124 @@
+---
+title: "Spline with Symbols Demo"
+---
+
+This is a demo of a spline chart with symbols.
+
+Highcharts Demos: [Spline with symbols](https://www.highcharts.com/demo/spline-symbols)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This chart shows how symbols and shapes can be used in charts. Highcharts includes several common symbol shapes, such as squares, circles and triangles, but it is also possible to add your own custom symbols. In this chart, custom weather symbols are used on data points to highlight that certain temperatures are warm while others are cold."
+    )
+  )
+)
+```
+
+# Spline chart with symbols
+
+Data retrieved from [Wikipedia](https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature)
+
+```{r}
+#| label: spline-with-symbols
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_chart(
+    type = "spline"
+  ) %>% 
+  hc_title(
+    text = "Monthly Average Temperature"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature'>Wikipedia.com</a>"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ),
+    accessibility = list(
+      enabled = TRUE,
+      description = "Months of the year"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Temperature"
+    ),
+    labels = list(
+      format = "{value}°"
+    )
+  ) %>% 
+  hc_tooltip(
+    crosshairs = TRUE, 
+    shared = TRUE
+  ) %>% 
+  hc_plotOptions(
+    spline = list(
+      marker = list(
+        radius = 4,
+        lineColor = "#666666",
+        lineWidth = 1
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Tokyo",
+    marker = list(
+      symbol = "square"
+    ),
+    data = list(
+      5.2, 5.7, 8.7, 13.9, 18.2, 21.4, 25.0, 
+      list(
+        y = 26.4,
+        marker = list(
+          symbol = "url(https://www.highcharts.com/samples/graphics/sun.png)"
+        ),
+        accessibility = list(
+          enabled = TRUE,
+          description = "Sunny symbol, this is the warmest point in the chart."
+        )
+      ),
+      22.8, 17.5, 12.1, 7.6
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Bergen",
+    marker = list(
+      symbol = "diamond"
+    ),
+    data = list(
+      list(
+        y = 1.5,
+        marker = list(
+          symbol = "url(https://www.highcharts.com/samples/graphics/snow.png)"
+        ),
+        accessibility = list(
+          description = "Snowy symbol, this is the coldest point in the chart."
+        )
+      ),
+      1.6, 3.3, 5.9, 10.5, 13.5, 14.5, 14.4, 11.5, 8.7, 4.7, 2.6
+    )
+  )
+```

@@ -1,0 +1,117 @@
+---
+title: "Gantt Chart with Milestones Demo"
+---
+
+This is a demo of a Gantt chart with milestones.
+
+Highcharts Documentation: [Milestone](https://www.highcharts.com/docs/gantt/gantt-task-config#milestone)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "See milestone example, one of the data points in the series has the milestone property set to true."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Gantt chart with milestones
+
+```{r}
+#| label: gantt-chart-milestone
+
+highchartzero() %>% 
+  hc_add_dependency("modules/gantt.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Gantt Chart with Milestone"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE
+    ),
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE,
+      linkedTo = 0
+    )
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    type = "treegrid",
+    uniqueNames = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "gantt",
+    name = "Project 1",
+    data = list(
+      list(
+        id = "s",
+        name = "Start prototype",
+        start = JS("Date.UTC(2014, 10, 18)"),
+        end = JS("Date.UTC(2014, 10, 20)")
+      ),
+      list(
+        id = "b",
+        name = "Develop",
+        start = JS("Date.UTC(2014, 10, 20)"),
+        end = JS("Date.UTC(2014, 10, 25)"),
+        dependency = "s"
+      ),
+      list(
+        id = "a",
+        name = "Run acceptance tests",
+        start = JS("Date.UTC(2014, 10, 23)"),
+        end = JS("Date.UTC(2014, 10, 26)")
+      ),
+      list(
+        name = "Prototype finished",
+        start = JS("Date.UTC(2014, 10, 27)"),
+        end = JS("Date.UTC(2014, 10, 29)"),
+        dependency = list("a", "b"),
+        milestone = TRUE
+      )
+    )
+  )
+```

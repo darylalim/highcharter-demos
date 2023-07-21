@@ -1,0 +1,126 @@
+---
+title: "Tile Map with Circles Demo"
+---
+
+This is a demo of a tile map with circles.
+
+Highcharts Maps Demos: [Tile map, circles](https://www.highcharts.com/demo/maps/circlemap-africa)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/africa_gdp_2017.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A tile map with circles.",
+      point = list(
+        valueDescriptionFormat = "{xDescription}, forecasted {point.value}% growth."
+      )
+    )
+  ),
+  highcharter.lang = list(
+    accessibility = list(
+      chartTypes = list(
+        defaultSingle = "Map with fixed circle areas laid out in the shape of Africa. The map shows {numPoints} countries."
+      )
+    )
+  )
+)
+```
+
+# Tile map circles
+
+```{r}
+#| label: tile-map-circles
+
+highchart() %>% 
+  hc_chart(
+    type = "tilemap",
+    height = "125%"
+  ) %>% 
+  hc_title(
+    text = "Africa Real GDP Growth Forecasts for 2017",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    visible = FALSE
+  ) %>% 
+  hc_yAxis(
+    visible = FALSE
+  ) %>% 
+  hc_legend(
+    enabled = TRUE,
+    layout = "vertical",
+    align = "left",
+    y = -20,
+    floating = TRUE
+  ) %>% 
+  hc_colorAxis(
+    dataClasses = list(
+      list(
+        to = 2,
+        color = "#e8f5e9",
+        name = "Weak"
+      ),
+      list(
+        from = 2,
+        to = 5,
+        color = "#81c784",
+        name = "Average"
+      ),
+      list(
+        from = 5,
+        to = 6,
+        color = "#43a047",
+        name = "Strong"
+      ),
+      list(
+        from = 6,
+        color = "#1b5e20",
+        name = "Stellar"
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = NULL,
+    pointFormat = "The real GDP growth of <b>{point.name}</b> is <b>{point.value}</b> %"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      tileShape = "circle",
+      dataLabels = list(
+        enabled = TRUE,
+        format = "{point.iso-a3}",
+        color = "#000000",
+        style = list(
+          textOutline = FALSE
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df
+  )
+```

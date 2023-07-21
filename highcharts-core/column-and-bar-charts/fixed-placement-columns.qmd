@@ -1,0 +1,118 @@
+---
+title: "Column Chart with Fixed Placement Demo"
+---
+
+This is a demo of a column chart with fixed placement.
+
+Highcharts Demos: [Fixed placement columns](https://www.highcharts.com/demo/column-placement)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing overlapping placement of columns, using different data series. The chart is also using multiple y-axes, allowing data in different ranges to be visualized on the same chart."
+    )
+  )
+)
+```
+
+# Column chart with fixed placement
+
+```{r}
+#| label: fixed-placement-columns
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "column"
+  ) %>% 
+  hc_title(
+    text = "Efficiency Optimization by Branch"
+  ) %>% 
+  hc_xAxis(
+    categories = c("Seattle HQ", "San Francisco", "Tokyo")
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      title = list(
+        text = "Employees"
+      ),
+      min = 0
+    ),
+    list(
+      title = list(
+        text = "Profit (millions)"
+      ),
+      opposite = TRUE
+    )
+  ) %>% 
+  hc_legend(
+    shadow = FALSE
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      grouping = FALSE,
+      shadow = FALSE,
+      borderRadius = 5,
+      borderWidth = 0
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Employees",
+    color = "rgba(165, 170, 217, 1)",
+    data = c(150, 73, 20),
+    pointPadding = 0.3,
+    pointPlacement = -0.2
+  ) %>% 
+  hc_add_series(
+    name = "Employees Optimized",
+    color = "rgba(126, 86, 134, 0.9)",
+    data = c(140, 90, 40),
+    pointPadding = 0.4,
+    pointPlacement = -0.2
+  ) %>% 
+  hc_add_series(
+    name = "Profit",
+    color = "rgba(248, 161, 63, 1)",
+    data = c(183.6, 178.8, 198.5),
+    tooltip = list(
+      valuePrefix = "$",
+      valueSuffix = " M"
+    ),
+    pointPadding = 0.3,
+    pointPlacement = 0.2,
+    yAxis = 1
+  ) %>% 
+  hc_add_series(
+    name = "Profit Optimized",
+    color = "rgba(186, 60, 61, 0.9)",
+    data = c(203.6, 198.8, 208.5),
+    tooltip = list(
+      valuePrefix = "$",
+      valueSuffix = " M"
+    ),
+    pointPadding = 0.4,
+    pointPlacement = 0.2,
+    yAxis = 1
+  )
+```

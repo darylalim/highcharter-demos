@@ -1,0 +1,138 @@
+---
+title: "Radial Bar Chart Demo"
+---
+
+This is a demo of a radial bar chart.
+
+Highcharts Demos: [Radial bar chart](https://www.highcharts.com/demo/polar-radial-bar)
+
+Stack Overflow questions: [Adding Flags in Highcharter using R](https://stackoverflow.com/questions/63308271/adding-flags-in-highcharter-using-r)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(htmlwidgets)
+library(htmltools)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A polar bar chart is similar to a bar chart, but the y-axis is circular. In this demo we see the total Winter Olympics medals earned for the top 5 countries."
+    )
+  )
+)
+```
+
+# Radial bar chart
+
+```{r}
+#| label: radial-bar-chart
+
+chart <- highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>%
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_chart(
+    type = "column",
+    inverted = TRUE,
+    polar = TRUE
+  ) %>% 
+  hc_colors(
+    colors = c(
+      "#FFD700", "#C0C0C0", "#CD7F32"
+    )
+  ) %>% 
+  hc_title(
+    text = "Winter Olympic medals per existing country (TOP 5)",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://en.wikipedia.org/wiki/All-time_Olympic_Games_medal_table'>Wikipedia</a>",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    outside = TRUE
+  ) %>% 
+  hc_pane(
+    size = "85%",
+    innerSize = "20%",
+    endAngle = 270
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      stacking = "normal",
+      borderWidth = 0,
+      pointPadding = 0,
+      groupPadding = 0.15
+    )
+  ) %>% 
+  hc_xAxis(
+    categories = c(
+      "Norway", "United States", "Germany", "Austria", "Canada"
+    ),
+    labels = list(
+      useHTML = TRUE,
+      formatter = JS(
+        "function() {
+          return {
+            'Norway': 'Normay &nbsp;<span class=\x22 f16\x22><span class=\x22 flag no \x22></span></span>&nbsp;&nbsp;',
+            'United States': 'United States &nbsp;<span class=\x22 f16\x22><span  class=\x22 flag us \x22></span ></span>&nbsp;&nbsp;&nbsp;',
+            'Germany': 'Germany &nbsp;<span class=\x22 f16\x22><span  class=\x22 flag de \x22></span ></span>&nbsp;&nbsp;',
+            'Austria': 'Austria<span class=\x22 f16\x22><span  class=\x22 flag at\x22></span ></span>&nbsp;&nbsp;',
+            'Canada': 'Canada &nbsp;<span class=\x22 f16\x22><span  class=\x22 flag ca \x22></span ></span>&nbsp;&nbsp;'
+          } 
+          [this.value]; 
+        }"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    crosshair = list(
+      enabled = TRUE,
+      color = "#333"
+    ),
+    lineWidth = 0,
+    tickInterval = 25,
+    reversedStacks = FALSE,
+    endOnTick = TRUE,
+    showLastLabel = TRUE
+  ) %>% 
+  hc_add_series(
+    name = "Gold medals",
+    data = c(148, 113, 104, 71, 77)
+  ) %>% 
+  hc_add_series(
+    name = "Silver medals",
+    data = c(113, 122, 98, 88, 72)
+  ) %>% 
+  hc_add_series(
+    name = "Bronze medals",
+    data = c(124, 95, 65, 91, 76)
+  )
+```
+
+# Add flags to chart
+
+Flag sprites service provided by [Martijn Lafeber](https://github.com/lafeber/world-flags-sprite/blob/master/LICENSE)
+
+```{r}
+#| label: add-flags
+
+prependContent(
+  chart, 
+  HTML('<link rel="stylesheet" href="https://github.com/downloads/lafeber/world-flags-sprite/flags16.css" />')
+)
+```

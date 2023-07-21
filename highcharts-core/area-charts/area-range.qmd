@@ -1,0 +1,99 @@
+---
+title: "Area Range Chart Demo"
+---
+
+This is a demo of a basic area chart.
+
+Highcharts Demos: [Area range](https://www.highcharts.com/demo/arearange)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/range.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Demonstrating an arearange chart with a low and high value per point. Area range charts are commonly used to visualize a range that changes over time."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Area range chart
+
+```{r}
+#| label: area-range
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    zoomType = "x",
+    scrollablePlotArea = list(
+      minWidth = 600,
+      scrollPositionX = 1
+    )
+  ) %>% 
+  hc_title(
+    text = "Temperature variation by day"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    type = "datetime",
+    accessibility = list(
+      rangeDescription = "Range: Jan 1st 2017 to Dec 31 2017."
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = FALSE
+    )
+  ) %>% 
+  hc_tooltip(
+    crosshairs = TRUE,
+    shared = TRUE,
+    valueSuffix = "°C",
+    xDateFormat = "%A, %b %e"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "arearange", 
+    name = "Temperatures"
+  )
+```

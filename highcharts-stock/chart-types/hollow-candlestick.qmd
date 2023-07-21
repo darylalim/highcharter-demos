@@ -1,0 +1,98 @@
+---
+title: "Hollow Candlestick Stock Chart Demo"
+---
+
+This is a demo of a hollow candlestick stock chart.
+
+Highcharts Stock Demos: [Hollow Candlestick](https://www.highcharts.com/demo/stock/hollow-candlestick)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+aapl <- adjustOHLC(aapl)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A hollow candlestick stock chart showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Hollow Candlestick
+
+```{r}
+#| label: hollow-candlestick
+
+highchartzero() %>% 
+  hc_add_dependency("modules/stock.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/hollowcandlestick.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "AAPL stock price"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    opposite = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    valueDecimals = 2
+  ) %>% 
+  hc_rangeSelector(
+    enabled = TRUE,
+    selected = 1
+  ) %>% 
+  hc_navigator(
+    enabled = TRUE,
+    series = list(
+      color = colors_v11[1]
+    )
+  ) %>% 
+  hc_scrollbar(
+    enabled = TRUE
+  ) %>% 
+  hc_add_series(
+    type = "hollowcandlestick",
+    name = "Hollow Candlestick",
+    data = aapl
+  )
+```

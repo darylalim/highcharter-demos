@@ -1,0 +1,75 @@
+---
+title: "Stock Chart with Disabled Navigator Demo"
+---
+
+This is a demo of a line stock chart with disabled navigator.
+
+Highcharts Stock Demos: [Disabled navigator](https://www.highcharts.com/demo/stock/navigator-disabled)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A line stock chart showing Apple stock price. The navigator is disabled."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Disabled navigator
+
+```{r}
+#| label: disabled-navigator
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_navigator(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "AAPL Stock Price",
+    data = aapl,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  )
+```

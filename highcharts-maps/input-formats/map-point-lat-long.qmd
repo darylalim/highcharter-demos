@@ -1,0 +1,141 @@
+---
+title: "Map Point with Latitude/Longitude Demo"
+---
+
+This is a demo of a map point series with latitude and longitude.
+
+Highcharts Maps Demos: [Map point with lat/long](https://www.highcharts.com/demo/maps/mappoint-latlon)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "London",
+    lat = 51.507222,
+    lon = -0.1275
+  ), 
+  list(
+    name = "Birmingham",
+    lat = 52.483056,
+    lon = -1.893611
+  ), 
+  list(
+    name = "Leeds",
+    lat = 53.799722,
+    lon = -1.549167
+  ), 
+  list(
+    name = "Glasgow",
+    lat = 55.858,
+    lon = -4.259
+  ), 
+  list(
+    name = "Sheffield",
+    lat = 53.383611,
+    lon = -1.466944
+  ), 
+  list(
+    name = "Liverpool",
+    lat = 53.4,
+    lon = -3
+  ), 
+  list(
+    name = "Bristol",
+    lat = 51.45,
+    lon = -2.583333
+  ), 
+  list(
+    name = "Belfast",
+    lat = 54.597,
+    lon = -5.93
+  ), 
+  list(
+    name = "Lerwick",
+    lat = 60.155,
+    lon = -1.145,
+    dataLabels = list(
+      align = "left",
+      x = 5,
+      verticalAlign = "middle"
+    )
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Map where city locations have been defined using latitude/longitude."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Map point with latitude and longitude points
+
+```{r}
+#| label: map-point-lat-long
+
+hcmap(
+  map = "countries/gb/gb-all",
+  download_map_data = getOption("highcharter.download_map_data"),
+  showInLegend = FALSE,
+  name = "Great Britain",
+  borderColor = "#A0A0A0",
+  nullColor = "rgba(200, 200, 200, 0.3)"
+) %>% 
+  hc_title(
+    text = "Highmaps basic lat/lon demo"
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE
+  ) %>% 
+  hc_tooltip(
+    headerFormat = NULL,
+    pointFormat = "<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}"
+  ) %>% 
+  hc_add_series(
+    type = "mappoint",
+    name = "Cities",
+    accessibility = list(
+      point = list(
+        valueDescriptionFormat = "{xDescription}. Lat: {point.lat:.2f}, lon: {point.lon:.2f}."
+      )
+    ),
+    color = colors_v11[2],
+    data = df
+  ) %>% 
+  hc_credits(
+    enabled = TRUE
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE
+  )
+```

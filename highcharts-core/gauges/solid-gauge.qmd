@@ -1,0 +1,229 @@
+---
+title: "Solid Gauges Demo"
+---
+
+This is a demo of a chart with solid gauges.
+
+Highcharts Demos: [Solid gauge](https://www.highcharts.com/demo/gauge-solid)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart demonstrating solid gauges with dynamic data. Two separate charts are used, and each is updated dynamically every few seconds. Solid gauges are popular charts for dashboards, as they visualize a number in a range at a glance. As demonstrated by these charts, the color of the gauge can change depending on the value of the data shown."
+    )
+  )
+)
+```
+
+# Build speed gauge
+
+```{r}
+#| label: speed-gauge
+
+chart_speed <- highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/solid-gauge.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "solidgauge",
+    events = list(
+      load = JS(
+        "function() {
+          var chart = this;
+          setInterval(function() {
+            if (chart) {
+              var point = chart.series[0].points[0],
+              inc = Math.round((Math.random() - 0.5) * 100);
+
+              var newVal = point.y + inc;
+              if (newVal < 0 || newVal > 200) {
+                newVal = point.y - inc;
+              }
+
+              point.update(newVal);
+            }
+          }, 2000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = NULL
+  ) %>% 
+  hc_pane(
+    center = c("50%", "85%"),
+    size = "140%",
+    startAngle = -90,
+    endAngle = 90,
+    background = list(
+      backgroundColor = "#EEE",
+      innerRadius = "60%",
+      outerRadius = "100%",
+      shape = "arc"
+    )
+  ) %>% 
+  hc_tooltip(
+    enabled = FALSE
+  ) %>%
+  hc_yAxis(
+    stops = list(
+      list(0.1, "#55BF3B"), # green
+      list(0.5, "#DDDF0D"), # yellow
+      list(0.9, "#DF5353") # red
+    ), 
+    lineWidth = 0,
+    tickWidth = 0,
+    minorTickInterval = NULL,
+    tickAmount = 2,
+    title = list(
+      y = -70,
+      text = "Speed"
+    ),
+    labels = list(
+      y = 16
+    ),
+    min = 0,
+    max = 200
+  ) %>% 
+  hc_plotOptions(
+    solidgauge = list(
+      dataLabels = list(
+        y = 5,
+        borderWidth = 0,
+        useHTML = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Speed",
+    data = c(80),
+    dataLabels = list(
+      format = "<div style='text-align:center'><span style='font-size:25px'>{y}</span><br/><span style='font-size:12px;opacity:0.4'>km/h</span></div>"
+    ),
+    tooltip = list(
+      valueSuffix = " km/h"
+    )
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  )
+```
+
+# Build RPM gauge
+
+```{r}
+#| label: rpm-gauge
+
+chart_rpm <- highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/solid-gauge.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "solidgauge",
+    events = list(
+      load = JS(
+        "function() {
+          var chart = this;
+          setInterval(function() {
+            if (chart) {
+              var point = chart.series[0].points[0],
+              inc = Math.random() - 0.5;
+
+              var newVal = point.y + inc;
+              if (newVal < 0 || newVal > 5) {
+                newVal = point.y - inc;
+              }
+
+              point.update(newVal);
+            }
+          }, 2000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = NULL
+  ) %>% 
+  hc_pane(
+    center = c("50%", "85%"),
+    size = "140%",
+    startAngle = -90,
+    endAngle = 90,
+    background = list(
+      backgroundColor = "#EEE",
+      innerRadius = "60%",
+      outerRadius = "100%",
+      shape = "arc"
+    )
+  ) %>% 
+  hc_tooltip(
+    enabled = FALSE
+  ) %>%
+  hc_yAxis(
+    stops = list(
+      list(0.1, "#55BF3B"), # green
+      list(0.5, "#DDDF0D"), # yellow
+      list(0.9, "#DF5353") # red
+    ), 
+    lineWidth = 0,
+    tickWidth = 0,
+    minorTickInterval = NULL,
+    tickAmount = 2,
+    min = 0,
+    max = 5,
+    title = list(
+      y = -70,
+      text = "RPM"
+    ),
+    labels = list(
+      y = 16
+    )
+  ) %>% 
+  hc_plotOptions(
+    solidgauge = list(
+      dataLabels = list(
+        y = 5,
+        borderWidth = 0,
+        useHTML = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "RPM",
+    data = c(1),
+    dataLabels = list(
+      format = "<div style='text-align:center'><span style='font-size:25px'>{y:.1f}</span><br/><span style='font-size:12px;opacity:0.4'>* 1000 / min</span></div>"
+    ),
+    tooltip = list(
+      valueSuffix = " revolutions/min"
+    )
+  )
+```
+
+# Solid gauge
+
+```{r}
+#| label: solid-gauge
+
+# Grid
+hw_grid(
+  chart_speed, chart_rpm,
+  ncol = 1
+)
+```

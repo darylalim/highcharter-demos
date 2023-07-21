@@ -1,0 +1,189 @@
+---
+title: "Bubble Chart Demo"
+---
+
+This is a demo of a bubble chart.
+
+Highcharts Demos: [Bubble chart](https://www.highcharts.com/demo/bubble)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  name = c(
+    "BE", "DE", "FI", "NL", "SE", 
+    "ES", "FR", "NO", "UK", "IT", 
+    "RU", "US", "HU", "PT", "NZ"
+  ),
+  country = c(
+    "Belgium", "Germany", "Finland", "Netherlands", "Sweden",
+    "Spain", "France", "Norway", "United Kingdom", "Italy",
+    "Russia", "United States", "Hungary", "Portugal", "New Zealand"),
+  fat = c(
+    95, 86.5, 80.8, 80.4, 80.3, 
+    78.4, 74.2, 73.5, 71, 69.2, 
+    68.6, 65.5, 65.4, 63.4, 64
+  ),
+  sugar = c(
+    95, 102.9, 91.5, 102.5, 86.1, 
+    70.1, 68.5, 83.1, 93.2, 57.6, 
+    20, 126.4, 50.8, 51.8, 82.9
+  ),
+  obesity = c(
+    13.8, 14.7, 15.8, 12, 11.8, 
+    16.6, 14.5, 10, 24.7, 10.4, 
+    16, 35.3, 28.5, 15.4, 31.3
+  )
+) %>% 
+  mutate(
+    name = as_factor(name),
+    country = as_factor(country)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing basic use of bubble series with a custom tooltip formatter. The chart uses plot lines to show safe intake levels for sugar and fat. Bubble charts are great for comparing three dimensions of data without relying on color or 3D charts.",
+      point = list(
+        valueDescriptionFormat = "{index}. {point.name}, fat: {point.x}g, sugar: {point.y}g, obesity: {point.z}%."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Bubble chart
+
+```{r}
+#| label: bubble-chart
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    plotBorderWidth = 1,
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Sugar and fat intake per country"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='http://www.euromonitor.com/'>Euromonitor</a> and <a href='https://data.oecd.org/'>OECD</a>"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = "Daily fat intake"
+    ),
+    gridLineWidth = 1,
+    labels = list(
+      format = "{value} gr"
+    ),
+    plotLines = list(
+      list(
+        color = "black",
+        dashStyle = "dot",
+        width = 2,
+        value = 65,
+        label = list(
+          rotation = 0,
+          y = 15,
+          style = list(
+            fontStyle = "italic"
+          ),
+          text = "Safe fat intake 65g/day"
+        ),
+        zIndex = 3
+      )
+    ),
+    accessibility = list(
+      rangeDescription = "Range: 60 to 100 grams."
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Daily sugar intake"
+    ),
+    labels = list(
+      format = "{value} gr"
+    ),
+    startOnTick = FALSE,
+    endOnTick = FALSE,
+    maxPadding = 0.2,
+    plotLines = list(
+      list(
+        color = "black",
+        dashStyle = "dot",
+        width = 2,
+        value = 50,
+        label = list(
+          align = "right",
+          style = list(
+            fontStyle = "italic"
+          ),
+          text = "Safe sugar intake 50g/day",
+          x = -10
+        ),
+        zIndex = 3
+      )
+    ),
+    accessibility = list(
+      rangeDescription = "Range: 0 to 160 grams."
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    useHTML = TRUE,
+    headerFormat = "<table>",
+    pointFormat = "<tr><th colspan='2'><h3>{point.country}</h3></th></tr><tr><th>Fat intake:</th><td>{point.x}g</td></tr><tr><th>Sugar intake:</th><td>{point.y}g</td></tr><tr><th>Obesity (adults):</th><td>{point.z}%</td></tr>",
+    footerFormat = "</table>",
+    followPointer = TRUE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "{point.name}"
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "bubble", 
+    hcaes(x = fat, y = sugar, z = obesity),
+    colorByPoint = TRUE
+  ) 
+```

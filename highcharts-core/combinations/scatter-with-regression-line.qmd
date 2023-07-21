@@ -1,0 +1,87 @@
+---
+title: "Scatter Plot with Regression Line Demo"
+---
+
+This is a demo of a scatter plot with a regression line.
+
+Highcharts Demos: [Scatter with regression line](https://www.highcharts.com/demo/combo-regression)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing how a line series can be used to show a computed regression line for a dataset. The source data for the regression line is visualized as a scatter series."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Scatter plot with regression line
+
+```{r}
+#| label: scatter-with-regression-line
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Scatter plot with regression line"
+  ) %>% 
+  hc_xAxis(
+    min = -0.5,
+    max = 5.5
+  ) %>% 
+  hc_yAxis(
+    min = 0
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "Regression Line",
+    data = list(
+      c(0, 1.11),
+      c(5, 4.51)
+    ),
+    marker = list(
+      enabled = FALSE
+    ),
+    states = list(
+      hover = list(
+        lineWidth = 0
+      )
+    ),
+    enableMouseTracking = FALSE
+  ) %>% 
+  hc_add_series(
+    type = "scatter",
+    name = "Observations",
+    data = c(1, 1.5, 2.8, 3.5, 3.9, 4.2),
+    marker = list(
+      radius = 4
+    )
+  )
+```

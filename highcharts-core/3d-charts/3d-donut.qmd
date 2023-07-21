@@ -1,0 +1,95 @@
+---
+title: "3D Donut Chart Demo"
+---
+
+This is a demo of a 3D donut chart.
+
+Highcharts Demos: [3D donut](https://www.highcharts.com/demo/3d-pie-donut)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Beijing 2022 Medal Table](https://olympics.com/en/olympic-games/beijing-2022/medals)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  country = c(
+    "Norway", "Germany", "USA", "Sweden", "Netherlands", "ROC", "Austria", "Canada", "Japan"
+  ),
+  gold_medals = c(
+    16, 12, 8, 8, 8, 6, 7, 4, 3
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A variation of a 3D pie chart with an inner radius added. These charts are often referred to as donut charts."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D donut chart
+
+```{r}
+#| label: 3d-donut
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    options3d = list(
+      enabled = TRUE,
+      alpha = 45
+    )
+  ) %>% 
+  hc_title(
+    text = "Beijing 2022 gold medals by country",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "3D donut in Highcharter",
+    align = "left"
+  ) %>% 
+  hc_plotOptions(
+    pie = list(
+      innerSize = 100,
+      depth = 45
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "pie",
+    hcaes(x = country, y = gold_medals)
+  ) 
+```

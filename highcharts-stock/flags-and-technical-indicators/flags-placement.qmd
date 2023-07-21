@@ -1,0 +1,152 @@
+---
+title: "Stock Chart with Flags Placement Demo"
+---
+
+This is a demo of a line stock chart with flags.
+
+Highcharts Stock Demos: [Flags placement](https://www.highcharts.com/demo/stock/flags-placement)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(dplyr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+usd_eur <- fromJSON("data/usdeur.json")
+```
+
+# Set date variables
+
+```{r}
+#| label: set-date-variables
+
+# Get the last date
+last_date <- last(usd_eur[,1])
+
+# Milliseconds in a day
+days <- 24 * 36e5
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A line stock chart showing USD to EUR exchange rate. Squarepin flags are placed on series, on axis and in pane."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Flags placement
+
+```{r}
+#| label: flags-placement
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "USD to EUR exchange rate"
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      title = list(
+        text = "Exchange rate"
+      ),
+      top = "15%",
+      height = "85%"
+    ),
+    list(
+      height = "15%"
+    )
+  ) %>% 
+  hc_plotOptions(
+    flags = list(
+      accessibility = list(
+        exposeAsGroupOnly = TRUE,
+        description = "Flagged events."
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "USD to EUR",
+    data = usd_eur,
+    id = "dataseries",
+    tooltip = list(
+      valueDecimals = 4
+    )
+  ) %>% 
+  hc_add_series(
+    type = "flags",
+    name = "Flags on series",
+    data = list(
+      list(
+        x = last_date - 60 * days,
+        title = "On series"
+      ),
+      list(
+        x = last_date - 30 * days,
+        title = "On series"
+      )
+    ),
+    onSeries = "dataseries",
+    shape = "squarepin"
+  ) %>% 
+  hc_add_series(
+    type = "flags",
+    name = "Flags on axis",
+    data = list(
+      list(
+        x = last_date - 45 * days,
+        title = "On axis"
+      ),
+      list(
+        x = last_date - 15 * days,
+        title = "On axis"
+      )
+    ),
+    shape = "squarepin"
+  ) %>% 
+  hc_add_series(
+    type = "flags",
+    name = "Flags in pane",
+    data = list(
+      list(
+        x = last_date - 40 * days,
+        title = "In pane"
+      ),
+      list(
+        x = last_date - 15 * days,
+        title = "In pane"
+      )
+    ),
+    yAxis = 1,
+    shape = "squarepin"
+  )
+```

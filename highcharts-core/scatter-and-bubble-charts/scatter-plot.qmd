@@ -1,0 +1,166 @@
+---
+title: "Scatter Plot Demo"
+---
+
+This is a demo of a scatter plot.
+
+Highcharts Demos: [Scatter plot](https://www.highcharts.com/demo/scatter)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(readr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Olympics 2012 by age, weight and height](https://www.theguardian.com/sport/datablog/2012/aug/07/olympics-2012-athletes-age-weight-height)
+
+```{r}
+#| label: build-data
+
+df <- read_csv("data/All London 2012 athletes - ALL ATHLETES.csv") %>% 
+  select(Sport, `Height, cm`, Weight) %>% 
+  filter(Sport %in% c("Basketball", "Triathlon", "Volleyball")) %>% 
+  rename(
+    sport = Sport,
+    height = `Height, cm`,
+    weight = Weight
+  ) %>% 
+  arrange(sport) %>% 
+  mutate(
+    sport = as_factor(sport),
+    height = height / 100
+  )
+
+basketball <- df %>% 
+  filter(sport == "Basketball")
+
+triathlon <- df %>% 
+  filter(sport == "Triathlon")
+
+volleyball <- df %>% 
+  filter(sport == "Volleyball")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Scatter charts are often used to visualize the relationships between data in two dimensions. This chart is visualizing olympic contestants by sport, showing how various sports prefer different characteristics."
+    )
+  )
+)
+```
+
+# Scatter plot
+
+```{r}
+#| label: scatter-plot
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(
+    c("rgba(5,141,199,0.5)", "rgba(80,180,50,0.5)", "rgba(237,86,27,0.5)")
+  ) %>% 
+  hc_chart(
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Olympic athletes by height and weight",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.theguardian.com/sport/datablog/2012/aug/07/olympics-2012-athletes-age-weight-height'>The Guardian</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = "Height"
+    ),
+    labels = list(
+      format = "{value} m"
+    ),
+    startOnTick = TRUE,
+    endOnTick = TRUE,
+    showLastLabel = TRUE
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Weight"
+    ),
+    labels = list(
+      format = "{value} kg"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = TRUE
+  ) %>% 
+  hc_plotOptions(
+    scatter = list(
+      marker = list(
+        radius = 2.5,
+        symbol = "circle",
+        states = list(
+          hover = list(
+            enabled = TRUE,
+            lineColor = "rgb(100, 100, 100)"
+          )
+        )
+      ),
+      states = list(
+        hover = list(
+          marker = list(
+            enabled = FALSE
+          )
+        )
+      ),
+      jitter = list(
+        x = 0.005
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "Height: {point.x} m<br/>Weight: {point.y} kg"
+  ) %>% 
+  hc_add_series(
+    data = basketball,
+    type = "scatter",
+    hcaes(x = height, y = weight),
+    name = "Basketball",
+    marker = list(
+      symbol = "circle"
+    )
+  ) %>% 
+  hc_add_series(
+    data = triathlon,
+    type = "scatter",
+    hcaes(x = height, y = weight),
+    name = "Triathlon",
+    marker = list(
+      symbol = "triangle"
+    )
+  ) %>% 
+  hc_add_series(
+    data = volleyball,
+    type = "scatter",
+    hcaes(x = height, y = weight),
+    name = "Volleyball",
+    marker = list(
+      symbol = "square"
+    )
+  )
+```

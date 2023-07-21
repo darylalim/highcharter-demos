@@ -1,0 +1,114 @@
+---
+title: "Time Data with Irregular Intervals Demo"
+---
+
+This is a demo of a spline chart with irregular time intervals.
+
+Highcharts Demos: [Time data with irregular intervals](https://www.highcharts.com/demo/spline-irregular-time)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(readr)
+library(highcharter)
+```
+
+# Import data
+
+Data retrieved from [Vikjavev](https://www.vikjavev.no/ver/snjomengd)
+
+```{r}
+#| label: import-data
+#| output: false
+
+winter_2019_2020 <- read_csv("data/winter_2019_2020.csv")
+winter_2020_2021 <- read_csv("data/winter_2020_2021.csv")
+winter_2021_2022 <- read_csv("data/winter_2021_2022.csv")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This demo visualizes a data set with irregular time intervals. Highcharts comes with sophisticated functionality for dealing with time data, including support for different time zones and irregular intervals."
+    )
+  )
+)
+```
+
+# Time data with irregular intervals
+
+```{r}
+#| label: time-with-irregular-intervals
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_title(
+    text = "Snow depth at Vikjafjellet, Norway"
+  ) %>% 
+  hc_subtitle(
+    text = "Irregular time data in Highcharter"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    dateTimeLabelFormats = list(
+      month = "%e. %b",
+      year = "%b"
+    ),
+    title = list(
+      text = "Date"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Snow depth (m)"
+    ),
+    min = 0
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{series.name}</b><br>",
+    pointFormat = "{point.x:%e. %b}: {point.y:.2f} m"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      marker = list(
+        enabled = TRUE,
+        radius = 2.5
+      )
+    )
+  ) %>% 
+  hc_colors(
+    colors = list(
+      "#6CF", "#39F", "#06C", "#036", "#000"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Winter 2019-2020",
+    data = winter_2019_2020,
+    type = "spline",
+    hcaes(x = date, y = snow_depth_m)
+  ) %>% 
+  hc_add_series(
+    name = "Winter 2020-2021",
+    data = winter_2020_2021,
+    type = "spline",
+    hcaes(x = date, y = snow_depth_m)
+  ) %>% 
+  hc_add_series(
+    name = "Winter 2021-2022",
+    data = winter_2021_2022,
+    type = "spline",
+    hcaes(x = date, y = snow_depth_m)
+  )
+```

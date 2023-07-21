@@ -1,0 +1,118 @@
+---
+title: "Time Series Zoomable Demo"
+---
+
+This is a demo of a time series chart that is zoom-able.
+
+Highcharts Demos: [Time series, zoomable](https://www.highcharts.com/demo/line-time-series)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/usdeur.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Highcharts has extensive support for time series, and will adapt intelligently to the input data. Click and drag in the chart to zoom in and inspect the data."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Time series zoomable
+
+```{r}
+#| label: time-series-zoomable
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    zoomType = "x"
+  ) %>% 
+  hc_title(
+    text = "USD to EUR exchange rate over time",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Click and drag in the plot area to zoom in",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime"
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Exchange rate"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    area = list(
+      fillColor = list(
+        linearGradient = list(
+          x1 = 0,
+          y1 = 0,
+          x2 = 0,
+          y2 = 1
+        ),
+        stops = list(
+          list(
+            0, JS("Highcharts.getOptions().colors[0]")
+          ),
+          list(
+            1, JS("Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')")
+          )
+        )
+      ),
+      marker = list(
+        radius = 2
+      ),
+      lineWidth = 1,
+      states = list(
+        hover = list(
+          lineWidth = 1
+        )
+      ),
+      threshold = NULL
+    )
+  ) %>% 
+  hc_add_series(
+    type = "area",
+    name = "USD to EUR",
+    data = df
+  )
+```

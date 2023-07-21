@@ -1,0 +1,168 @@
+---
+title: "Parallel Coordinates Chart Demo"
+---
+
+This is a demo of a parallel coordinates chart.
+
+Highcharts Demos: [Parallel coordinates](https://www.highcharts.com/demo/parallel-coordinates)
+
+Stack Overflow questions: [Parallel coordinates in highcharter R](https://stackoverflow.com/questions/67838588/parallelcoordinates-in-r-highcharter-r)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(jsonlite)
+library(purrr)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/marathon.json") %>%
+  as_tibble() %>%
+  asplit(1) %>% 
+  imap(
+    ~list(
+      name = paste("Runner", .y),
+      data = as.numeric(.x[1:7]),
+      color = "rgba(11, 200, 200, 0.1)"
+    )
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing an example of a parallel coordinate plot. This type of visualization is commonly used to show multivariate data, and can help analyze large datasets to find patterns and correlations."
+    )
+  ),
+  highcharter.lang = list(
+    accessibility = list(
+      axis = list(
+        yAxisDescriptionPlural = "The chart has 7 Y axes across the chart displaying Training date, Miles for training run, Training time, Shoe brand, Running pace per mile, Short or long, and After 2004."
+      )
+    )
+  )
+)
+```
+
+# Parallel coordinates
+
+```{r}
+#| label: parallel-coordinates
+
+highchartzero() %>% 
+  hc_add_dependency("modules/parallel-coordinates.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "spline",
+    parallelCoordinates = TRUE,
+    parallelAxes = list(
+      lineWidth = 2
+    )
+  ) %>% 
+  hc_title(
+    text = "Marathon set"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      animation = FALSE,
+      marker = list(
+        enabled = FALSE,
+        states = list(
+          hover = list(
+            enabled = FALSE
+          )
+        )
+      ),
+      states = list(
+        hover = list(
+          halo = list(
+            size = 0
+          )
+        )
+      ),
+      events = list(
+        mouseOver = JS(
+          "function () {this.group.toFront();}"
+        )
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<span style='color:{point.color}'>\u25CF</span>{series.name}: <b>{point.formattedValue}</b><br>"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Training date",
+      "Miles for training run",
+      "Training time",
+      "Shoe brand",
+      "Running pace per mile",
+      "Short or long",
+      "After 2004"
+    ),
+    offset = 10
+  ) %>%
+  hc_yAxis_multiples(
+    list(
+      type = "datetime",
+      tooltipValueFormat = "{value:%y-%m-%d}"
+    ),
+    list(
+      min = 0,
+      tooltipValueFormat = "{value} mile(s)"
+    ),
+    list(
+      type = "datetime",
+      min = 0,
+      labels = list(
+        format = "{value:%H:%M}"
+      )
+    ),
+    list(
+      categories = list(
+        "Other",
+        "Adidas",
+        "Mizuno",
+        "Asics",
+        "Brooks",
+        "New Balance",
+        "Izumi"
+      )
+    ),
+    list(
+      type = "datetime"
+    ),
+    list(
+      categories = list(
+        "&gt; 5miles", 
+        "&lt; 5miles"
+      )
+    ),
+    list(
+      categories = list(
+        "Before", 
+        "After"
+      )
+    )
+  ) %>% 
+  hc_add_series_list(
+    x = df
+  )
+```

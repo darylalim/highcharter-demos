@@ -1,0 +1,122 @@
+---
+title: "3D Column Chart with Stacking and Grouping Demo"
+---
+
+This is a demo of a 3D column chart with stacking and grouping.
+
+Highcharts Demos: [3D column with stacking and grouping](https://www.highcharts.com/demo/3d-column-stacking-grouping)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing grouped and stacked 3D columns. These features are available both for 2D and 3D column charts."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D column chart with stacking and grouping
+
+Data retrieved from [World Energy & Climate Statistics - Yearbook 2022](https://yearbook.enerdata.net/electricity/world-electricity-production-statistics.html)
+
+```{r}
+#| label: 3d-column-with-stacking-grouping
+
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data,js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column",
+    options3d = list(
+      enabled = TRUE,
+      alpha = 15,
+      beta = 15,
+      viewDistance = 25,
+      depth = 40
+    )
+  ) %>% 
+  hc_title(
+    text = "Electricity production in countries, grouped by continent",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    labels = list(
+      skew3d = TRUE,
+      style = list(
+        fontSize = "16px"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    allowDecimals = FALSE,
+    min = 0,
+    title = list(
+      text = "TWh",
+      skew3d = TRUE,
+      style = list(
+        fontSize = "16px"
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{point.key}</b><br>",
+    pointFormat = "<span style-'color:{series.color}'>\u25CF</span> {series.name}: {point.y} / {point.stackTotal}"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = 2016
+    ),
+    column = list(
+      stacking = "normal",
+      depth = 40
+    )
+  ) %>% 
+  hc_add_series(
+    name = "South Korea",
+    data = c(563, 567, 590, 582, 571),
+    stack = "Asia"
+  ) %>% 
+  hc_add_series(
+    name = "Germany",
+    data = c(650, 654, 643, 612, 572),
+    stack = "Europe"
+  ) %>% 
+  hc_add_series(
+    name = "Saudi Arabia",
+    data = c(368, 378, 378, 367, 363),
+    stack = "Asia"
+  ) %>% 
+  hc_add_series(
+    name = "France",
+    data = c(564, 562, 582, 571, 533),
+    stack = "Europe"
+  )
+```

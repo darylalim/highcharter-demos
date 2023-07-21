@@ -1,0 +1,122 @@
+---
+title: "Area Chart with Missing Points Demo"
+---
+
+This is a demo of an area chart with missing points.
+
+Highcharts Demos: [Area with missing points](https://www.highcharts.com/demo/area-missing)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Statistics Norway](https://www.ssb.no/statbank/table/10467/)
+
+```{r}
+# label: build-data
+
+df <- tibble(
+    year = seq.int(from = 2014, to = 2021, by = 1),
+    Arvid = c(10, 9, 11, 11, 8, 13, 12, 14),
+    Yasin = c(13, 9, 10, 10, 8, NA, 8, 6)
+  ) %>% 
+  pivot_longer(
+    cols = !year,
+    names_to = "name",
+    values_to = "born_persons"
+  ) %>% 
+  mutate(
+    year = as.integer(year),
+    name = as_factor(name),
+    born_persons = as.integer(born_persons)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "An area chart showing a gap in the data. By default, Highcharts treats null values as missing data, and will allow for gaps in datasets."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Area range chart with missing points
+
+```{r}
+#| label: area-with-missing-points
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Born persons, by boy's name"
+  ) %>% 
+  hc_subtitle(
+    text = "* Missing data for Yasin in 2019",
+    align = "right",
+    verticalAlign = "bottom"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Amount"
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "left",
+    verticalAlign = "top",
+    x = 150,
+    y = 60,
+    floating = TRUE,
+    borderWidth = 1,
+    backgroundColor = "#FFFFFF"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = 2014
+    ),
+    area = list(
+      fillOpacity = 0.5
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "area",
+    hcaes(x = year, y = born_persons, group = name)
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  )
+```

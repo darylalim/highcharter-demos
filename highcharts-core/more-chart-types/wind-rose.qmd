@@ -1,0 +1,182 @@
+---
+title: "Wind Rose Chart Demo"
+---
+
+This is a demo of a wind rose chart.
+
+Highcharts Demos: [Wind rose](https://www.highcharts.com/demo/polar-wind-rose)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  direction = c(
+    "N", "NNE", "NE", "ENE", 
+    "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW", 
+    "W", "WNW", "NW", "NNW"
+  ),
+  `< 0.5 m/s` = c(
+    1.81, 0.62, 0.82, 0.59, 
+    0.62, 1.22, 1.61, 2.04, 
+    2.66, 2.96, 2.53, 1.97, 
+    1.64, 1.32, 1.58, 1.51
+  ),
+  `0.5-2 m/s` = c(
+    1.78, 1.09, 0.82, 1.22, 
+    2.2, 2.01, 3.06, 3.42, 
+    4.74, 4.14, 4.01, 2.66, 
+    1.71, 2.4, 4.28, 5
+  ),
+  `2-4 m/s` = c(
+    0.16, 0, 0.07, 0.07, 
+    0.49, 1.55, 2.37, 1.97, 
+    0.43, 0.26, 1.22, 1.97, 
+    0.92, 0.99, 1.28, 1.32
+  ),
+  `4-6 m/s` = c(
+    0, 0, 0, 0, 
+    0, 0.3, 2.14, 0.86, 
+    0, 0, 0.49, 0.79, 
+    1.45, 1.61, 0.76, 0.13
+  ),
+  `6-8 m/s` = c(
+    0, 0, 0, 0, 
+    0, 0.13, 1.74, 0.53, 
+    0, 0, 0.13, 0.3, 
+    0.26, 0.33, 0.66, 0.23
+  ),
+  `8-10 m/s` = c(
+    0, 0, 0, 0, 
+    0, 0, 0.39, 0.49, 
+    0, 0, 0, 0, 
+    0.1, 0, 0.69, 0.13
+  ),
+  `> 10 m/s` = c(
+    0, 0, 0, 0, 
+    0, 0, 0.13, 0, 
+    0, 0, 0, 0, 
+    0, 0, 0.03, 0.07
+  )
+) %>% 
+  pivot_longer(
+    cols = !direction,
+    names_to = "speed",
+    values_to = "value"
+  ) %>% 
+  mutate(
+    direction = as_factor(direction),
+    speed = as_factor(speed)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "The wind rose chart is often used to visualize wind patterns. In this example, the chart shows the wind speed distribution. This is achieved with a polar stacked column chart."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Wind rose
+
+```{r}
+#| label: wind-rose
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    polar = TRUE
+  ) %>% 
+  hc_title(
+    text = "Wind rose for South Shore Met Station, Oregon",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: or.water.usgs.gov",
+    align = "left"
+  ) %>% 
+  hc_pane(
+    size = "85%"
+  ) %>% 
+  hc_legend(
+    align = "right",
+    verticalAlign = "top",
+    y = 100,
+    layout = "vertical"
+  ) %>% 
+  hc_xAxis(
+    categories = c(
+      "N", "NNE", "NE", "ENE", 
+      "E", "ESE", "SE", "SSE",
+      "S", "SSW", "SW", "WSW", 
+      "W", "WNW", "NW", "NNW"
+    ),
+    tickmarkPlacement = "on"
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    endOnTick = FALSE,
+    showLastLabel = TRUE,
+    title = list(
+      text = "Frequency (%)"
+    ),
+    labels = list(
+      formatter = JS(
+        "function () {
+          return this.value + '%';
+        }"
+      )
+    ),
+    reversedStacks = FALSE
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = "%"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      stacking = "normal",
+      shadow = FALSE,
+      groupPadding = 0,
+      pointPlacement = "on"
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "column",
+    hcaes(x = direction, y = value, group = speed)
+  )
+```

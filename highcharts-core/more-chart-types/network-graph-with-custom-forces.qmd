@@ -1,0 +1,888 @@
+---
+title: "Network Graph with Custom Forces Demo"
+---
+
+This is a demo of a network graph with custom forces.
+
+Highcharts Docs: [Algorithm options](https://www.highcharts.com/docs/chart-and-series-types/network-graph#algorithm-options)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build nodes
+
+```{r}
+#| label: build-nodes
+
+nodes <- list(
+  list(
+    id = 0,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 0,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 1,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 100,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 2,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 200,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 3,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 300,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 4,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 400,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 5,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 500,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 6,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 600,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 7,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 700,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 8,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 800,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 9,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 900,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 10,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 1000,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 11,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 1100,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 12,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 1200,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 13,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 1300,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 14,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 1400,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 15,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 1500,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 16,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 1600,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 17,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 1700,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 18,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 1800,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 19,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 1900,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 20,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 2000,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 21,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 2100,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 22,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 2200,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 23,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 2300,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 24,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 2400,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 25,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 2500,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 26,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 2600,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 27,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 2700,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 28,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 2800,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 29,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 2900,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 30,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 3000,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 31,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 3100,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 32,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 3200,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 33,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 3300,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 34,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 3400,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 35,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 3500,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 36,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 3600,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 37,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 3700,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 38,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 3800,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 39,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 3900,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 40,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 4000,
+    mass = 1,
+    marker = list(
+      radius = 1
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 41,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 4100,
+    mass = 1,
+    marker = list(
+      radius = 2
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 42,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 4200,
+    mass = 1,
+    marker = list(
+      radius = 3
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 43,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 4300,
+    mass = 1,
+    marker = list(
+      radius = 4
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 44,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 4400,
+    mass = 1,
+    marker = list(
+      radius = 5
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 45,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 4500,
+    mass = 1,
+    marker = list(
+      radius = 6
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 46,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 4600,
+    mass = 1,
+    marker = list(
+      radius = 7
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 47,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 4700,
+    mass = 1,
+    marker = list(
+      radius = 8
+    ),
+    color = '#90ed7d'
+  ), 
+  list(
+    id = 48,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 4800,
+    mass = 1,
+    marker = list(
+      radius = 9
+    ),
+    color = '#7cb5ec'
+  ), 
+  list(
+    id = 49,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#434348'
+  ), 
+  list(
+    id = 4900,
+    mass = 1,
+    marker = list(
+      radius = 10
+    ),
+    color = '#434348'
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph with custom forces."
+    )
+  )
+)
+```
+
+# Network graph with custom forces
+
+```{r}
+#| label: network-graph-with-custom-forces
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "networkgraph",
+    plotBorderWidth = 1
+  ) %>% 
+  hc_title(
+    text = "Network graph with custom forces"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      turboThreshold = 0,
+      keys = list("from", "to", "color")
+    )
+  ) %>% 
+  hc_add_series(
+    type = "networkgraph",
+    layoutAlgorithm = list(
+      enableSimulation = TRUE,
+      initialPositions = "random",
+      # Applied to links only, should be 0
+      attractiveForce = JS(
+        "function () {
+          return 0;
+        }"
+      ),
+      repulsiveForce = JS(
+        "function () {
+          return 50;
+        }"
+      ),
+      integration = "euler",
+      # Half of the repulsive force
+      gravitationalConstant = 25
+    ),
+    nodes = nodes,
+    # No links, only nodes:
+    data = list()
+  )
+```

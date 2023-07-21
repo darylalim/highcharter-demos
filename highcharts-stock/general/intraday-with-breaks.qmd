@@ -1,0 +1,121 @@
+---
+title: "Intraday Area Stock Chart with Breaks Demo"
+---
+
+This is a demo of an intraday area stock chart with breaks.
+
+Highcharts Stock Demos: [Intraday with breaks](https://www.highcharts.com/demo/stock/intraday-breaks)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/new-intraday.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "An intraday area stock chart showing Apple stock price by minute. The x-axis uses explicit breaks for nights and weekends."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Intraday with breaks
+
+```{r}
+#| label: intraday-with-breaks
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "AAPL stock price by minute"
+  ) %>% 
+  hc_subtitle(
+    text = "Using explicit breaks for nights and weekends"
+  ) %>% 
+  hc_xAxis(
+    breaks = list(
+      list(
+        from = JS("Date.UTC(2011, 9, 6, 16)"),
+        to = JS("Date.UTC(2011, 9, 7, 8)"),
+        `repeat` = 24 * 36e5
+      ),
+      list(
+        from = JS("Date.UTC(2011, 9, 7, 1)"),
+        to = JS("Date.UTC(2011, 9, 10, 8)"),
+        `repeat` = 7 * 24 * 36e5
+      )
+    )
+  ) %>% 
+  hc_rangeSelector(
+    buttons = list(
+      list(
+        type = "hour",
+        count = 1,
+        text = "1h"
+      ),
+      list(
+        type = "day",
+        count = 1,
+        text = "1D"
+      ),
+      list(
+        type = "all",
+        count = 1,
+        text = "All"
+      )
+    ),
+    selected = 2,
+    inputEnabled = FALSE
+  ) %>% 
+  hc_add_series(
+    name = "AAPL",
+    type = "area",
+    data = df,
+    gapSize = 5,
+    tooltip = list(
+      valueDecimals = 2
+    ),
+    fillColor = list(
+      linearGradient = list(
+        x1 = 0,
+        y1 = 0,
+        x2 = 0,
+        y2 = 1
+      ),
+      stops = list(
+        list(0, colors_v11[1]),
+        list(1, adjustcolor(colors_v11[1], alpha.f = 0))
+      )
+    ),
+    threshold = NULL
+  )
+```

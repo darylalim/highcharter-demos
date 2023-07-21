@@ -1,0 +1,117 @@
+---
+title: "Line Chart with 50k Points Demo"
+---
+
+This is a demo of a line chart with 50k points.
+
+Highcharts Demos: [Line chart with 500k points](https://www.highcharts.com/demo/line-boost)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Define function to get data
+
+```{r}
+#| label: get-data-function
+
+get_data <- function(n) {
+  arr <- list()
+  x <- as.double(
+    as.POSIXct(
+      format(
+        Sys.time(), "%Y-01-01 00:00:00"
+      )
+    )
+  ) - n * 3600
+  
+  for (i in 0:(n-1)) {
+    if (i %% 100 == 0) {
+      a <- 2 * runif(1)
+    }
+    if (i %% 1000 == 0) {
+      b <- 2 * runif(1)
+    }
+    if (i %% 10000 == 0) {
+      c <- 2 * runif(1)
+    }
+    if (i %% 50000 == 0) {
+      spike <- 10
+    } else {
+      spike <- 0
+    }
+    arr[[i+1]] <- list(x, 2 * sin(i / 100) + a + b + c + spike + runif(1))
+    x <- x + 3600
+  }
+  
+  return(arr)
+}
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+n <- 50000
+df <- get_data(n)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Using the Highcharts Boost module, it is possible to render large amounts of data on the client side. This chart shows a line series with 50,000 data points. The points represent hourly data. Click and drag in the chart to zoom in.",
+      screenReaderSection = list(
+        beforeChartFormat = "<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>"
+      )
+    )
+  )
+)
+```
+
+# Line chart with 50000 points
+
+```{r}
+#| label: line-boost
+
+highchartzero() %>% 
+  hc_add_dependency("modules/boost.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    zoomType = "x"
+  ) %>% 
+  hc_title(
+    text = "Highcharts drawing 50000 points"
+  ) %>% 
+  hc_subtitle(
+    text = "Using the Boost module"
+  ) %>% 
+  hc_tooltip(
+    valueDecimals = 2
+  ) %>% 
+  hc_xAxis(
+    type = "datetime"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "line",
+    lineWidth = 0.5,
+    name = "Hourly data points"
+  ) %>% 
+  hc_boost(
+    enabled = TRUE
+  )
+```

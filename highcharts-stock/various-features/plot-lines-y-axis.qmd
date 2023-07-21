@@ -1,0 +1,115 @@
+---
+title: "Stock Chart with Plot Lines on Y Axis Demo"
+---
+
+This is a demo of a line stock chart with plot lines on the y-axis.
+
+Highcharts Stock Demos: [Plot lines on Y axis](https://www.highcharts.com/demo/stock/yaxis-plotlines)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+usd_eur <- getFX(
+  "USD/EUR", 
+  auto.assign = FALSE
+)
+
+last_quarter <- getFX(
+  "USD/EUR",
+  from = Sys.Date() - months(3), 
+  auto.assign = FALSE
+)
+```
+
+# Set min and max rates
+
+```{r}
+#| label: min-max-rates
+
+min_rate <- min(last_quarter$USD.EUR)
+max_rate <- max(last_quarter$USD.EUR)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A line stock chart showing the USD to EUR exchange rate. The chart has plot lines on the y-axis."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Plot lines on Y axis
+
+```{r}
+#| label: plot-lines-y-axis
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "USD to EUR exchange rate"
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Exchange rate"
+    ),
+    plotLines = list(
+      list(
+        value = min_rate,
+        color = "green",
+        dashStyle = "shortdash",
+        width = 2,
+        label = list(
+          text = "Last quarter minimum"
+        )
+      ),
+      list(
+        value = max_rate,
+        color = "red",
+        dashStyle = "shortdash",
+        width = 2,
+        label = list(
+          text = "Last quarter maximum"
+        )
+      )
+    )
+  ) %>%
+  hc_add_series(
+    type = "line",
+    name = "USD to EUR",
+    data = usd_eur$USD.EUR,
+    tooltip = list(
+      valueDecimals = 4
+    )
+  )
+```

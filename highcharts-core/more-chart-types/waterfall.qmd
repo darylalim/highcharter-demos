@@ -1,0 +1,126 @@
+---
+title: "Waterfall Chart Demo"
+---
+
+This is a demo of a waterfall chart.
+
+Highcharts Demos: [Waterfall](https://www.highcharts.com/demo/waterfall)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "Start",
+    y = 120000
+  ),
+  list(
+    name = "Product Revenue",
+    y = 569000
+  ),
+  list(
+    name = "Service Revenue",
+    y = 231000
+  ),
+  list(
+    name = "Positive Balance",
+    isIntermediateSum = TRUE,
+    color = colors_v11[2]
+  ),
+  list(
+    name = "Fixed Costs",
+    y = -342000
+  ),
+  list(
+    name = "Variable Costs",
+    y = -233000
+  ),
+  list(
+    name = "Balance",
+    isSum = TRUE,
+    color = colors_v11[2]
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Waterfall charts are used to visualize cumulative values, where each data point contributes to a total. In this example, points showing intermediate sums are used to indicate the progression of the total."
+    )
+  )
+)
+```
+
+# Waterfall chart
+
+```{r}
+#| label: waterfall
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "waterfall"
+  ) %>% 
+  hc_title(
+    text = "Highcharter Waterfall"
+  ) %>% 
+  hc_xAxis(
+    type = "category"
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "USD"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<b>${point.y:,.2f}</b> USD"
+  ) %>% 
+  hc_add_series(
+    upColor = colors_v11[3],
+    color = colors_v11[4],
+    data = df,
+    dataLabels = list(
+      enabled = TRUE,
+      formatter = JS(
+        "function () {
+          return Highcharts.numberFormat(this.y / 1000, 0, ',') + 'k';
+        }"
+      )
+    ),
+    pointPadding = 0
+  )
+```

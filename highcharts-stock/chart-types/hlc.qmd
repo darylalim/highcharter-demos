@@ -1,0 +1,79 @@
+---
+title: "HLC Stock Chart Demo"
+---
+
+This is a demo of an HLC stock chart.
+
+Highcharts Stock Demos: [HLC](https://www.highcharts.com/demo/stock/hlc)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+aapl <- adjustOHLC(aapl)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "An HLC stock chart showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# HLC
+
+```{r}
+#| label: hlc
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 2
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_add_series(
+    type = "hlc",
+    name = "AAPL Stock Price",
+    useOhlcData = TRUE,
+    data = aapl,
+    accessibility = list(
+      point = list(
+        valueDescriptionFormat = "{xDescription}. High: {point.high}, low: {point.low}, close: {point.close}."
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    valueDecimals = 2
+  )
+```

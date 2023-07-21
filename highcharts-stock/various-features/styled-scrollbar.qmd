@@ -1,0 +1,85 @@
+---
+title: "Stock Chart with Scrollbar Styling Demo"
+---
+
+This is a demo of a line stock chart with scrollbar styling.
+
+Highcharts Stock Demos: [Styled scrollbar](https://www.highcharts.com/demo/stock/styled-scrollbar)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A line stock chart showing Apple stock price. The chart has a styled scrollbar."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Styled scrollbar
+
+```{r}
+#| label: styled-scrollbar
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_subtitle(
+    text = "Stock chart with scrollbar styling"
+  ) %>% 
+  hc_scrollbar(
+    barBorderRadius = 0,
+    barBorderWidth = 1,
+    buttonsEnabled = TRUE,
+    height = 14,
+    margin = 0,
+    rifleColor = "#333",
+    trackBackgroundColor = "#f2f2f2",
+    trackBorderRadius = 0
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "AAPL Stock Price",
+    data = aapl,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  )
+```

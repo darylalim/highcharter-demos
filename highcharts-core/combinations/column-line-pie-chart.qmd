@@ -1,0 +1,129 @@
+---
+title: "Column, Line and Pie Chart Demo"
+---
+
+This is a demo of a column, line and a pie series combined in a single chart.
+
+Highcharts Demos: [Column, line and pie](https://www.highcharts.com/demo/combo)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing how different series types can be combined in a single chart. The chart is using a set of column series, overlaid by a line and a pie series. The line is illustrating the column averages, while the pie is illustrating the column totals."
+    )
+  )
+)
+```
+
+# Column, line and pie chart
+
+Data retrieved from [Statistics Norway](https://www.ssb.no/energi-og-industri/olje-og-gass/statistikk/sal-av-petroleumsprodukt/artikler/auka-sal-av-petroleumsprodukt-til-vegtrafikk)
+
+```{r}
+#| label: column-line-pie-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "Sales of petroleum products March, Norway",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    categories = c(
+      "Jet fuel", "Duty-free diesel", "Petrol", "Diesel", "Gas oil"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Million liters"
+    )
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = " million liters"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "2020",
+    data = c(59, 83, 65, 228, 184)
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "2021",
+    data = c(24, 79, 72, 240, 167)
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "2022",
+    data = c(58, 88, 75, 250, 176)
+  ) %>% 
+  hc_add_series(
+    type = "spline",
+    name = "Average",
+    data = c(47, 83.33, 70.66, 239.33, 175.66),
+    marker = list(
+      lineWidth = 2,
+      lineColor = JS("Highcharts.getOptions().colors[3]"),
+      fillColor = "white"
+    )
+  ) %>% 
+  hc_add_series(
+    type = "pie",
+    name = "Total",
+    data = list(
+      list(
+        name = "2020",
+        y = 619,
+        color = JS("Highcharts.getOptions().colors[0]"), # 2020 color
+        dataLabels = list(
+          enabled = TRUE,
+          distance = -50,
+          format = "{point.total} M",
+          style = list(
+            fontSize = "15px"
+          )
+        )
+      ),
+      list(
+        name = "2021",
+        y = 586,
+        color = JS("Highcharts.getOptions().colors[1]") # 2021 color
+      ),
+      list(
+        name = "2022",
+        y = 647,
+        color = JS("Highcharts.getOptions().colors[2]") # 2022 color
+      )
+    ),
+    center = c(75, 65),
+    size = 100,
+    innerSize = "70%",
+    showInLegend = FALSE,
+    dataLabels = list(
+      enabled = FALSE
+    )
+  )
+```

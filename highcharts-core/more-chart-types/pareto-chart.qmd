@@ -1,0 +1,112 @@
+---
+title: "Pareto Chart Demo"
+---
+
+This is a demo of a Pareto chart.
+
+Highcharts Demos: [Pareto chart](https://www.highcharts.com/demo/pareto)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "A Pareto Chart is a chart type based on the Pareto principle, commonly used to maximize business efficiency. Highcharts can calculate the Pareto line automatically based on a series, as shown in this chart."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Pareto chart
+
+```{r}
+#| label: pareto-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/pareto.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column"
+  ) %>% 
+  hc_title(
+    text = "Restaurants Complaints"
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Overpriced",
+      "Small portions",
+      "Wait time",
+      "Food is tasteless",
+      "No atmosphere",
+      "Not clean",
+      "Too noisy",
+      "Unfriendly staff"
+    ),
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      title = list(
+        text = NULL
+      )
+    ),
+    list(
+      title = list(
+        text = NULL
+      ),
+      minPadding = 0,
+      maxPadding = 0,
+      min = 0,
+      max = 100,
+      opposite = TRUE,
+      labels = list(
+        format = "{value}%"
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    type = "pareto",
+    name = "Pareto",
+    yAxis = 1,
+    zIndex = 10,
+    baseSeries = 1,
+    tooltip = list(
+      valueDecimals = 2,
+      valueSuffix = "%"
+    )
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "Complaints",
+    zIndex = 2,
+    data = c(755, 222, 151, 86, 72, 51, 36, 10)
+  )
+```

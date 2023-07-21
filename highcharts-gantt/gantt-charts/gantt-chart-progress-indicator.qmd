@@ -1,0 +1,143 @@
+---
+title: "Gantt Chart with Progress Indicators Demo"
+---
+
+This is a demo of a Gantt chart with progress indicators.
+
+Highcharts Gantt Demos: [Progress indicator](https://www.highcharts.com/demo/gantt/progress-indicator)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+# Set language object options
+options(
+  highcharter.lang = list(
+    accessibility = list(
+      axis = list(
+        xAxisDescriptionPlural = "The chart has a two-part X axis showing time in both week numbers and days."
+      )
+    )
+  )
+)
+
+# Set chart options
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      point = list(
+        descriptionFormatter = JS(
+          "function(point) {
+            var completedValue = point.completed ?
+                  point.completed.amount || point.completed:null,
+                completed = completedValue ?
+                  ' Task ' + Math.round(completedValue * 1000) / 10 + '% completed.':'';
+            return Highcharts.format(
+              '{point.yCategory}.{completed} Start {point.x:%Y-%m-%d}, end {point.x2:%Y-%m-%d}.',
+              {point, completed}
+            );
+          }"
+        )
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Gantt chart with progress indicators
+
+```{r}
+#| label: gantt-chart-progress-indicator
+
+highchartzero() %>% 
+  hc_add_dependency("modules/gantt.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Gantt Chart with Progress Indicators",
+    align = "left"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE,
+      min = JS("Date.UTC(2014, 10, 17)"),
+      max = JS("Date.UTC(2014, 10, 30)")
+    ),
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE,
+      linkedTo = 0
+    )
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    type = "treegrid",
+    uniqueNames = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "gantt",
+    name = "Project 1",
+    data = list(
+      list(
+        name = "Start prototype",
+        start = JS("Date.UTC(2014, 10, 18)"),
+        end = JS("Date.UTC(2014, 10, 25)"),
+        completed = 0.25
+      ),
+      list(
+        name = "Test prototype",
+        start = JS("Date.UTC(2014, 10, 27)"),
+        end = JS("Date.UTC(2014, 10, 29)")
+      ),
+      list(
+        name = "Develop",
+        start = JS("Date.UTC(2014, 10, 20)"),
+        end = JS("Date.UTC(2014, 10, 25)"),
+        completed = list(
+          amount = 0.12,
+          fill = "#fa0"
+        )
+      ),
+      list(
+        name = "Run acceptance tests",
+        start = JS("Date.UTC(2014, 10, 23)"),
+        end = JS("Date.UTC(2014, 10, 26)")
+      )
+    )
+  )
+```

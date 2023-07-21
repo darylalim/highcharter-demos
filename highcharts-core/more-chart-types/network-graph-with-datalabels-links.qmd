@@ -1,0 +1,114 @@
+---
+title: "Network Graph with Data Labels on Links Demo"
+---
+
+This is a demo of a network graph with `dataLabels` on links.
+
+Highcharts Docs: [Use case 4](https://www.highcharts.com/docs/chart-and-series-types/network-graph#use-case-4)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    from = "n1",
+    to = "n2"
+  ), 
+  list(
+    from = "n2",
+    to = "n3"
+  ), 
+  list(
+    from = "n3",
+    to = "n4"
+  ), 
+  list(
+    from = "n4",
+    to = "n5"
+  ), 
+  list(
+    from = "n5",
+    to = "n1"
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph with data labels on links."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Network graph with `dataLabels` on links
+
+```{r}
+#| label: network-graph-with-datalabels-links
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "networkgraph"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      layoutAlgorithm = list(
+        enableSimulation = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    dataLabels = list(
+      enabled = TRUE,
+      linkTextPath =list(
+        attributes = list(
+          dy = 12
+        )
+      ),
+      linkFormat = "{point.fromNode.name}\u2192 {point.toNode.name}",
+      textPath = list(
+        enabled = TRUE,
+        attributes = list(
+          dy = 14,
+          startOffset = "45%",
+          textLength = 80
+        )
+      ),
+      format = "Node: {point.name}"
+    ),
+    marker = list(
+      radius = 35
+    ),
+    data = df
+  )
+```

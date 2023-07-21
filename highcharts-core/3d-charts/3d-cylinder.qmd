@@ -1,0 +1,119 @@
+---
+title: "3D Cylinder Chart Demo"
+---
+
+This is a demo of a 3D cylinder chart.
+
+Highcharts Demos: [3D cylinder](https://www.highcharts.com/demo/cylinder)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  age_group = c(
+    "0-9", "10-19", "20-29", "30-39", "40-49", 
+    "50-59", "60-69", "70-79", "80-89", "90+"
+  ),
+  reported_cases = c(
+    95321, 169339, 121105, 136046, 106800, 58041, 26766, 14291, 7065, 3283
+  )
+) %>% 
+  mutate(
+    age_group = as_factor(age_group),
+    reported_cases = as.integer(reported_cases)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing basic use of 3D cylindrical columns. A 3D cylinder chart is similar to a 3D column chart, with a different shape. The chart visualizes confirmed COVID-19 cases for women in Norway."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D cylinder chart
+
+```{r}
+#| label: 3d-cylinder
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/cylinder.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    options3d = list(
+      enabled = TRUE,
+      alpha = 15,
+      beta = 15,
+      depth = 50,
+      viewDistance = 25
+    )
+  ) %>% 
+  hc_title(
+    text = "Number of confirmed COVID-19"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.fhi.no/en/id/infectious-diseases/coronavirus/daily-reports/daily-reports-COVID19/'>FHI</a>"
+  ) %>% 
+  hc_xAxis(
+    categories = df$age_group,
+    title = list(
+      text = "Age groups"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      margin = 20,
+      text = "Reported cases"
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>Age: {point.x}</b><br>"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      depth = 25,
+      colorByPoint = TRUE
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "cylinder",
+    hcaes(x = age_group, y = reported_cases),
+    name = "Cases",
+    showInLegend = FALSE
+  )
+```

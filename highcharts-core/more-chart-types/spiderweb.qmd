@@ -1,0 +1,122 @@
+---
+title: "Spiderweb Chart Demo"
+---
+
+This is a demo of a spiderweb chart.
+
+Highcharts Demos: [Spiderweb](https://www.highcharts.com/demo/polar-spider)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A spiderweb chart compares the allocated budget against actual spending within an organization. The spider chart has six spokes. Each spoke represents one of the 6 departments within the organization: sales, marketing, development, customer support, information technology and administration. The chart is interactive, and each data point is displayed upon hovering. The chart clearly shows that 4 of the 6 departments have overspent their budget with Marketing responsible for the greatest overspend of $20,000. The allocated budget and actual spending data points for each department are as follows: Sales. Budget equals $43,000; spending equals $50,000. Marketing. Budget equals $19,000; spending equals $39,000. Development. Budget equals $60,000; spending equals $42,000. Customer support. Budget equals $35,000; spending equals $31,000. Information technology. Budget equals $17,000; spending equals $26,000. Administration. Budget equals $10,000; spending equals $14,000."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Spiderweb chart
+
+```{r}
+#| label: spiderweb
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    polar = TRUE,
+    type = "line"
+  ) %>% 
+  hc_title(
+    text = "Budget vs spending",
+    x = -80
+  ) %>% 
+  hc_caption(
+    text = "A spiderweb chart or radar chart is a variant of the polar chart. Spiderweb charts are commonly used to compare multivariate data sets, like this demo using six variables of comparison."
+  ) %>% 
+  hc_pane(
+    size = "80%"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Sales", 
+      "Marketing", 
+      "Development",
+      "Customer Support", 
+      "Information Technology", 
+      "Administration"
+    ),
+    tickmarkPlacement = "on",
+    lineWidth = 0
+  ) %>% 
+  hc_yAxis(
+    gridLineInterpolation = "polygon",
+    lineWidth = 0,
+    min = 0
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE,
+    pointFormat = "<span style='color:{series.color}'>{series.name}: <b>${point.y:,.0f}</b><br/>"
+  ) %>% 
+  hc_legend(
+    align = "right",
+    verticalAlign = "middle",
+    layout = "vertical"
+  ) %>% 
+  hc_add_series(
+    name = "Allocated Budget",
+    data = c(43000, 19000, 60000, 35000, 17000, 10000),
+    pointPlacement = "on"
+  ) %>% 
+  hc_add_series(
+    name = "Actual Spending",
+    data = c(50000, 39000, 42000, 31000, 26000, 14000),
+    pointPlacement = "on"
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          legend = list(
+            align = "center",
+            verticalAlign = "bottom",
+            layout = "horizontal"
+          ),
+          pane = list(
+            size = "70%"
+          )
+        )
+      )
+    )
+  )
+```

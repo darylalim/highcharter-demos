@@ -1,0 +1,109 @@
+---
+title: "X-range Chart Demo"
+---
+
+This is a demo of an x-range chart.
+
+Highcharts Demos: [X-range series](https://www.highcharts.com/demo/x-range)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "X-range charts are used to visualize a range on the X-axis. This is often used in Gantt charts, as seen in this example. The X-range data series forms the basis of Highcharts Gantt, but is also available with Highcharts.",
+      point = list(
+        descriptionFormat = "{add index 1}. {yCategory}, {x:%A %e %B %Y} to {x2:%A %e %B %Y}."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# X-range chart
+
+```{r}
+#| label: x-range
+
+highchartzero() %>% 
+  hc_add_dependency("modules/xrange.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "xrange"
+  ) %>% 
+  hc_title(
+    text = "Highcharter X-range"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime"
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = FALSE
+    ),
+    categories = c(
+      "Prototyping", "Development", "Testing"
+    ),
+    reversed = TRUE
+  ) %>% 
+  hc_add_series(
+    name = "Project 1",
+    borderColor = "gray",
+    pointWidth = 20,
+    data = list(
+      list(
+        x = JS("Date.UTC(2014, 10, 21)"),
+        x2 = JS("Date.UTC(2014, 11, 2)"),
+        y = 0,
+        partialFill = 0.25
+      ),
+      list(
+        x = JS("Date.UTC(2014, 11, 2)"),
+        x2 = JS("Date.UTC(2014, 11, 5)"),
+        y = 1
+      ),
+      list(
+        x = JS("Date.UTC(2014, 11, 8)"),
+        x2 = JS("Date.UTC(2014, 11, 9)"),
+        y = 2
+      ),
+      list(
+        x = JS("Date.UTC(2014, 11, 9)"),
+        x2 = JS("Date.UTC(2014, 11, 19)"),
+        y = 1
+      ),
+      list(
+        x = JS("Date.UTC(2014, 11, 10)"),
+        x2 = JS("Date.UTC(2014, 11, 23)"),
+        y = 2
+      )
+    ),
+    dataLabels = list(
+      enabled = TRUE
+    )
+  )
+```

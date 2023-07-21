@@ -1,0 +1,192 @@
+---
+title: "Organization Chart Demo"
+---
+
+This is a demo of an organization chart.
+
+Highcharts Demos: [Organization chart](https://www.highcharts.com/demo/organization-chart)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list("Shareholders", "Board"),
+  list("Shareholders", "Board"),
+  list("Board", "CEO"),
+  list("CEO", "CTO"),
+  list("CEO", "CPO"),
+  list("CEO", "CSO"),
+  list("CEO", "HR"),
+  list("CTO", "Product"),
+  list("CTO", "Web"),
+  list("CSO", "Sales"),
+  list("HR", "Market"),
+  list("CSO", "Market"),
+  list("HR", "Market"),
+  list("CTO", "Market")
+)
+```
+
+# Build nodes
+
+```{r}
+#| label: build-nodes
+
+nodes <- list(
+  list(
+    id = "Shareholders"
+  ),
+  list(
+    id = "Board"
+  ),
+  list(
+    id = "CEO",
+    title = "CEO",
+    name = "Atle Sivertsen",
+    image = "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2022/06/30081411/portrett-sorthvitt.jpg"
+  ),
+  list(
+    id = "HR",
+    title = "CFO",
+    name = "Anne Jorunn Fjærestad",
+    color = "#007ad0",
+    image = "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131210/Highsoft_04045_.jpg"
+  ),
+  list(
+    id = "CTO",
+    title = "CTO",
+    name = "Christer Vasseng",
+    image = "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131120/Highsoft_04074_.jpg"
+  ),
+  list(
+    id = "CPO",
+    title = "CPO",
+    name = "Torstein Hønsi",
+    image = "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg"
+  ),
+  list(
+    id = "CSO",
+    title = "CSO",
+    name = "Anita Nesse",
+    image = "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131156/Highsoft_03834_.jpg"
+  ),
+  list(
+    id = "Product",
+    name = "Product developers"
+  ),
+  list(
+    id = "Web",
+    name = "Web devs, sys admin"
+  ),
+  list(
+    id = "Sales",
+    name = "Sales team"
+  ),
+  list(
+    id = "Market",
+    name = "Marketing team",
+    column = 5
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Organization charts are a common case of hierarchical network charts, where the parent/child relationships between nodes are visualized. Highcharts includes a dedicated organization chart type that streamlines the process of creating these types of visualizations.",
+      point = list(
+        descriptionFormat = "{add index 1}. {toNode.name} {#if (ne toNode.name toNode.id)}, {toNode.id}{/if}, reports to {fromNode.id}"
+      )
+    )
+  )
+)
+```
+
+# Organization chart
+
+```{r}
+#| label: organization-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/sankey.js") %>% 
+  hc_add_dependency("modules/organization.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    height = 600,
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "Highcharts Org Chart"
+  ) %>% 
+  hc_add_series(
+    type = "organization",
+    name = "Highsoft",
+    keys = list("from", "to"),
+    data = df,
+    levels = list(
+      list(
+        level = 0,
+        color = "silver",
+        dataLabels = list(
+          color = "black"
+        ),
+        height = 25
+      ),
+      list(
+        level = 1,
+        color = "silver",
+        dataLabels = list(
+          color = "black"
+        ),
+        height = 25
+      ),
+      list(
+        level = 2,
+        color = "#980104"
+      ),
+      list(
+        level = 4,
+        color = "#359154"
+      )
+    ),
+    nodes = nodes,
+    colorByPoint = FALSE,
+    color = "#007ad0",
+    dataLabels = list(
+      color = "white"
+    ),
+    borderColor = "white",
+    nodeWidth = 65
+  ) %>% 
+  hc_tooltip(
+    outside = TRUE
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE, 
+    allowHTML = TRUE,
+    sourceWidth = 800,
+    sourceHeight = 600
+  )
+```

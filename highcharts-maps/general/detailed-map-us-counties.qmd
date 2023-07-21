@@ -1,0 +1,109 @@
+---
+title: "Detailed Map of US Counties Demo"
+---
+
+This is a demo of a detailed map of US counties.
+
+Highcharts Maps Demos: [Detailed map, US counties](https://www.highcharts.com/demo/maps/us-counties)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+# Data from highcharts used in map demos, included with highcharter
+data("unemployment")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Demo showing a large dataset."
+    )
+  )
+)
+```
+
+# Detailed map, US counties
+
+```{r}
+#| label: detailed-map-us-counties
+
+hcmap(
+  map = "countries/us/us-all-all",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = unemployment,
+  value = "value",
+  joinBy = rownames("code"),
+  name = "Unemployment rate",
+  tooltip = list(
+    valueSuffix = "%"
+  ),
+  borderWidth = 0.5,
+  shadow = FALSE,
+  accessibility = list(
+    enabled = FALSE
+  )
+) %>% 
+  hc_add_series(
+    type = "mapline",
+    name = "State borders",
+    color = "white",
+    shadow = FALSE,
+    borderWidth = 2,
+    accessibility = list(
+      enabled = FALSE
+    )
+  ) %>% 
+  hc_chart(
+    height = "80%"
+  ) %>% 
+  hc_title(
+    text = "US Counties unemployment rates, January 2018",
+    align = "left"
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "right",
+    margin = 0,
+    backgroundColor = "rgba(255, 255, 255, 0.85)"
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE
+  ) %>% 
+  hc_colorAxis(
+    min = 0,
+    max = 25,
+    tickInterval = 5,
+    stops = list(
+      list(0, "#F1EEF6"),
+      list(0.65, "#900037"),
+      list(1, "#500007")
+    ),
+    labels = list(
+      format = "{value}%"
+    )
+  ) %>% 
+  hc_plotOptions(
+    mapline = list(
+      showInLegend = FALSE,
+      enableMouseTracking = FALSE
+    )
+  )
+```

@@ -1,0 +1,151 @@
+---
+title: "Basic Line Chart Demo"
+---
+
+This is a demo of a basic line chart.
+
+Highcharts Demos: [Basic line](https://www.highcharts.com/demo/line-basic)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  year = seq.int(from = 2010, to = 2020, by = 1),
+  `Installation & Developers` = c(
+    43934, 48656, 65165, 81827, 112143, 142383, 171533, 165174, 155157, 161454, 
+    154610
+  ),
+  Manufacturing = c(
+    24916, 37941, 29742, 29851, 32490, 30282, 38121, 36885, 33726, 34243, 
+    31050
+  ),
+  `Sales & Distribution` = c(
+    11744, 30000, 16005, 19771, 20185, 24377, 32147, 30912, 29243, 29213, 
+    25663
+  ),
+  `Operations & Maintenance` = c(
+    NA, NA, NA, NA, NA, NA, NA, NA, 11164, 11218, 
+    10077
+  ),
+  Other = c(
+    21908, 5548, 8105, 11248, 8989, 11816, 18274, 17300, 13053, 11906, 
+    10073
+  )
+) %>% 
+  pivot_longer(
+    cols = !year,
+    names_to = "job_category",
+    values_to = "employees"
+  ) %>% 
+  mutate(
+    year = as.integer(year),
+    job_category = as_factor(job_category),
+    employees = as.integer(employees)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Basic line chart showing trends in a dataset. This chart includes the `series-label` module, which adds a label to each line for enhanced readability."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Basic line chart
+
+```{r}
+#| label: basic-line
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "U.S. Solar Employment Growth by Job Category, 2010-2020",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://irecusa.org/programs/solar-jobs-census/'>IREC</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    accessibility = list(
+      enabled = TRUE,
+      rangeDescription = "Range: 2010 to 2020"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Number of Employees"
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical", 
+    align = "right", 
+    verticalAlign = "middle"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      label = list(
+        connectorAllowed = FALSE
+      ),
+      pointStart = 2010
+    )
+  ) %>%
+  hc_add_series(
+    data = df,
+    type = "line",
+    hcaes(x = year, y = employees, group = job_category)
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          legend = list(
+            layout = "horizontal",
+            align = "center",
+            verticalAlign = "bottom"
+          )
+        )
+      )
+    )
+  )
+```

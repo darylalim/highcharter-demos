@@ -1,0 +1,86 @@
+---
+title: "Column Stock Chart Demo"
+---
+
+This is a demo of a column stock chart.
+
+Highcharts Stock Demos: [Column](https://www.highcharts.com/demo/stock/column)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+
+aapl_volume <- aapl$AAPL.Volume
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A column stock chart showing Apple stock volume."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Column
+
+```{r}
+#| label: column
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    alignTicks = FALSE
+  ) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Volume"
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "AAPL Stock Volume",
+    data = aapl_volume,
+    dataGrouping = list(
+      units = list(
+        list(
+          "week", # unit name
+          list(1) # allowed multiples
+        ),
+        list(
+          "month",
+          list(1, 2, 3, 4, 6)
+        )
+      )
+    )
+  )
+```

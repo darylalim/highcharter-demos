@@ -1,0 +1,121 @@
+---
+title: "Simple Network Graph Demo"
+---
+
+This is a demo of a simple network graph.
+
+Highcharts Docs: [Data format](https://www.highcharts.com/docs/chart-and-series-types/network-graph#data-format)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  c("A", "B"),
+  c("A", "C"),
+  c("A", "D"),
+  c("A", "E"),
+  c("A", "F"),
+  c("A", "G"),
+
+  c("B", "C"),
+  c("B", "D"),
+  c("B", "E"),
+  c("B", "F"),
+  c("B", "G"),
+
+  c("C", "D"),
+  c("C", "E"),
+  c("C", "F"),
+  c("C", "G"),
+
+  c("D", "E"),
+  c("D", "F"),
+  c("D", "G"),
+
+  c("E", "F"),
+  c("E", "G"),
+
+  c("F", "G")
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph with random initial positions."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Simple network graph
+
+```{r}
+#| label: network-graph-simple
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "networkgraph",
+    plotBorderWith = 1
+  ) %>% 
+  hc_title(
+    text = "Networkgraph with random initial positions"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      keys = list("from", "to")
+    )
+  ) %>% 
+  hc_add_series(
+    layoutAlgorithm = list(
+      enableSimulation = TRUE,
+      initialPositions = JS(
+        "function () {
+          var chart = this.series[0].chart,
+              width = chart.plotWidth,
+              height = chart.plotHeight;
+          
+          this.nodes.forEach(function (node) {
+            // If initial positions were set previously, use those positions.
+            // Otherwise, use random position:
+            node.plotX = node.plotX === undefined ?
+              Math.random() * width: node.plotX;
+            node.plotY = node.plotY === undefined ?
+              Math.random() * height: node.plotY
+          })
+        }"
+      )
+    ),
+    name = "K8",
+    data = df
+  )
+```

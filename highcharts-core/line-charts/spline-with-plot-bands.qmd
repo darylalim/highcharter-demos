@@ -1,0 +1,221 @@
+---
+title: "Spline with Plot Bands Demo"
+---
+
+This is a demo of a spline chart with plot bands.
+
+Highcharts Demos: [Spline with plot bands](https://www.highcharts.com/demo/spline-plot-bands)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [Vikjavev](https://www.vikjavev.no/ver/#2022-06-13,2022-06-14)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  Hestavollane = c(
+    4.5, 5.1, 4.4, 3.7, 4.2, 3.7, 4.3, 4, 5, 4.9, 
+    4.8, 4.6, 3.9, 3.8, 2.7, 3.1, 2.6, 3.3, 3.8, 
+    4.1, 1, 1.9, 3.2, 3.8, 4.2
+  ),
+  Vik = c(
+    0.1, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.4, 
+    0.1, 0, 0.2, 0.3, 0, 0, 0, 0, 0, 0.1, 
+    0.1, 0.1, 0, 0.1, 0, 0, 0
+  )
+) %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "location",
+    values_to = "wind_speed"
+  ) %>% 
+  mutate(
+    location = as_factor(location)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This demo shows how plot bands can be used on an axis to highlight regions of a chart. In this example, the plot bands are used to separate the wind speeds on the Y-axis into categories."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Spline with plot bands
+
+```{r}
+#| label: spline-with-plot-bands
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    scrollablePlotArea = list(
+      minWidth = 600,
+      scrollPositionX = 1
+    )
+  ) %>% 
+  hc_title(
+    text = "Wind speed during two days",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "<a href='https://www.vikjavev.no/ver/#2022-06-13,2022-06-14'>13th & 14th of June, 2022 at two locations in Vik i Sogn, Norway</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    labels = list(
+      overflow = "justify"
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Wind speed (m/s)"
+    ),
+    minorGridLineWidth = 0,
+    gridLineWidth = 0,
+    alternateGridColor = NULL,
+    plotBands = list(
+      list(
+        # Light air
+        from = 0.3,
+        to = 1.5,
+        color = "rgba(68, 170, 213, 0.1)",
+        label = list(
+          text = "Light air",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # Light breeze
+        from = 1.5,
+        to = 3.3,
+        color = "rgba(0, 0, 0, 0)",
+        label = list(
+          text = "Light breeze",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # Gentle breeze
+        from = 3.3,
+        to = 5.5,
+        color = "rgba(68, 170, 213, 0.1)",
+        label = list(
+          text = "Gentle breeze",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # Moderate breeze
+        from = 5.5,
+        to = 8,
+        color = "rgba(0, 0, 0, 0)",
+        label = list(
+          text = "Moderate breeze",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # Fresh breeze
+        from = 8,
+        to = 11,
+        color = "rgba(68, 170, 213, 0.1)",
+        label = list(
+          text = "Fresh breeze",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # Strong breeze
+        from = 11,
+        to = 14,
+        color = "rgba(0, 0, 0, 0)",
+        label = list(
+          text = "Strong breeze",
+          style = list(
+            color = "#606060"
+          )
+        )
+      ),
+      list(
+        # High wind
+        from = 14,
+        to = 15,
+        color = "rgba(68, 170, 213, 0.1)",
+        label = list(
+          text = "High wind",
+          style = list(
+            color = "#606060"
+          )
+        )
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = " m/s"
+  ) %>% 
+  hc_plotOptions(
+    spline = list(
+      lineWidth = 4,
+      states = list(
+        hover = list(
+          lineWidth = 5
+        )
+      ),
+      marker = list(
+        enabled = FALSE
+      ),
+      pointInterval = 3600000, # one hour
+      pointStart = JS("Date.UTC(2022, 5, 13, 0, 0, 0)")
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "spline",
+    hcaes(y = wind_speed, group = location)
+  )
+```

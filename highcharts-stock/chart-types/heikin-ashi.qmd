@@ -1,0 +1,116 @@
+---
+title: "Heikin-Ashi Stock Chart Demo"
+---
+
+This is a demo of a Heikin-Ashi stock chart.
+
+Highcharts Stock Demos: [Heikin Ashi](https://www.highcharts.com/demo/stock/heikinashi)
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+aapl <- adjustOHLC(aapl)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A comparison of candlestick and Heikin-Ashi stock charts showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Heikin-Ashi
+
+```{r}
+#| label: heikin-ashi
+
+highchartzero() %>% 
+  hc_add_dependency("modules/stock.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/heikinashi.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Candlestick and Heikin-Ashi series comparison",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      title = list(
+        text = "Candlestick"
+      ),
+      height = "50%",
+      opposite = TRUE
+    ),
+    list(
+      title = list(
+        text = "Heikin-Ashi"
+      ),
+      top = "50%",
+      height = "50%",
+      offset = 0,
+      opposite = TRUE
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE,
+    valueDecimals = 2
+  ) %>% 
+  hc_rangeSelector(
+    enabled = TRUE,
+    selected = 1
+  ) %>% 
+  hc_navigator(
+    enabled = TRUE
+  ) %>% 
+  hc_scrollbar(
+    enabled = TRUE
+  ) %>% 
+  hc_add_series(
+    type = "candlestick",
+    name = "Candlestick",
+    data = aapl
+  ) %>%
+  hc_add_series(
+    type = "heikinashi",
+    name = "Heikin-Ashi",
+    data = aapl,
+    yAxis = 1
+  )
+```

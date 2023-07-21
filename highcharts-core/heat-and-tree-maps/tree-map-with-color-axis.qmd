@@ -1,0 +1,102 @@
+---
+title: "Tree Map with Color Axis Demo"
+---
+
+This is a demo of a tree map with color axis.
+
+Highcharts Demos: [Tree map with color axis](https://www.highcharts.com/demo/treemap-coloraxis)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "A",
+    value = 6,
+    colorValue = 1
+  ), 
+  list(
+    name = "B",
+    value = 6,
+    colorValue = 2
+  ), 
+  list(
+    name = "C",
+    value = 4,
+    colorValue = 3
+  ), 
+  list(
+    name = "D",
+    value = 3,
+    colorValue = 4
+  ), 
+  list(
+    name = "E",
+    value = 2,
+    colorValue = 5
+  ), 
+  list(
+    name = "F",
+    value = 2,
+    colorValue = 6
+  ), 
+  list(
+    name = "G",
+    value = 1,
+    colorValue = 7
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Tree maps are great tools for comparing values that are part of a whole, or for showing hierarchical data. This example is a simple tree map with no hierarchy, showing the value differences with rectangle sizes and using a color axis."
+    )
+  )
+)
+```
+
+# Tree map with color axis
+
+```{r}
+#| label: tree-map-color-axis
+
+highchartzero() %>% 
+  hc_add_dependency("modules/heatmap.js") %>% 
+  hc_add_dependency("modules/treemap.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colorAxis(
+    minColor = "#FFFFFF",
+    maxColor = "#2caffe"
+  ) %>% 
+  hc_add_series(
+    type = "treemap", 
+    layoutAlgorithm = "squarified",
+    clip = FALSE,
+    data = df
+  ) %>% 
+  hc_title(
+    text = "Highcharter Treemap"
+  )
+```

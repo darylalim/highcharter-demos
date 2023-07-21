@@ -1,0 +1,129 @@
+---
+title: "Basic Column Chart Demo"
+---
+
+This is a demo of a basic column chart.
+
+Highcharts Demos: [Basic column](https://www.highcharts.com/demo/column-basic)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  month = c(
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ),
+  Tokyo = c(
+    49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 
+    135.6, 148.5, 216.4, 194.1, 95.6, 54.4
+  ),
+  `New York` = c(
+    83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 
+    105.0, 104.3, 91.2, 83.5, 106.6, 92.3
+  ),
+  London = c(
+    48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 
+    59.0, 59.6, 52.4, 65.2, 59.3, 51.2
+  ),
+  Berlin = c(
+    42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 
+    57.4, 60.4, 47.6, 39.1, 46.8, 51.1
+  )
+) %>% 
+  pivot_longer(
+    cols = !month,
+    names_to = "city",
+    values_to = "rainfall_mm"
+  ) %>% 
+  mutate(
+    month = as_factor(month), 
+    city = as_factor(city)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A basic column chart comparing emissions by pollutant. Oil and gas extraction has the overall highest amount of emissions, followed by manufacturing industries and mining. The chart is making use of the axis crosshair feature, to highlight years as they are hovered over."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Basic column
+
+```{r}
+#| label: column-basic
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Monthly Average Rainfall"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: WorldClimate.com"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    categories = unique(df$month),
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    title = list(
+      text = "Rainfall (mm)"
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<span style='font-size:10px'>{point.key}</span><table>",
+    pointFormat = "<tr><td style='color:{series.color};padding:0'>{series.name}: </td> <td style='padding:0'><b>{point.y:.1f} mm</b></td></tr>",
+    footerFormat = "</table>",
+    shared = TRUE,
+    useHTML = TRUE
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      pointPadding = 0.2,
+      borderWidth = 0
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "column", 
+    hcaes(x = month, y = rainfall_mm, group = city)
+  )
+```

@@ -1,0 +1,104 @@
+---
+title: "Timeline Chart with Connector Styles Demo"
+---
+
+This is a demo of a timeline chart with connector styles.
+
+Highcharts Docs: [Events tied to a `datetime` axis](https://www.highcharts.com/docs/chart-and-series-types/timeline-series#events-tied-to-a-datetime-axis)
+
+Highcharts Samples: [Timeline connector styles](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-timeline/connector-styles)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "First dogs",
+    label = "1951: First dogs in space",
+    description = "22 July 1951 First dogs in space (Dezik and Tsygan)"
+  ),
+  list(
+    name = "Sputnik 1",
+    label = "1957: First artificial satellite",
+    description = "4 October 1957 First artificial satellite. First signals from space."
+  ),
+  list(
+    name = "First human spaceflight",
+    label = "1961: First human spaceflight (Yuri Gagarin)",
+    description = "First human spaceflight (Yuri Gagarin), and the first human-crewed orbital flight"
+  ),
+  list(
+    name = "First human on the Moon",
+    label = "1969: First human on the Moon",
+    description = "First human on the Moon, and first space launch from a celestial body other than the Earth. First sample return from the Moon"
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A chart illustrating a timeline of space exploration. The chart shows even intervals."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Timeline with connector styles
+
+```{r}
+#| label: timeline-with-connector-styles
+
+highchartzero() %>% 
+  hc_add_dependency("modules/timeline.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "timeline"
+  ) %>% 
+  hc_xAxis(
+    visible = FALSE
+  ) %>% 
+  hc_yAxis(
+    visible = FALSE
+  ) %>% 
+  hc_title(
+    text = "Timeline of Space Exploration"
+  ) %>% 
+  hc_subtitle(
+    text = "Info source: <a href='https://en.wikipedia.org/wiki/Timeline_of_space_exploration'>www.wikipedia.org</a>"
+  ) %>% 
+  hc_add_series(
+    dataLabels = list(
+      connectorColor = "#C0C0C0",
+      connectorWidth = 2
+    ),
+    data = df
+  )
+```

@@ -1,0 +1,133 @@
+---
+title: "Spline Chart Updating Each Second Demo"
+---
+
+This is a demo of a spline chart showing data updating each second.
+
+Highcharts Demos: [Spline updating each second](https://www.highcharts.com/demo/dynamic-update)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing data updating every second, with old data being removed.",
+      announceNewData = list(
+        enabled = TRUE,
+        minAnnounceInterval = 15000,
+        announcementFormatter = JS(
+          "function (allSeries, newSeries, newPoint) {
+            if (newPoint) {
+              return 'New point added. Value: ' + newPoint.y;
+            }
+            return false;
+          }"
+        )
+      )
+    ),
+    time = list(
+      useUTC = FALSE
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Spline chart updating each second
+
+```{r}
+#| label: dynamic-update
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "spline",
+    animation = JS("Highcharts.svg"),
+    marginRight = 10,
+    events = list(
+      load = JS(
+        "function () {
+          // set up updating of chart each second
+          var series = this.series[0];
+          setInterval(function () {
+            var x = (new Date()).getTime(), // current time
+                y = Math.random();
+            series.addPoint([x, y], true, true);
+          }, 1000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "Live random data"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    tickPixelInterval = 150
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Value"
+    ),
+    plotLines = list(
+      list(
+        value = 0,
+        width = 1,
+        color = "#808080"
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{series.name}</b><br>",
+    pointFormat = "{point.x:%Y-%m-%d %H:%M:%S}<br>{point.y:.2f}"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_exporting(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    name = "Random data",
+    data = JS(
+      "(function () {
+        // generate an array of random data
+        var data = [],
+            time = (new Date()).getTime(),
+            i;
+
+        for (i = -19; i <= 0; i += 1) {
+          data.push({
+            x: time + i * 1000,
+            y: Math.random()
+          });
+        }
+        return data;
+      }())"
+    )
+  )
+```

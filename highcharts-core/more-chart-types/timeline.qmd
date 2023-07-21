@@ -1,0 +1,109 @@
+---
+title: "Timeline Chart Demo"
+---
+
+This is a demo of a timeline chart.
+
+Highcharts Demos: [Timeline](https://www.highcharts.com/demo/timeline)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "2000: Orbiting of an asteroid",
+    description = "14 February 2000, first orbiting of an asteroid (433 Eros)."
+  ),
+  list(
+    name = "2005: Landing on Titan.",
+    description = "14 January 2005, first soft landing on Titan also first soft landing in the outer Solar System."
+  ),
+  list(
+    name = "2011: Orbit of Mercury",
+    description = "18 March 2011, first spacecraft to orbit Mercury."
+  ),
+  list(
+    name = "2015: Food eaten in space",
+    description = "10 August 2015, first food grown in space and eaten (lettuce)."
+  ),
+  list(
+    name = "2019: Black hole photograph",
+    description = "10 April 2019, first direct photograph of a black hole and its vicinity."
+  ),
+  list(
+    name = "2020: Private spaceflight",
+    description = "'30 May 2020, first orbital human spaceflight launched by a private company (SpaceX)."
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Timeline charts are used to place events on a time axis, such as this example showing some space exploration events from 2000 to 2020.",
+      screenReaderSection = list(
+        beforeChartFormat = "<h5>{chartTitle}</h5> <div>{typeDescription}</div> <div>{chartSubtitle}</div> <div>{chartLongdesc}</div> <div>{viewTableButton}</div>"
+      ),
+      point = list(
+        valueDescriptionFormat = "{index}. {point.label}. {point.description}."
+      )
+    )
+  )
+)
+```
+
+# Timeline
+
+```{r}
+#| label: timeline
+
+highchartzero() %>% 
+  hc_add_dependency("modules/timeline.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "timeline") %>% 
+  hc_xAxis(
+    visible = FALSE
+  ) %>% 
+  hc_yAxis(
+    visible = FALSE
+  ) %>% 
+  hc_title(
+    text = "Timeline of Space Exploration"
+  ) %>% 
+  hc_subtitle(
+    text = "Info source: <a href='https://en.wikipedia.org/wiki/Timeline_of_space_exploration'>www.wikipedia.org</a>"
+  ) %>% 
+  hc_colors(
+    colors = list(
+      "#4185F3",
+      "#427CDD",
+      "#406AB2",
+      "#3E5A8E",
+      "#3B4A68",
+      "#363C46"
+    )
+  ) %>% 
+  hc_add_series(
+    data = df
+  )
+```

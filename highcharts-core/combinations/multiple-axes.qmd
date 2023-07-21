@@ -1,0 +1,201 @@
+---
+title: "Chart with Multiple Axes Demo"
+---
+
+This is a demo of a chart with multiple y-axes.
+
+Highcharts Demos: [Multiple axes](https://www.highcharts.com/demo/combo-multi-axes)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of multiple y-axes, where each series has a separate axis. Multiple axes allows data in different ranges to be visualized together. While this in some cases can cause charts to be hard to read, it can also be a powerful tool to illustrate correlations."
+    )
+  )
+)
+```
+
+# Chart with multiple y-axes
+
+```{r}
+#| label: multiple-axes
+
+highchartzero() %>% 
+  hc_add_dependency("modules/series-label.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Average Monthly Weather Data for Tokyo",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: WorldClimate.com",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    categories = c(
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ),
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      labels = list(
+        format = "{value}°C",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[2]")
+        )
+      ),
+      title = list(
+        text = "Temperature",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[2]")
+        )
+      ),
+      opposite = TRUE
+    ),
+    list(
+      gridLineWidth = 0,
+      title = list(
+        text = "Rainfall",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[0]")
+        )
+      ),
+      labels = list(
+        format = "{value} mm",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[0]")
+        )
+      )
+    ),
+    list(
+      gridLineWidth = 0,
+      title = list(
+        text = "Sea-Level Pressure",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[1]")
+        )
+      ),
+      labels = list(
+        format = "{value} mb",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[1]")
+        )
+      ),
+      opposite = TRUE
+    )
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "left",
+    x = 80,
+    verticalAlign = "top",
+    y = 55,
+    floating = TRUE,
+    backgroundColor = "rgba(255, 255, 255, 0.25)"
+  ) %>% 
+  hc_add_series(
+    name = "Rainfall",
+    type = "column",
+    yAxis = 1,
+    data = c(
+      49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 
+      135.6, 148.5, 216.4, 194.1, 95.6, 54.4
+    ),
+    tooltip = list(
+      valueSuffix = " mm"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Sea-Level Pressure",
+    type = "spline",
+    yAxis = 2,
+    data = c(
+      1016, 1016, 1015.9, 1015.5, 1012.3, 1009.5, 
+      1009.6, 1010.2, 1013.1, 1016.9, 1018.2, 1016.7
+    ),
+    marker = list(
+      enabled = FALSE
+    ),
+    dashStyle = "shortdot",
+    tooltip = list(
+      valueSuffix = " mb"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Temperature",
+    type = "spline",
+    data = c(
+      7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 
+      25.2, 26.5, 23.3, 18.3, 13.9, 9.6
+    ),
+    tooltip = list(
+      valueSuffix = " °C"
+    )
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          legend = list(
+            floating = FALSE,
+            layout = "horizontal",
+            align = "center",
+            verticalAlign = "bottom",
+            x = 0,
+            y = 0
+          ),
+          yAxis = list(
+            list(
+              labels = list(
+                align = "right",
+                x = 0,
+                y = -6
+              ),
+              showLastLabel = FALSE
+            ),
+            list(
+              labels = list(
+                align = "left",
+                x = 0,
+                y = -6
+              ),
+              showLastLabel = FALSE
+            ),
+            list(
+              visible = FALSE
+            )
+          )
+        )
+      )
+    )
+  )
+```

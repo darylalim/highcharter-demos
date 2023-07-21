@@ -1,0 +1,95 @@
+---
+title: "Radial Bar Chart with Custom Angles Demo"
+---
+
+This is a demo of a radial bar chart with custom start and end angles of pane.
+
+Highcharts Docs: [Examples of use](https://www.highcharts.com/docs/chart-and-series-types/radial-bar-chart#examples-of-use)
+
+Highcharts Samples: [Custom start and end angles of pane](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-polar/column-inverted-endangle)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A radial bar chart with custom start and end angles of pane."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Radial bar chart with custom start and end angles of pane
+
+```{r}
+#| label: radial-bar-custom-angles
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column",
+    inverted = TRUE,
+    polar = TRUE,
+    marginTop = 25
+  ) %>% 
+  hc_title(
+    text = "Custom start and end angles of pane"
+  ) %>% 
+  hc_subtitle(
+    text = "The startAngle <b>(45)</b> and endAngle <b>(315)</b>"
+  ) %>% 
+  hc_pane(
+    startAngle = 45,
+    endAngle = 315
+  ) %>% 
+  hc_xAxis(
+    tickInterval = 1,
+    labels = list(
+      allowOverlap = TRUE,
+      y = -5
+    )
+  ) %>% 
+  hc_yAxis(
+    max = 220,
+    showLastLabel = TRUE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointPadding = 0,
+      groupPadding = 0,
+      dataLabels = list(
+        enabled = TRUE,
+        inside = TRUE,
+        allowOverlap = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    colorByPoint = TRUE,
+    data = c(29, 71, 106, 129, 144, 176, 135, 148, 216, 194, 95, 94)
+  )
+```

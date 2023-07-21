@@ -1,0 +1,151 @@
+---
+title: "Map with Multiple Data Classes Demo"
+---
+
+This is a demo of a map with multiple data classes.
+
+Highcharts Maps Demos: [Multiple data classes](https://www.highcharts.com/demo/maps/data-class-ranges)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(readr)
+library(dplyr)
+library(stringr)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [World population density 2016](https://docs.google.com/spreadsheets/d/1WBx3mRqiomXk_ks1a5sEAtJGvYukguhAkcCuRDrY1L0)
+
+```{r}
+#| label: build-data
+
+df <- read_csv("data/World population density 2016 - Sheet1.csv")
+
+df <- df %>% 
+  rename(
+    code = `Country code`,
+    name = `Country name`,
+    value = `Population density 2016`
+  ) %>% 
+  mutate(
+    code = str_to_upper(code)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with multiple data classes."
+    )
+  )
+)
+```
+
+# Multiple data classes
+
+```{r}
+#| label: multiple-data-classes
+
+hcmap(
+  map = "custom/world",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = df,
+  joinBy = list("iso-a3", "code"),
+  animation = TRUE,
+  name = "Population density",
+  tooltip = list(
+    valueSuffix = "/km²"
+  ),
+  shadow = FALSE
+) %>% 
+  hc_colors(
+    list(
+      "rgba(19,64,117,0.05)", 
+      "rgba(19,64,117,0.2)", 
+      "rgba(19,64,117,0.4)",
+      "rgba(19,64,117,0.5)", 
+      "rgba(19,64,117,0.6)", 
+      "rgba(19,64,117,0.8)", 
+      "rgba(19,64,117,1)"
+    )
+  ) %>%
+  hc_title(
+    text = "Population density by country (/km²)",
+    align = "left"
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE,
+    buttonOptions = list(
+      align = "right"
+    )
+  ) %>% 
+  hc_mapView(
+    fitToGeometry = list(
+      type = "MultiPoint",
+      coordinates = list(
+        list(-164, 54), # Alaska west
+        list(-35, 84), # Greenland north
+        list(179, -38), # New Zealand east
+        list(-68, -55) # Chile south
+      )
+    )
+  ) %>% 
+  hc_legend(
+    title = list(
+      text = "Individuals per km²",
+      style = list(
+        color = "black"
+      )
+    ),
+    align = "left",
+    verticalAlign = "bottom",
+    floating = TRUE,
+    layout = "vertical",
+    valueDecimals = 0,
+    backgroundColor = "rgba(255, 255, 255, 0.8)",
+    symbolRadius = 0,
+    symbolHeight = 14
+  ) %>% 
+  hc_colorAxis(
+    dataClasses = list(
+      list(
+        to = 3
+      ),
+      list(
+        from = 3, 
+        to = 10
+      ),
+      list(
+        from = 10,
+        to = 30
+      ),
+      list(
+        from = 30,
+        to = 100
+      ),
+      list(
+        from = 100,
+        to = 300
+      ),
+      list(
+        from = 300,
+        to = 1000
+      ),
+      list(
+        from = 1000
+      )
+    )
+  )
+```

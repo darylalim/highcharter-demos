@@ -1,0 +1,111 @@
+---
+title: "Inverted Column Pyramid Chart Demo"
+---
+
+This is a demo of an inverted column pyramid chart.
+
+Highcharts Demos: [Inverted column pyramid](https://www.highcharts.com/docs/chart-and-series-types/column-pyramid#other-demos)
+
+Highcharts Samples: [Inverted column pyramid](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/columnpyramid-inverted)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  fruit = c("Apples", "Oranges", "Pears", "Grapes", "Bananas"),
+  John = c(5, 3, 4, 7, 2),
+  Jane = c(2, 2, 3, 2, 1),
+  Joe = c(3, 4, 4, 2, 5)
+) %>% 
+  pivot_longer(
+    cols = !fruit,
+    names_to = "name",
+    values_to = "consumption"
+  ) %>% 
+  mutate(
+    fruit = as_factor(fruit),
+    name = as_factor(name),
+    consumption = as.integer(consumption)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of the pyramid series type with stacking and inverted alignment to visualize total fruit consumption. A pyramid series is similar to a column series, but with a different shape."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Inverted column pyramid
+
+```{r}
+#| label: column-pyramid-inverted
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "Stacked column pyramid chart"
+  ) %>% 
+  hc_xAxis(
+    categories = unique(df$fruit),
+    title = list(
+      text = NULL
+    )
+  ) %>%
+  hc_yAxis(
+    min = 0,
+    title = list(
+      text = "Total fruit consumption"
+    )
+  ) %>% 
+  hc_legend(
+    reversed = TRUE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      stacking = "normal"
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "columnpyramid",
+    hcaes(x = fruit, y = consumption, group = name)
+  ) 
+```

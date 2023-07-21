@@ -1,0 +1,309 @@
+---
+title: "Activity Gauge Demo"
+---
+
+This is a demo of an activity gauge.
+
+Highcharts Demos: [Activity gauge](https://www.highcharts.com/demo/gauge-activity)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+move_data <- list(
+  list(
+    color = JS("Highcharts.getOptions().colors[0]"),
+    radius = "112%",
+    innerRadius = "88%",
+    y = 80
+  )
+)
+
+exercise_data <- list(
+  list(
+    color = JS("Highcharts.getOptions().colors[1]"),
+    radius = "87%%",
+    innerRadius = "63%%",
+    y = 65
+  )
+)
+
+stand_data <- list(
+  list(
+    color = JS("Highcharts.getOptions().colors[2]"),
+    radius = "62%",
+    innerRadius = "38%",
+    y = 50
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A chart showing multiple gauge series arcing around the center point, similar to the activity chart found on the Apple Watch. Each gauge has a custom icon, and the tooltip is positioned statically in the center."
+    )
+  )
+)
+```
+
+# Activity gauge
+
+Issues:
+
+-   Add custom icon to each gauge with render_icons function in chart render event
+
+```{r}
+#| label: activity-gauge
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/solid-gauge.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "solidgauge",
+    height = "110%"
+  ) %>% 
+  hc_title(
+    text = "Activity",
+    style = list(
+      fontSize = "24px"
+    )
+  ) %>% 
+  hc_tooltip(
+    borderWidth = 0,
+    backgroundColor = "none",
+    shadow = FALSE,
+    style = list(
+      fontSize = "24px"
+    ),
+    valueSuffix = "%",
+    pointFormat = "{series.name}<br><span style='font-size:2em; color: {point.color}; font-weight: bold'>{point.y}</span>",
+    positioner = JS(
+      "function (labelWidth) {
+        return {
+          x: (this.chart.chartWidth - labelWidth) / 2,
+          y: (this.chart.plotHeight / 2) + 15
+        };
+      }"
+    )
+  ) %>% 
+  hc_pane(
+    startAngle = 0,
+    endAngle = 360,
+    background = list(
+      # Track for Move
+      list(
+        outerRadius = "112%",
+        innerRadius = "88%",
+        backgroundColor = JS("Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.3).get()"),
+        borderWidth = 0
+      ),
+      # Track for Exercise
+      list(
+        outerRadius = "87%",
+        innerRadius = "63%",
+        backgroundColor = JS("Highcharts.color(Highcharts.getOptions().colors[1]).setOpacity(0.3).get()"),
+        borderWidth = 0
+      ),
+      # Track for Stand
+      list(
+        outerRadius = "62%",
+        innerRadius = "38%",
+        backgroundColor = JS("Highcharts.color(Highcharts.getOptions().colors[2]).setOpacity(0.3).get()"),
+        borderWidth = 0
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    max = 100,
+    lineWidth = 0,
+    tickPositions = list()
+  ) %>% 
+  hc_plotOptions(
+    solidgauge = list(
+      dataLabels = list(
+        enabled = FALSE
+      ),
+      linecap = "round",
+      stickyTracking = FALSE,
+      rounded = TRUE
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Move",
+    data = move_data
+  ) %>% 
+  hc_add_series(
+    name = "Exercise",
+    data = exercise_data
+  ) %>% 
+  hc_add_series(
+    name = "Stand",
+    data = stand_data
+  )
+```
+
+# Build Apple Watch theme
+
+```{r}
+#| label: apple-watch-theme
+#| eval: false
+
+apple_watch_theme <- hc_theme(
+  chart = list(
+    backgroundColor = "black"
+  ),
+  colors = c("#F62366", "#9DFF02", "#0CCDD6"),
+  title = list(
+    style = list(
+      color = "#C0C0C0"
+    )
+  ),
+  tooltip = list(
+    style = list(
+      color = "#C0C0C0"
+    )
+  )
+)
+```
+
+# Activity gauge with Apple Watch style
+
+```{r}
+#| label: activity-gauge-apple-watch
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/solid-gauge.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "solidgauge",
+    height = "110%",
+    backgroundColor = "black"
+  ) %>% 
+  hc_title(
+    text = "Activity",
+    style = list(
+      fontSize = "24px",
+      color = "#C0C0C0"
+    )
+  ) %>% 
+  hc_tooltip(
+    borderWidth = 0,
+    backgroundColor = "none",
+    shadow = FALSE,
+    style = list(
+      fontSize = "24px",
+      color = "#C0C0C0"
+    ),
+    valueSuffix = "%",
+    pointFormat = "{series.name}<br><span style='font-size:2em; color: {point.color}; font-weight: bold'>{point.y}</span>",
+    positioner = JS(
+      "function (labelWidth) {
+        return {
+          x: (this.chart.chartWidth - labelWidth) / 2,
+          y: (this.chart.plotHeight / 2) + 15
+        };
+      }"
+    )
+  ) %>% 
+  hc_pane(
+    startAngle = 0,
+    endAngle = 360,
+    background = list(
+      # Track for Move
+      list(
+        outerRadius = "112%",
+        innerRadius = "88%",
+        backgroundColor = "#F62366",
+        borderWidth = 0
+      ),
+      # Track for Exercise
+      list(
+        outerRadius = "87%",
+        innerRadius = "63%",
+        backgroundColor = "#9DFF02",
+        borderWidth = 0
+      ),
+      # Track for Stand
+      list(
+        outerRadius = "62%",
+        innerRadius = "38%",
+        backgroundColor = "#0CCDD6",
+        borderWidth = 0
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    max = 100,
+    lineWidth = 0,
+    tickPositions = list()
+  ) %>% 
+  hc_plotOptions(
+    solidgauge = list(
+      dataLabels = list(
+        enabled = FALSE
+      ),
+      linecap = "round",
+      stickyTracking = FALSE,
+      rounded = TRUE
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Move",
+    data = list(
+      list(
+        color = "#F62366",
+        radius = "112%",
+        innerRadius = "88%",
+        y = 80
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Exercise",
+    data = list(
+      list(
+        color = "#9DFF02",
+        radius = "87%%",
+        innerRadius = "63%%",
+        y = 65
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Stand",
+    data = list(
+      list(
+        color = "#0CCDD6",
+        radius = "62%",
+        innerRadius = "38%",
+        y = 50
+      )
+    )
+  )
+```

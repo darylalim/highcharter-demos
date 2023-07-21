@@ -1,0 +1,215 @@
+---
+title: "Polygon Series Demo"
+---
+
+This is a demo of a chart showing use of the polygon series.
+
+Highcharts Demos: [Polygon series](https://www.highcharts.com/demo/polygon)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+target <- tibble(
+  c(163, 42), 
+  c(162, 46), 
+  c(162, 55), 
+  c(163, 64), 
+  c(164, 70), 
+  c(170, 90), 
+  c(181, 100), 
+  c(182, 90), 
+  c(173, 52), 
+  c(166, 45)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    x = V1,
+    y = V2
+  )
+
+observations <- tibble(
+  c(184, 87.9, "Netherlands"),
+  c(183, 90.4, "Montenegro"),
+  c(182, 89.9, "Estonia"),
+  c(182, 86.8, "Denmark"),
+  c(181, 89.2, "Iceland"),
+  c(181, 89.9, "Czechia"),
+  c(180, 89.9, "Serbia"),
+  c(180, 89.9, "Sweden"),
+  c(180, 89.1, "Norway"),
+  c(180, 80.7, "Dominica"),
+  c(180, 86.3, "Finland"),
+  c(179, 88.4, "Bermuda"),
+  c(179, 90.7, "Puerto Rico"),
+  c(178, 84.1, "Belarus"),
+  c(178, 103.7, "Cook Islands"),
+  c(177, 98.8, "Niue"),
+  c(177, 103.2, "American Samoa"),
+  c(176, 80.3, "Russia"),
+  c(176, 91.1, "Saint Lucia"),
+  c(175, 67.0, "Senegal"),
+  c(175, 93.7, "Tonga"),
+  c(174, 74.6, "Algeria"),
+  c(174, 84.7, "Argentina"),
+  c(174, 79.5, "Portugal"),
+  c(173, 73.6, "Mauritius"),
+  c(173, 91.8, "Samoa"),
+  c(172, 69.5, "Japan"),
+  c(172, 74.0, "Bahrain"),
+  c(171, 64.1, "Chad"),
+  c(171, 88.0, "Tuvalu"),
+  c(171, 67.8, "Sudan"),
+  c(170, 58.8, "Eritrea"),
+  c(170, 63.9, "Kenya"),
+  c(170, 74.7, "Mongolia"),
+  c(170, 65.1, "Nigeria"),
+  c(169, 93.0, "Nauru"),
+  c(169, 81.1, "Micronesia"),
+  c(169, 64.9, "Ghana"),
+  c(169, 71.9, "South Africa"),
+  c(168, 61.2, "Vietnam"),
+  c(168, 65.9, "Ivory Coast"),
+  c(168, 69.2, "Maldives"),
+  c(168, 56.5, "Ethiopia"),
+  c(167, 74.2, "Ecuador"),
+  c(167, 60.5, "Burundi"),
+  c(166, 69.6, "India"),
+  c(166, 74.7, "Brunei"),
+  c(165, 57.7, "Bangladesh"),
+  c(165, 58.4, "Madagascar"),
+  c(165, 61.8, "Philippines"),
+  c(164, 60.5, "Nepal"),
+  c(164, 69.1, "Guatemala"),
+  c(163, 62.5, "Yemen"),
+  c(162, 59.5, "Laos"),
+  c(159, 53.9, "Timor-Leste")
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    x = V1,
+    y = V2,
+    name = V3
+  ) %>% 
+  mutate(
+    x = as.numeric(x),
+    y = as.numeric(y),
+    name = as_factor(name)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of the polygon series type to plot height and weight data using a set of coordinates."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Polygon series
+
+```{r}
+#| label: polygon-series
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Average height and weight for men by country",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.worlddata.info/average-bodyheight.php'>WorldData</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    gridLineWidth = 1,
+    title = list(
+      enabled = TRUE,
+      text = "Height (cm)"
+    ),
+    startOnTick = TRUE,
+    endOnTick = TRUE,
+    showLastLabel = TRUE
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Weight (kg)"
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "right",
+    verticalAlign = "middle"
+  ) %>% 
+  hc_add_series(
+    name = "Target",
+    type = "polygon",
+    data = target,
+    color = adjustcolor(colors_v11[1], alpha.f = 0.5),
+    enableMouseTracking = FALSE,
+    accessibility = list(
+      exposeAsGroupOnly = TRUE,
+      description = "Target ranges in an upwards trending diagonal from 161 to 182 on the x axis, and 42 to 100 on the y axis."
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Observations",
+    type = "scatter",
+    color = colors_v11[2],
+    data = observations
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{point.key}</b><br>",
+    pointFormat = "{point.x} cm, {point.y} kg"
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          legend = list(
+            align = "center",
+            layout = "horizontal",
+            verticalAlign = "bottom"
+          )
+        )
+      )
+    )
+  )
+```

@@ -1,0 +1,77 @@
+---
+title: "Line Stock Chart with Markers and Shadow Demo"
+---
+
+This is a demo of a line stock chart with markers and shadow.
+
+Highcharts Stock Demos: [Line with markers and shadow](https://www.highcharts.com/demo/stock/line-markers)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A line stock chart with markers and shadow showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Line with markers and shadow
+
+```{r}
+#| label: line-with-markers-shadow
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "AAPL Stock Price",
+    data = aapl,
+    marker = list(
+      enabled = TRUE,
+      radius = 3
+    ),
+    shadow = TRUE,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  )
+```

@@ -1,0 +1,109 @@
+---
+title: "Network Graph with Data Labels Around Nodes Demo"
+---
+
+This is a demo of a network graph with `dataLabels` around the nodes.
+
+Highcharts Docs: [Use case 3](https://www.highcharts.com/docs/chart-and-series-types/network-graph#use-case-3)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  c("Proto Indo-European", "Balto-Slavic"),
+  c("Proto Indo-European", "Germanic"),
+  c("Proto Indo-European", "Celtic"),
+  c("Proto Indo-European", "Italic"),
+  c("Proto Indo-European", "Hellenic"),
+  c("Proto Indo-European", "Anatolian"),
+  c("Proto Indo-European", "Indo-Iranian"),
+  c("Proto Indo-European", "Tocharian"),
+  c("Indo-Iranian", "Dardic"),
+  c("Indo-Iranian", "Indic"),
+  c("Indo-Iranian", "Iranian"),
+  c("Iranian", "Old Persian"),
+  c("Old Persian", "Middle Persian"),
+  c("Indic", "Sanskrit"),
+  c("Italic", "Osco-Umbrian"),
+  c("Italic", "Latino-Faliscan"),
+  c("Latino-Faliscan", "Latin"),
+  c("Celtic", "Brythonic"),
+  c("Celtic", "Goidelic")
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A network graph with data labels around the nodes."
+    )
+  )
+)
+```
+
+# Network graph with `dataLabels` around nodes
+
+Issues:
+
+-   Add colors with JS function
+
+```{r}
+#| label: network-graph-with-datalabels-nodes
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "networkgraph",
+    marginTop = 80
+  ) %>% 
+  hc_title(
+    text = "The Indo-European Language Tree"
+  ) %>% 
+  hc_subtitle(
+    text = "A Force-Directed Network Graph in Highcharter"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      keys = c("from", "to"),
+      layoutAlgorithm = list(
+        enableSimulation = TRUE,
+        integration = "verlet",
+        linkLength = 100
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    id = "language-tree",
+    marker = list(
+      radius = 13
+    ),
+    dataLabels = list(
+      enabled = TRUE,
+      textPath = list(
+        enabled = TRUE
+      ),
+      linkFormat = "",
+      allowOverlap = TRUE
+    ),
+    data = df
+  )
+```

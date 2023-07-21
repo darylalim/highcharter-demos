@@ -1,0 +1,170 @@
+---
+title: "3D Bubble Chart Demo"
+---
+
+This is a demo of a 3D bubble chart.
+
+Highcharts Demos: [3D bubbles](https://www.highcharts.com/demo/bubble-3d)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c(9, 81, 63),
+  c(98, 5, 89),
+  c(51, 50, 73),
+  c(41, 22, 14),
+  c(58, 24, 20),
+  c(78, 37, 34),
+  c(55, 56, 53),
+  c(18, 45, 70),
+  c(42, 44, 28),
+  c(3, 52, 59),
+  c(31, 18, 97),
+  c(79, 91, 63),
+  c(93, 23, 23),
+  c(44, 83, 22)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    x = V1, 
+    y = V2, 
+    z = V3,
+  )
+
+df2 <- tibble(
+  c(42, 38, 20),
+  c(6, 18, 1),
+  c(1, 93, 55),
+  c(57, 2, 90),
+  c(80, 76, 22),
+  c(11, 74, 96),
+  c(88, 56, 10),
+  c(30, 47, 49),
+  c(57, 62, 98),
+  c(4, 16, 16),
+  c(46, 10, 11),
+  c(22, 87, 89),
+  c(57, 91, 82),
+  c(45, 15, 98)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    x = V1, 
+    y = V2, 
+    z = V3
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Bubble chart demonstrating a decorative 3D rendering effect using gradient fills on the bubbles."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D bubbles
+
+```{r}
+#| label: 3d-bubble-chart
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "bubble",
+    plotBorderWidth = 1,
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Highcharter bubbles with radial gradient fill",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    gridLineWidth = 1,
+    accessibility = list(
+      rangeDescription = "Range: 0 to 100."
+    )
+  ) %>% 
+  hc_yAxis(
+    startOnTick = FALSE,
+    endOnTick = FALSE,
+    accessibility = list(
+      rangeDescription = "Range: 0 to 100."
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    marker = list(
+      fillColor = list(
+        radialGradient = list(
+          cx = 0.4,
+          cy = 0.3,
+          r = 0.7
+        ),
+        stops = list(
+          list(
+            0, "rgba(255, 255, 255, 0.5)"
+          ),
+          list(
+            1, JS("Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')")
+          )
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df2,
+    marker = list(
+      fillColor = list(
+        radialGradient = list(
+          cx = 0.4,
+          cy = 0.3,
+          r = 0.7
+        ),
+        stops = list(
+          list(
+            0, "rgba(255, 255, 255, 0.5)"
+          ),
+          list(
+            1, JS("Highcharts.color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')")
+          )
+        )
+      )
+    )
+  )
+```

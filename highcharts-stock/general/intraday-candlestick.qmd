@@ -1,0 +1,90 @@
+---
+title: "Intraday Candlestick Stock Chart Demo"
+---
+
+This is a demo of an intraday candlestick stock chart.
+
+Highcharts Stock Demos: [Intraday candlestick](https://www.highcharts.com/demo/stock/intraday-candlestick)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/new-intraday.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "An intraday candlestick stock chart showing Apple stock price by minute."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Intraday candlestick
+
+```{r}
+#| label: intraday-candlestick
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "AAPL stock price by minute"
+  ) %>% 
+  hc_rangeSelector(
+    buttons = list(
+      list(
+        type = "hour",
+        count = 1,
+        text = "1h"
+      ),
+      list(
+        type = "day",
+        count = 1,
+        text = "1D"
+      ),
+      list(
+        type = "all",
+        count = 1,
+        text = "All"
+      )
+    ),
+    selected = 1,
+    inputEnabled = FALSE
+  ) %>% 
+  hc_add_series(
+    name = "AAPL",
+    type = "candlestick",
+    data = df,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  )
+```

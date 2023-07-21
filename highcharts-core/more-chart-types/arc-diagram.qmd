@@ -1,0 +1,148 @@
+---
+title: "Arc Diagram Demo"
+---
+
+This is a demo of an arc diagram.
+
+Highcharts Demos: [Arc Diagram](https://www.highcharts.com/demo/arc-diagram)
+
+::: {.callout-note}
+Note the arc diagram series type requires Highcharts version 10.
+:::
+
+At this time, the development version of `highcharter` supports HighchartsJS 10.2.0.
+
+[Installation instructions](https://jkunst.com/highcharter/index.html#installation)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Hamburg", "Stuttgart", 1),
+  c("Hamburg", "Frankfurt", 1),
+  c("Hamburg", "München", 1),
+  c("Hannover", "Wien", 1),
+  c("Hannover", "München", 1),
+  c("Berlin", "Wien", 1),
+  c("Berlin", "München", 1),
+  c("Berlin", "Stuttgart", 1),
+  c("Berlin", "Frankfurt", 1),
+  c("Berlin", "Köln", 1),
+  c("Berlin", "Düsseldorf", 1),
+  c("München", "Düsseldorf", 1),
+  c("München", "Wien", 1),
+  c("München", "Frankfurt", 1),
+  c("München", "Köln", 1),
+  c("München", "Amsterdam", 1),
+  c("Stuttgart", "Wien", 1),
+  c("Frankfurt", "Wien", 1),
+  c("Frankfurt", "Amsterdam", 1),
+  c("Frankfurt", "Paris", 1),
+  c("Frankfurt", "Budapest", 1),
+  c("Düsseldorf", "Wien", 1),
+  c("Düsseldorf", "Hamburg", 1),
+  c("Amsterdam", "Paris", 1),
+  c("Paris", "Brest", 1),
+  c("Paris", "Nantes", 1),
+  c("Paris", "Bayonne", 1),
+  c("Paris", "Bordeaux", 1),
+  c("Paris", "Toulouse", 1),
+  c("Paris", "Montpellier", 1),
+  c("Paris", "Marseille", 1),
+  c("Paris", "Nice", 1),
+  c("Paris", "Milano", 1),
+  c("Nantes", "Nice", 1),
+  c("Bordeaux", "Lyon", 1),
+  c("Nantes", "Lyon", 1),
+  c("Milano", "München", 1),
+  c("Milano", "Roma", 1),
+  c("Milano", "Bari", 1),
+  c("Milano", "Napoli", 1),
+  c("Milano", "Brindisi", 1),
+  c("Milano", "Lamezia Terme", 1),
+  c("Torino", "Roma", 1),
+  c("Venezia", "Napoli", 1),
+  c("Roma", "Bari", 1),
+  c("Roma", "Catania", 1),
+  c("Roma", "Brindisi", 1),
+  c("Catania", "Milano", 1)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    from = V1,
+    to = V2,
+    weight = V3
+  ) %>% 
+  mutate(
+    weight = as.integer(weight)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Arc diagram chart with circles of different sizes along the X axis, and connections drawn as arcs between them. From the chart we can see that Paris is the city with the most connections to other cities.",
+      point = list(
+        valueDescriptionFormat = "Connection from {point.from} to {point.to}."
+      )
+    )
+  )
+)
+```
+
+# Arc diagram
+
+```{r}
+#| label: arc-diagram
+
+highchartzero() %>%
+  hc_add_dependency("modules/sankey.js") %>%
+  hc_add_dependency("modules/arc-diagram.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(
+    colors = list(
+      "#293462", "#a64942", "#fe5f55", "#fff1c1", "#5bd1d7", 
+      "#ff502f", "#004d61", "#ff8a5c", "#fff591", "#f5587b", 
+      "#fad3cf", "#a696c8", "#5BE7C4", "#266A2E", "#593E1A"
+    )
+  ) %>%
+  hc_title(
+    text = "Main train connections in Europe"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "arcdiagram",
+    hcaes(from = from, to = to, weight = weight),
+    # keys = list("from", "to", "weight"),
+    name = "Train connections",
+    linkWeight = 1,
+    centeredLinks = TRUE,
+    dataLabels = list(
+      rotation = 90,
+      y = 30,
+      align = "left",
+      color = "black"
+    ),
+    offset = "65%",
+  )
+```

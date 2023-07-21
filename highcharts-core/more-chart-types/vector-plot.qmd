@@ -1,0 +1,97 @@
+---
+title: "Vector Plot Demo"
+---
+
+This is a demo of a vector plot.
+
+Highcharts Demos: [Vector plot](https://www.highcharts.com/demo/vector-plot)
+
+Highcharter Articles: [Vector](https://jkunst.com/highcharter/articles/highcharts.html#vector)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+x <- seq.int(
+  from = 5, 
+  to = 95, 
+  by = 5
+)
+
+df <- expand.grid(x = x, y = x) %>% 
+  mutate(
+    length = 200 - (x + y),
+    direction = (x + y) / 200 * 360
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A vector plot can visualize vectors using four values: The x and y coordinates, the length, and the angle. This demo is showing a vector field, where vectors are given at regular intervals."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Vector plot
+
+```{r}
+#| label: vector-plot
+
+highchartzero() %>% 
+  hc_add_dependency("modules/vector.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "Highcharter Vector plot"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    min = 0,
+    max = 100,
+    gridLineWidth = 1
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = FALSE
+    ),
+    min = 0, 
+    max = 100
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "vector",
+    hcaes(x = x, y = y, length = length, direction = direction),
+    color = colors_v11[2],
+    name = "Sample vector field"
+  ) 
+```

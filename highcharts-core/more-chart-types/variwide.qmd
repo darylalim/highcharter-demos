@@ -1,0 +1,128 @@
+---
+title: "Variwide Chart Demo"
+---
+
+This is a demo of a variwide chart.
+
+Highcharts Demos: [Variwide](https://www.highcharts.com/demo/variwide)
+
+GitHub issues: [variwide chart #571](https://github.com/jbkunst/highcharter/issues/571)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Norway", 50.2, 335504),
+  c("Denmark", 42, 277339),
+  c("Belgium", 39.2, 421611),
+  c("Sweden", 38, 462057),
+  c("France", 35.6, 2228857),
+  c("Netherlands", 34.3, 702641),
+  c("Finland", 33.2, 215615),
+  c("Germany", 33.0, 3144050),
+  c("Austria", 32.7, 349344),
+  c("Ireland", 30.4, 275567),
+  c("Italy", 27.8, 1672438),
+  c("United Kingdom", 26.7, 2366911),
+  c("Spain", 21.3, 1113851),
+  c("Greece", 14.2, 175887),
+  c("Portugal", 13.7, 184933),
+  c("Czech Republic", 10.2, 176564),
+  c("Poland", 8.6, 424269),
+  c("Romania", 5.5, 169578)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    country = V1,
+    labor_cost = V2,
+    gdp = V3
+  ) %>% 
+  mutate(
+    country = as_factor(country),
+    labor_cost = as.numeric(labor_cost),
+    gdp = as.numeric(gdp)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Variwide charts can be used to visualize a second dimension in a column chart. Each data point is given a weight, in addition to its value, determining the width of the column. In this chart, the Y-Axis represents the labor cost of the country, while the column width is proportional to the country's GDP."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Variwide chart
+
+```{r}
+#| label: variwide
+
+highchartzero() %>% 
+  hc_add_dependency("modules/variwide.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Labor Costs in Europe, 2016"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='http://ec.europa.eu/eurostat/web/labour-market/labour-costs/main-tables'>eurostat</a>"
+  ) %>% 
+  hc_xAxis(
+    type = "category"
+  ) %>% 
+  hc_caption(
+    text = "Column widths are proportional to GDP"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    name = "Labor Costs",
+    data = df,
+    type = "variwide",
+    hcaes(x = country, y = labor_cost, z = gdp),
+    colorByPoint = TRUE,
+    dataLabels = list(
+      enabled = TRUE,
+      format = "€{point.y:.0f}"
+    ),
+    tooltip = list(
+      pointFormat = paste(
+        "Labor Costs: <b>€ {point.y}/h</b><br>", "GDP: <b>€ {point.z} million</b><br>"
+      )
+    ),
+    borderRadius = 3
+  )
+```

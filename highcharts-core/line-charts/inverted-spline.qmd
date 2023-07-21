@@ -1,0 +1,120 @@
+---
+title: "Inverted Spline Demo"
+---
+
+This is a demo of a spline chart with inverted axes.
+
+Highcharts Demos: [Spline with inverted axes](https://www.highcharts.com/demo/spline-inverted)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  altitude = c(0, 10, 20, 30, 40, 50, 60, 70, 80),
+  temperature = c(15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5)
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Spline charts are smoothed line charts, and this example shows an inverted spline chart. Inverting the chart means the X-axis is positioned as the vertical axis, and the Y-axis is positioned as the horizontal axis. This can be more intuitive for certain data sets, such as in this chart where the X-axis represents vertical altitude."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Spline with inverted axes
+
+```{r}
+#| label: inverted-spline
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "Atmosphere Temperature by Altitude",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "According to the Standard Atmosphere Model",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = "Altitude"
+    ),
+    reversed = FALSE,
+    labels = list(
+      format = "{value} km"
+    ),
+    accessibility = list(
+      rangeDescription = "Range: 0 to 80 km."
+    ),
+    maxPadding = 0.05,
+    showLastLabel = TRUE
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Temperature"
+    ),
+    labels = list(
+      format = "{value}°"
+    ),
+    accessibility = list(
+      rangeDescription = "Range: -90°C to 20°C."
+    ),
+    lineWidth = 2
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{series.name}</b><br>",
+    pointFormat = "{point.x} km: {point.y}°C"
+  ) %>% 
+  hc_plotOptions(
+    spline = list(
+      marker = list(
+        enabled = FALSE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Temperature",
+    data = df,
+    type = "spline",
+    hcaes(x = altitude, y = temperature)
+  )
+```

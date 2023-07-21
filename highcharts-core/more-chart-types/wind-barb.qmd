@@ -1,0 +1,151 @@
+---
+title: "Wind Barb Demo"
+---
+
+This is a demo of a wind barb series on a chart.
+
+Highcharts Demos: [Wind barb](https://www.highcharts.com/demo/windbarb-series)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c(4.9, 246),
+  c(4.1, 242),
+  c(3.2, 262),
+  c(1.5, 284),
+  c(1.1, 294),
+  c(0.4, 192),
+  c(0.2, 30),
+  c(1.1, 110),
+  c(1.4, 112),
+  c(2.1, 132),
+  c(1.6, 134),
+  c(1.5, 128),
+  c(0.7, 91),
+  c(0.7, 275),
+  c(0.6, 341),
+  c(4.5, 236),
+  c(4.9, 241),
+  c(3.4, 234),
+  c(0.7, 260),
+  c(1.1, 274),
+  c(0.9, 327),
+  c(0.5, 336),
+  c(0.4, 331),
+  c(1.4, 157)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    value = V1,
+    direction = V2
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Wind barbs are used to visualize wind direction and speed on a chart. As seen in this example, they are often combined with other series types to provide additional information."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Wind barb
+
+```{r}
+#| label: wind-barb
+
+highchartzero() %>% 
+  hc_add_dependency("modules/windbarb.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "Observed wind in Vik, 30. July 2022",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.yr.no/nb/historikk/graf/1-137598/Norge/Vestland/Vik/Vik%C3%B8yri?q=2022-07-30'>YR</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    type = "datetime",
+    offset = 40
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Wind speed (m/s)"
+    )
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = JS("Date.UTC(2022, 6, 30)"),
+      pointInterval = 36e5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "windbarb",
+    data = df,
+    name = "Wind",
+    color = colors_v11[2],
+    showInLegend = FALSE,
+    tooltip = list(
+      valueSuffix = " m/s"
+    )
+  ) %>% 
+  hc_add_series(
+    type = "area",
+    data = df$value,
+    color = colors_v11[1],
+    fillColor = list(
+      linearGradient = list(
+        x1 = 0,
+        x2 = 0,
+        y1 = 0,
+        y2 = 1
+      ),
+      stops = list(
+        list(0, colors_v11[1]),
+        list(1, adjustcolor(col = colors_v11[1], alpha.f = 0.25))
+      )
+    ),
+    name = "Wind speed",
+    tooltip = list(
+      valueSuffx = " m/s"
+    ),
+    states = list(
+      inactive = list(
+        opacity = 1
+      )
+    )
+  )
+```

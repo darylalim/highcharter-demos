@@ -1,0 +1,122 @@
+---
+title: "Gantt Chart with Grouping Tasks Demo"
+---
+
+This is a demo of a Gantt chart with grouping tasks in a hierarchy.
+
+Highcharts Documentation: [Grouping tasks in a hierarchy](https://www.highcharts.com/docs/gantt/gantt-grouping-tasks)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "Example of defining subtasks and grouping them with one parent task."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Gantt chart with grouping tasks
+
+```{r}
+#| label: gantt-chart-grouping-tasks
+
+highchartzero() %>% 
+  hc_add_dependency("modules/gantt.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Grouping in a hierarchy"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE
+    ),
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE,
+      linkedTo = 0
+    )
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    type = "treegrid",
+    uniqueNames = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    type = "gantt",
+    name = "Project 1",
+    data = list(
+      list(
+        name = "Start prototype",
+        start = JS("Date.UTC(2014, 10, 18)"),
+        end = JS("Date.UTC(2014, 10, 20)")
+      ),
+      list(
+        name = "Product launch",
+        id = "launch",
+        # collapsed = TRUE,
+        pointWidth = 3
+      ),
+      list(
+        parent = "launch",
+        id = "b",
+        name = "Develop",
+        start = JS("Date.UTC(2014, 10, 20)"),
+        end = JS("Date.UTC(2014, 10, 25)")
+      ),
+      list(
+        parent = "launch",
+        id = "a",
+        name = "Run acceptance tests",
+        start = JS("Date.UTC(2014, 10, 23)"),
+        end = JS("Date.UTC(2014, 10, 26)")
+      ),
+      list(
+        parent = "launch",
+        name = "Test prototype",
+        start = JS("Date.UTC(2014, 10, 27)"),
+        end = JS("Date.UTC(2014, 10, 29)")
+      )
+    )
+  )
+```

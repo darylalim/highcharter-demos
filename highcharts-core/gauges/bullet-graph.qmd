@@ -1,0 +1,267 @@
+---
+title: "Bullet Chart Demo"
+---
+
+This is a demo of a series of bullet charts.
+
+Highcharts Demos: [Bullet graph](https://www.highcharts.com/demo/bullet-graph)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A series of bullet charts showing Revenue, Profit, and New Customers. Bullet charts allow readers to quickly compare a single value to a target value. This demo is also using plot bands to separate different ranges on the axes. Bullet charts are popular in dashboards, as they typically take up less space than gauge charts."
+    )
+  )
+)
+```
+
+# Build container 1
+
+```{r}
+#| label: container-1
+
+container_1 <- highchart() %>% 
+  hc_chart(
+    type = "bullet",
+    inverted = TRUE,
+    marginLeft = 135,
+    marginTop = 40
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointPadding = 0.25,
+      borderWidth = 0,
+       color = "#000",
+      targetOptions = list(
+        width = "200%"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "2017 YTD"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "<span class='hc-cat-title'>Revenue</span><br>U.S. $ (1,000s)"
+    )
+  ) %>% 
+  hc_yAxis(
+    gridLineWidth = 0,
+    plotBands = list(
+      list(
+        from = 0,
+        to = 150,
+        color = "#666"
+      ),
+      list(
+        from = 150,
+        to = 225,
+        color = "#999"
+      ),
+      list(
+        from = 225,
+        to = 9e9,
+        color = "#bbb"
+      )
+    ),
+    title = FALSE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  ) %>% 
+  hc_exporting(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<b>{point.y}</b> (with target at {point.target})"
+  ) %>% 
+  hc_add_series(
+    data = list(
+      list(
+        y = 275, 
+        target = 250
+      )
+    )
+  )
+```
+
+# Build container 2
+
+```{r}
+#| label: container-2
+
+container_2 <- highchart() %>% 
+  hc_chart(
+    type = "bullet",
+    inverted = TRUE,
+    marginLeft = 135
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointPadding = 0.25,
+      borderWidth = 0,
+      color = "#000",
+      targetOptions = list(
+        width = "200%"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = NULL
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "<span class='hc-cat-title'>Profit</span><br>%"
+    )
+  ) %>% 
+  hc_yAxis(
+    gridLineWidth = 0,
+    plotBands = list(
+      list(
+        from = 0,
+        to = 20,
+        color = "#666"
+      ),
+      list(
+        from = 20,
+        to = 25,
+        color = "#999"
+      ),
+      list(
+        from = 25,
+        to = 100,
+        color = "#bbb"
+      )
+    ),
+    labels = list(
+      format = "{value}%"
+    ),
+    title = FALSE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  ) %>% 
+  hc_exporting(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<b>{point.y}</b> (with target at {point.target})"
+  ) %>% 
+  hc_add_series(
+    data = list(
+      list(
+        y = 22, 
+        target = 27
+      )
+    )
+  )
+```
+
+# Build container 3
+
+```{r}
+#| label: container-3
+
+container_3 <- highchart() %>% 
+  hc_chart(
+    type = "bullet",
+    inverted = TRUE,
+    marginLeft = 135
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointPadding = 0.25,
+      borderWidth = 0,
+      color = "#000",
+      targetOptions = list(
+        width = "200%"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = NULL
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "<span class='hc-cat-title'>New Customers</span><br>Count"
+    )
+  ) %>% 
+  hc_yAxis(
+    gridLineWidth = 0,
+    plotBands = list(
+      list(
+        from = 0,
+        to = 1400,
+        color = "#666"
+      ),
+      list(
+        from = 1400,
+        to = 2000,
+        color = "#999"
+      ),
+      list(
+        from = 2000,
+        to = 9e9,
+        color = "#bbb"
+      )
+    ),
+    labels = list(
+      format = "{value}"
+    ),
+    title = FALSE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_credits(
+    enabled = TRUE
+  ) %>% 
+  hc_exporting(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<b>{point.y}</b> (with target at {point.target})"
+  ) %>% 
+  hc_add_series(
+    data = list(
+      list(
+        y = 1650, 
+        target = 2100
+      )
+    )
+  )
+```
+
+# Bullet graph
+
+```{r}
+#| label: bullet-graph
+
+# Lay out into grid
+hw_grid(
+  container_1, container_2, container_3,
+  ncol = 1
+)
+```

@@ -1,0 +1,73 @@
+---
+title: "Step Line Stock Chart Demo"
+---
+
+This is a demo of a step line stock chart.
+
+Highcharts Stock Demos: [Step line](https://www.highcharts.com/demo/stock/step-line)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A step line stock chart showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Step line
+
+```{r}
+#| label: step-line
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "AAPL Stock Price",
+    data = aapl,
+    step = TRUE,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  )
+```

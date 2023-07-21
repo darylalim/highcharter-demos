@@ -1,0 +1,114 @@
+---
+title: "Radial Bar Chart with Custom Thresholds Demo"
+---
+
+This is a demo of a radial bar chart with custom thresholds.
+
+Highcharts Docs: [Examples of use](https://www.highcharts.com/docs/chart-and-series-types/radial-bar-chart#examples-of-use)
+
+Highcharts Samples: [Radial bar chart with custom thresholds](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-polar/column-inverted-threshold)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A radial bar chart with custom thresholds."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Radial bar chart with custom thresholds
+
+```{r}
+#| label: radial-bar-custom-thresholds
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column",
+    inverted = TRUE,
+    polar = TRUE,
+    marginTop = 50
+  ) %>% 
+  hc_title(
+    text = "Custom thresholds"
+  ) %>% 
+  hc_subtitle(
+    text = "Left pane <b>(-5.5)</b> and right pane <b>(5.5)</b>"
+  ) %>% 
+  hc_pane(
+    list(
+      size = "60%",
+      center = c("25%", "50%")
+    ),
+    list(
+      size = "60%",
+      center = c("75%", "50%")
+    )
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      tickInterval = 1
+    ),
+    list(
+      pane = 1,
+      tickInterval = 1
+    )
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      min = -10,
+      max = 10,
+      tickInterval = 1
+    ),
+    list(
+      pane = 1,
+      min = -10,
+      max = 10,
+      tickInterval = 1
+    )
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      grouping = FALSE,
+      pointPadding = 0,
+      groupPadding = 0
+    )
+  ) %>% 
+  hc_add_series(
+    threshold = -5.5,
+    data = c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+  ) %>% 
+  hc_add_series(
+    xAxis = 1,
+    yAxis = 1,
+    threshold = 5.5,
+    data = c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+  )
+```

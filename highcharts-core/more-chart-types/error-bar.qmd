@@ -1,0 +1,161 @@
+---
+title: "Error Bar Series Demo"
+---
+
+This is a demo of a chart showing the use of error bar series.
+
+Highcharts Demos: [Error bar](https://www.highcharts.com/demo/error-bar)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+rainfall <- c(
+  49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 
+  135.6, 148.5, 216.4, 194.1, 95.6, 54.4
+)
+
+rainfall_error <- list(
+  c(48, 51), c(68, 73), c(92, 110), c(128, 136), c(140, 150), c(171, 179), 
+  c(135, 143), c(142, 149), c(204, 220), c(189, 199), c(95, 110), c(52, 56)
+)
+
+temperature <- c(
+  7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 
+  25.2, 26.5, 23.3, 18.3, 13.9, 9.6
+)
+
+temperature_error <- list(
+  c(6, 8), c(5.9, 7.6), c(9.4, 10.4), c(14.1, 15.9), c(18.0, 20.1), c(21.0, 24.0), 
+  c(23.2, 25.3), c(26.1, 27.8), c(23.2, 23.9), c(18.0, 21.1), c(12.9, 14.0), c(7.6, 10.0)
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing the use of error bar series to visualize uncertainty or error in datasets. In this demo, both the line series and the column series have error bars attached to them, showing the uncertainty range."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Error bar
+
+```{r}
+#| label: error-bar
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Temperature vs Rainfall"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    )
+  ) %>% 
+  hc_yAxis_multiples(
+    # Primary yAxis
+    list(
+      labels = list(
+        format = "{value} °C",
+        style = list(
+          color = colors_v11[2]
+        )
+      ),
+      title = list(
+        text = "Temperature",
+        style = list(
+          color = colors_v11[2]
+        )
+      )
+    ),
+    # Secondary yAxis
+    list(
+      title = list(
+        text = "Rainfall",
+        style = list(
+          color = colors_v11[1]
+        )
+      ),
+      labels = list(
+        format = "{value} mm",
+        style = list(
+          color = colors_v11[1]
+        )
+      ),
+      opposite = TRUE
+    )
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_add_series(
+    name = "Rainfall",
+    type = "column",
+    yAxis = 1,
+    data = rainfall,
+    tooltip = list(
+      pointFormat = "<span style='font-weight: bold; color: {series.color}'>{series.name}</span>: <b>{point.y:.1f} mm</b> "
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Rainfall error",
+    type = "errorbar",
+    yAxis = 1,
+    data = rainfall_error,
+    tooltip = list(
+      pointFormat = "(error range: {point.low}-{point.high} mm)<br/>"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Temperature",
+    type = "spline",
+    data = temperature,
+    tooltip = list(
+      pointFormat = "<span style='font-weight: bold; color: {series.color}'>{series.name}</span>: <b>{point.y:.1f}°C</b> "
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Temperature error",
+    type = "errorbar",
+    data = temperature_error,
+    tooltip = list(
+      pointFormat = "(error range: {point.low}-{point.high}°C)<br/>"
+    )
+  )
+```

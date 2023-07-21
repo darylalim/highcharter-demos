@@ -1,0 +1,107 @@
+---
+title: "Column Chart with Negative Values Demo"
+---
+
+This is a demo of a column chart with negative values.
+
+Highcharts Demos: [Column with negative values](https://www.highcharts.com/demo/column-negative)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  fruit = c("Apples", "Oranges", "Pears", "Grapes", "Bananas"),
+  John = c(5, 3, 4, 7, 2),
+  Jane = c(2, -2, -3, 2, 1),
+  Joe = c(3, 4, 4, -2, 5)
+) %>% 
+  pivot_longer(
+    cols = !fruit,
+    names_to = "name",
+    values_to = "value"
+  ) %>% 
+  mutate(
+    fruit = as_factor(fruit),
+    name = as_factor(name),
+    value = as.integer(value)
+  )
+
+# Categories for x-axis
+categories <- unique(df$fruit)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing column comparisons with negative values. Column charts are commonly used to compare values, and remains one of the most popular and readable types of charts."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Column chart with negative values
+
+```{r}
+#| label: column-with-negative-values
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Column chart with negative values"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    categories = categories
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Values"
+    )
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "column",
+    hcaes(x = fruit, y = value, group = name)
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  )
+```

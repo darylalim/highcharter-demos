@@ -1,0 +1,106 @@
+---
+title: "Compare Multiple Series Stock Chart Demo"
+---
+
+This is a demo of a stock chart comparing multiple series.
+
+Highcharts Stock Demos: [Compare multiple series](https://www.highcharts.com/demo/stock/compare)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+getSymbols(
+  c("MSFT", "AAPL", "GOOG"), 
+  auto.assign = TRUE
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A stock chart comparing Microsoft, Apple, and Google stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Compare multiple series
+
+```{r}
+#| label: compare
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 4
+  ) %>% 
+  hc_yAxis(
+    labels = list(
+      formatter = JS(
+        "function() {
+          return (this.value > 0 ? ' + ' : '') + this.value + '%';
+        }"
+      )
+    ),
+    plotLines = list(
+      list(
+        value = 0,
+        width = 2,
+        color = "#C0C0C0"
+      )
+    )
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      compare = "percent",
+      showInNavigator = TRUE
+    )
+  ) %>%
+  hc_tooltip(
+    pointFormat = "<span style='color: {series.color}'>{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>",
+    valueDecimals = 2,
+    split = TRUE
+  ) %>% 
+  hc_add_series(
+    type ="line",
+    name = "MSFT",
+    data = MSFT
+  ) %>% 
+  hc_add_series(
+    type ="line",
+    name = "AAPL",
+    data = AAPL
+  ) %>% 
+  hc_add_series(
+    type ="line",
+    name = "GOOG",
+    data = GOOG
+  )
+```

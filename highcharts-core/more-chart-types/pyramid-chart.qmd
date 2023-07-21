@@ -1,0 +1,116 @@
+---
+title: "Pyramid Chart Demo"
+---
+
+This is a demo of a pyramid chart.
+
+Highcharts Demos: [Pyramid chart](https://www.highcharts.com/demo/pyramid)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  stage = c(
+    "Website visits", 
+    "Downloads", 
+    "Requested price list", 
+    "Invoice sent", 
+    "Finalized"
+  ),
+  unique_users = c(
+    15654, 4064, 1987, 976, 846
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Pyramid charts are related to funnel charts, and show a hierarchical structure that has a progressive order, such as a sales process."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Pyramid chart
+
+```{r}
+#| label: pyramid-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/funnel.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Sales pyramid",
+    x = -50
+  ) %>% 
+  hc_plotOptions(
+    pyramid = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b> ({point.y:,.0f})",
+        softConnector = TRUE
+      ),
+      center = c("40%", "50%"),
+      width = "80%"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "pyramid", 
+    hcaes(x = stage, y = unique_users),
+    name = "Unique users"
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 500
+        ),
+        chartOptions = list(
+          plotOptions = list(
+            pyramid = list(
+              dataLabels = list(
+                inside = TRUE
+              ),
+              center = c("50%", "50%"),
+              width = "100%"
+            )
+          )
+        )
+      )
+    )
+  )
+```

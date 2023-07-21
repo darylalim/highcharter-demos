@@ -1,0 +1,143 @@
+---
+title: "Gauge Series Demo"
+---
+
+This is a demo of a chart with a gauge series.
+
+Highcharts Demos: [Gauge series](https://www.highcharts.com/demo/gauge-speedometer)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of plot bands with a gauge series. The chart is updated dynamically every few seconds."
+    )
+  )
+)
+```
+
+# Gauge series
+
+```{r}
+#| label: gauge-series
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "gauge",
+    plotBackgroundColor = NULL,
+    plotBackgroundImage = NULL,
+    plotBorderWidth = 0,
+    plotShadow = FALSE,
+    height = "80%",
+    events = list(
+      load = JS(
+        "function() {
+          var chart = this;
+          setInterval(function() {
+            if (chart && !chart.renderer.forExport) {
+              var point = chart.series[0].points[0],
+              inc = Math.round((Math.random() - 0.5) * 20);
+                var newVal = point.y + inc;
+                if (newVal < 0 || newVal > 200) {
+                  newVal = point.y - inc;
+                }
+                point.update(newVal);
+            }
+          }, 3000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "Speedometer"
+  ) %>% 
+  hc_pane(
+    startAngle = -90,
+    endAngle = 89.9,
+    background = NULL,
+    center = c("50%", "75%"),
+    size = "110%"
+  ) %>% 
+  # the value axis
+  hc_yAxis(
+    min = 0,
+    max = 200,
+    tickPixelInterval = 72,
+    tickPosition = "inside",
+    tickColor = "#FFFFFF",
+    tickLength = 20,
+    tickWidth = 2,
+    minorTickInterval = NULL,
+    labels = list(
+      distance = 20,
+      style = list(
+        fontSize = "14px"
+      )
+    ),
+    plotBands = list(
+      list(
+        from = 0,
+        to = 120,
+        color = "#55BF3B", # green
+        thickness = 20
+      ),
+      list(
+        from = 120,
+        to = 160,
+        color = "#DDDF0D", # yellow
+        thickness = 20
+      ),
+      list(
+        from = 160,
+        to = 200,
+        color = "#DF5353", # red
+        thickness = 20
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Speed",
+    data = c(80),
+    tooltip = list(
+      valueSuffix = " km/h"
+    ),
+    dataLabels = list(
+      format = "{y} km/h",
+      borderWidth = 0,
+      color = "#333333",
+      style = list(
+        fontSize = "16px"
+      )
+    ),
+    dial = list(
+      radius = "80%",
+      backgroundColor = "gray",
+      baseWidth = 12,
+      baseLength = "0%",
+      rearLength = "0%"
+    ),
+    pivot = list(
+      backgroundColor = "gray",
+      radius = 6
+    )
+  )
+```

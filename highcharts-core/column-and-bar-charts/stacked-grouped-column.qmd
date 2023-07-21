@@ -1,0 +1,105 @@
+---
+title: "Stacked and Grouped Column Chart Demo"
+---
+
+This is a demo of a stacked and grouped column chart.
+
+Highcharts Demos: [Stacked and grouped column](https://www.highcharts.com/demo/column-stacked-and-grouped)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing stacked columns with grouping, allowing specific series to be stacked on the same column. Stacking is often used to visualize data that accumulates to a sum."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Stacked and grouped column chart
+
+Data retrieved from [Winter Olympic Games](https://en.wikipedia.org/wiki/Winter_Olympic_Games)
+
+```{r}
+#| label: stacked-grouped-column
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "column"
+  ) %>% 
+  hc_title(
+    text = "Olympic Games all-time medal table, grouped by continent",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    categories = c("Gold", "Silver", "Bronze")
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Count medals"
+    ),
+    allowDecimals = FALSE,
+    min = 0
+  ) %>% 
+  hc_tooltip(
+    formatter = JS(
+      "function () {
+        return '<b>' + this.x + '</b><br/>' +
+        this.series.name + ': ' + this.y + '<br/>' +
+        'Total: ' + this.point.stackTotal;
+      }"
+    )
+  ) %>%
+  hc_plotOptions(
+    column = list(
+      stacking = "normal"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Norway",
+    data = c(148, 133, 124),
+    stack = "Europe"
+  ) %>% 
+  hc_add_series(
+    name = "Germany",
+    data = c(102, 98, 65),
+    stack = "Europe"
+  ) %>% 
+  hc_add_series(
+    name = "United States",
+    data = c(113, 122, 95),
+    stack = "North America"
+  ) %>% 
+  hc_add_series(
+    name = "Canada",
+    data = c(77, 72, 80),
+    stack = "North America"
+  )
+```

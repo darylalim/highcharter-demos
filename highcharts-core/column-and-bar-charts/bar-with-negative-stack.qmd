@@ -1,0 +1,164 @@
+---
+title: "Bar Chart with Negative Stack Demo"
+---
+
+This is a demo of a bar chart with stacking and two x-axes.
+
+Highcharts Demos: [Bar with negative stack](https://www.highcharts.com/demo/bar-negative-stack)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  age_category = c(
+    "0-4", "5-9", "10-14", "15-19", "20-24", 
+    "25-29", "30-34", "35-40", "40-45", "45-49", 
+    "50-54", "55-59", "60-64", "65-69", "70-74", 
+    "75-79", "80+"
+  ),
+  Male = c(
+    -8.98, -7.52, -6.65, -5.72, -4.85,
+    -3.71, -2.76, -2.07, -1.70, -1.47,
+    -1.22, -0.99, -0.81, -0.62, -0.41,
+    -0.23, -0.15
+  ),
+  Female = c(
+    8.84, 7.42, 6.57, 5.68, 4.83,
+    3.74, 2.80, 2.14, 1.79, 1.59,
+    1.34, 1.06, 0.83, 0.63, 0.43,
+    0.25, 0.19
+  )
+) %>% 
+  pivot_longer(
+    cols = !age_category,
+    names_to = "gender",
+    values_to = "percentage_population"
+  ) %>% 
+  mutate(
+    age_category = as_factor(age_category),
+    gender = as_factor(gender)
+  )
+
+# Categories for x-axis
+categories <- unique(df$age_category)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Bar chart showing Somalian population distribution by using a mirrored horizontal column chart with stacking and two x-axes.",
+      point = list(
+        valueDescriptionFormat = "{index}. Age {xDescription}, {value}%."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Bar chart with negative stack
+
+```{r}
+#| label: bar-negative-stack
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Population pyramid for Somalia, 2021",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://countryeconomy.com/demography/population-structure/somalia'>countryeconomy.com</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      categories = categories,
+      reversed = FALSE,
+      labels = list(
+           step = 1
+      ),
+      accessibility = list(
+        description = "Age (male)"
+      )
+    ),
+    list(
+      # mirror axis on right side
+      opposite = TRUE, 
+      reversed = FALSE,
+      categories = categories,
+      linkedTo = 0,
+      labels = list(
+        step = 1
+      ),
+      accessibility = list(
+        description = "Age (female)"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = FALSE
+    ),
+    labels = list(
+      formatter = JS(
+        "function () {
+          return Math.abs(this.value) + '%';
+        }"
+      )
+    ),
+    accessibility = list(
+      description = "Percentage population",
+      rangeDescription = "Range: 0 to 5%"
+    )
+  ) %>%
+  hc_plotOptions(
+    series = list(
+      stacking = "normal",
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_tooltip(
+    formatter = JS(
+      "function () {
+        return '<b>' + this.series.name + ', age ' + this.point.category + '</b><br/>' + 
+        'Population: ' + Highcharts.numberFormat(Math.abs(this.point.y), 1) + '%';
+      }"
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "bar",
+    hcaes(x = age_category, y = percentage_population, group = gender)
+  )
+```

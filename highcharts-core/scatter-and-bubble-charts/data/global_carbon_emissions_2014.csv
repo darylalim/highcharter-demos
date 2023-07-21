@@ -1,0 +1,117 @@
+continent,country,carbon_emissions
+Europe,Germany,767.1
+Europe,Croatia,20.7
+Europe,Belgium,97.2
+Europe,Czech Republic,111.7
+Europe,Netherlands,158.1
+Europe,Spain,241.6
+Europe,Ukraine,249.1
+Europe,Poland,298.1
+Europe,France,323.7
+Europe,Romania,78.3
+Europe,United Kingdom,415.4
+Europe,Turkey,353.2
+Europe,Italy,337.6
+Europe,Greece,71.1
+Europe,Austria,69.8
+Europe,Belarus,67.7
+Europe,Serbia,59.3
+Europe,Finland,54.8
+Europe,Bulgaria,51.2
+Europe,Portugal,48.3
+Europe,Norway,44.4
+Europe,Sweden,44.3
+Europe,Hungary,43.7
+Europe,Switzerland,40.2
+Europe,Denmark,40
+Europe,Slovakia,34.7
+Europe,Ireland,34.6
+Europe,Estonia,19.4
+Europe,Slovenia,16.7
+Europe,Lithuania,12.3
+Europe,Luxembourg,10.4
+Europe,Macedonia,9.5
+Europe,Moldova,7.8
+Europe,Latvia,7.5
+Europe,Cyprus,7.2
+Africa,Senegal,8.2
+Africa,Cameroon,9.2
+Africa,Zimbabwe,13.1
+Africa,Ghana,14.1
+Africa,Kenya,14.1
+Africa,Sudan,17.3
+Africa,Tunisia,24.3
+Africa,Angola,25
+Africa,Libya,50.6
+Africa,Ivory Coast,7.3
+Africa,Morocco,60.7
+Africa,Ethiopia,8.9
+Africa,United Republic of Tanzania,9.1
+Africa,Nigeria,93.9
+Africa,South Africa,392.7
+Africa,Egypt,225.1
+Africa,Algeria,141.5
+Oceania,Australia,409.4
+Oceania,New Zealand,34.1
+Oceania,Papua New Guinea,7.1
+North America,Costa Rica,7.6
+North America,Honduras,8.4
+North America,Jamaica,8.3
+North America,Panama,10.2
+North America,Guatemala,12
+North America,Dominican Republic,23.4
+North America,Cuba,30.2
+North America,USA,5334.5
+North America,Canada,566
+North America,Mexico,456.3
+South America,El Salvador,7.2
+South America,Uruguay,8.1
+South America,Bolivia,17.8
+South America,Trinidad and Tobago,34
+South America,Ecuador,43
+South America,Chile,78.6
+South America,Peru,52
+South America,Colombia,74.1
+South America,Brazil,501.1
+South America,Argentina,199
+South America,Venezuela,195.2
+Asia,Nepal,6.5
+Asia,Georgia,6.5
+Asia,Brunei Darussalam,7.4
+Asia,Kyrgyzstan,7.4
+Asia,Afghanistan,7.9
+Asia,Myanmar,9.1
+Asia,Mongolia,14.7
+Asia,Sri Lanka,16.6
+Asia,Bahrain,20.5
+Asia,Yemen,22.6
+Asia,Jordan,22.3
+Asia,Lebanon,21.1
+Asia,Azerbaijan,31.7
+Asia,Singapore,47.8
+Asia,Hong Kong,49.9
+Asia,Syria,52.7
+Asia,DPR Korea,59.9
+Asia,Israel,64.8
+Asia,Turkmenistan,70.6
+Asia,Oman,74.3
+Asia,Qatar,88.8
+Asia,Philippines,96.9
+Asia,Kuwait,98.6
+Asia,Uzbekistan,122.6
+Asia,Iraq,139.9
+Asia,Pakistan,158.1
+Asia,Vietnam,190.2
+Asia,United Arab Emirates,201.1
+Asia,Malaysia,227.5
+Asia,Kazakhstan,236.2
+Asia,Thailand,272
+Asia,Taiwan,276.7
+Asia,Indonesia,453
+Asia,Saudi Arabia,494.8
+Asia,Japan,1278.9
+Asia,China,10540.8
+Asia,India,2341.9
+Asia,Russia,1766.4
+Asia,Iran,618.2
+Asia,Korea,610.1

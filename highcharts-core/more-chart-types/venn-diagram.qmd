@@ -1,0 +1,111 @@
+---
+title: "Venn Diagram Demo"
+---
+
+This is a demo of a venn diagram.
+
+Highcharts Demos: [Venn diagram](https://www.highcharts.com/demo/venn-diagram)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    sets = list("Good"),
+    value = 2
+  ),
+  list(
+    sets = list("Fast"),
+    value = 2
+  ),
+  list(
+    sets = list("Cheap"),
+    value = 2
+  ),
+  list(
+    sets = list("Good", "Fast"),
+    value = 1,
+    name = "More expensive"
+  ),
+  list(
+    sets = list("Good", "Cheap"),
+    value = 1,
+    name = "Will take time to deliver"
+  ),
+  list(
+    sets = list("Fast", "Cheap"),
+    value = 1,
+    name = "Not the best quality"
+  ),
+  list(
+    sets = list("Fast", "Cheap", "Good"),
+    value = 1,
+    name = "They\'re dreaming"
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Venn diagrams are used to show logical relations between sets. This chart is showing the relationship between the sets 'Good', 'Bad', and 'Cheap', with labels for the different intersections.",
+      point = list(
+        descriptionFormat = "{add index 1}. Intersection: {sets}. {#if (gt sets.length 1)}{name}. {/if} 'Value {value}"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Venn diagram
+
+```{r}
+#| label: venn-diagram
+
+highchartzero() %>% 
+  hc_add_dependency("modules/venn.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "venn"
+  ) %>% 
+  hc_add_series(
+    name = "The Unattainable Triangle",
+    data = df,
+    dataLabels = list(
+      style = list(
+        fontSize = "20px"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "The Unattainable Triangle"
+  )
+```

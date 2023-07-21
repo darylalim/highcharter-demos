@@ -1,0 +1,182 @@
+---
+title: "Map with Marker Clusters Demo"
+---
+
+This is a demo of a map with marker clusters.
+
+Highcharts Maps Demos: [Map with marker clusters](https://www.highcharts.com/demo/maps/marker-clusters)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/european-train-stations-near-airports.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with marker clusters."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Map with marker clusters
+
+```{r}
+#| label: map-with-marker-clusters
+
+hcmap(
+  map = "custom/europe",
+  download_map_data = getOption("highcharter.download_map_data"),
+  name = "Europe",
+  accessibility = list(
+    exposeAsGroupOnly = TRUE
+  ),
+  borderColor = "#A0A0A0",
+  nullColor = "rgba(177, 244, 177, 0.5)",
+  showInLegend = FALSE,
+) %>% 
+  hc_add_dependency("modules/marker-clusters.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "European Train Stations Near Airports",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://github.com/trainline-eu/stations'>github.com/trainline-eu/stations</a>",
+    align = "left"
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE
+  ) %>% 
+  hc_tooltip(
+    # headerFormat = "",
+    # pointFormat = "<b>{point.name}</b><br>Lat: {point.lat:.2f}, Lon: {point.lon:.2f}",
+    formatter = JS(
+      "function () {
+        if (this.point.clusteredData) {
+          return 'Clustered points: ' + this.point.clusterPointsAmount;
+        }
+        return '<b>' + this.key + '</b><br>Lat: ' + this.point.lat.toFixed(2) + ', Lon: ' + this.point.lon.toFixed(2);
+      }"
+    )
+  ) %>% 
+  hc_colorAxis(
+    min = 0,
+    max = 20
+  ) %>% 
+  hc_plotOptions(
+    mappoint = list(
+      cluster = list(
+        enabled = TRUE,
+        allowOverlap = FALSE,
+        animation = list(
+          duration = 450
+        ),
+        dataLabels = list(
+          enabled = TRUE,
+          align = "center",
+          format = "{point.clusterPointsAmount}",
+          inside = TRUE,
+          style = list(
+            color = "contrast"
+          ),
+          verticalAlign = "middle"
+        ),
+        layoutAlgorithm = list(
+          type = "grid",
+          gridSize = 70
+        ),
+        minimumClusterSize = 2,
+        zones = list(
+          list(
+            from = 1,
+            to = 4,
+            marker = list(
+              radius = 13
+            )
+          ),
+          list(
+            from = 5,
+            to = 9,
+            marker = list(
+              radius = 15
+            )
+          ),
+          list(
+            from = 10,
+            to = 15,
+            marker = list(
+              radius = 17
+            )
+          ),
+          list(
+            from = 16,
+            to = 20,
+            marker = list(
+              radius = 19
+            )
+          ),
+          list(
+            from = 21,
+            to = 100,
+            marker = list(
+              radius = 21
+            )
+          )
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    type = "mappoint",
+    enableMouseTracking = TRUE,
+    accessibility = list(
+      point = list(
+        descriptionFormat = "{#if isCluster}Grouping of {clusterPointsAmount} points.{else}{name}, country code: {country}.{/if}"
+      )
+    ),
+    colorKey = "clusterPointsAmount",
+    name = "Cities",
+    data = df,
+    color = colors_v11[6],
+    marker = list(
+      lineWidth = 1,
+      lineColor = "#fff",
+      symbol = "mapmarker",
+      radius = 8
+    ),
+    dataLabels = list(
+      enabled = TRUE,
+      verticalAlign = "top"
+    )
+  )
+```

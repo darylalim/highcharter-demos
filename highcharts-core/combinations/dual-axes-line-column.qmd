@@ -1,0 +1,127 @@
+---
+title: "Dual Axes, Line and Column Chart Demo"
+---
+
+This is a demo of a column and a line series combined in a chart, with dual y-axes.
+
+Highcharts Demos: [Dual axes, line and column](https://www.highcharts.com/demo/combo-dual-axes)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing a combination of a column and a line chart, using multiple y-axes. Using multiple axes allows for data within different ranges to be visualized together."
+    )
+  )
+)
+```
+
+# Dual axes, line and column chart
+
+```{r}
+#| label: dual-axes-line-column
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    zoomType = "xy"
+  ) %>% 
+  hc_title(
+    text = "Average Monthly Precipitation and Temperature in Karasjok, 2021",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.yr.no/nb/historikk/graf/5-97251/Norge/Troms%20og%20Finnmark/Karasjok/Karasjok?q=2021'>YR</a>"
+  ) %>% 
+  hc_xAxis(
+    categories = list(
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ),
+    crosshair = TRUE
+  ) %>% 
+  hc_yAxis_multiples(
+    # Primary yAxis
+    list(
+      labels = list(
+        format = "{value}°C",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[1]")
+        )
+      ),
+      title = list(
+        text = "Temperature",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[1]")
+        )
+      )
+    ),
+    # Secondary yAxis
+    list(
+      title = list(
+        text = "Precipitation",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[0]")
+        )
+      ),
+      labels = list(
+        format = "{value} mm",
+        style = list(
+          color = JS("Highcharts.getOptions().colors[0]")
+        )
+      ),
+      opposite = TRUE
+    )
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_legend(
+    align = "left",
+    x = 80,
+    verticalAlign = "top",
+    y = 80,
+    floating = TRUE,
+    backgroundColor = "rgba(255, 255, 255, 0.25)"
+  ) %>% 
+  hc_add_series(
+    name = "Precipitation",
+    type = "column",
+    yAxis = 1,
+    data = c(
+      27.6, 28.8, 21.7, 34.1, 29.0, 28.4, 
+      45.6, 51.7, 39.0, 60.0, 28.6, 32.1
+    ),
+    tooltip = list(
+      valueSuffix = " mm"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Temperature",
+    type = "spline",
+    data = c(
+      -13.6, -14.9, -5.8, -0.7, 3.1, 13.0, 
+      14.5, 10.8, 5.8, -0.7, -11.0, -16.4
+    ),
+    tooltip = list(
+      valueSuffix = "°C"
+    )
+  )
+```

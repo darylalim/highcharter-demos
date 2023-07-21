@@ -1,0 +1,133 @@
+---
+title: "Stacked Column Chart Demo"
+---
+
+This is a demo of a stacked column chart.
+
+Highcharts Demos: [Stacked column](https://www.highcharts.com/demo/column-stacked)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from:
+
+-   [Which teams have won the Premier League the most times?](https://en.as.com/soccer/which-teams-have-won-the-premier-league-the-most-times-n/)
+-   [Number of FA Cup titles from 1872 to 2022, by team](https://www.statista.com/statistics/383679/fa-cup-wins-by-team/)
+-   [UEFA Champions League History \> Most titles \> Finals](https://www.uefa.com/uefachampionsleague/history/winners/)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  team = c("Arsenal", "Chelsea", "Liverpool", "Manchester United"),
+  BPL = c(3, 5, 1, 13),
+  `FA Cup` = c(14, 8, 8, 12),
+  CL = c(0, 2, 6, 3)
+) %>% 
+  pivot_longer(
+    cols = !team,
+    names_to = "trophy",
+    values_to = "count"
+  ) %>% 
+  mutate(
+    team = as_factor(team),
+    trophy = as_factor(trophy),
+    count = as.integer(count)
+  )
+
+# Categories for x-axis
+categories <- unique(df$team)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing stacked columns for comparing quantities. Stacked charts are often used to visualize data that accumulates to a sum. This chart is showing data labels for each individual section of the stack."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Stacked column chart
+
+```{r}
+#| label: stacked-column
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Major trophies for some English teams",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    categories = categories
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Count trophies",
+      min = 0,
+      stackLabels = list(
+        enabled = TRUE
+      )
+    )
+  ) %>% 
+  hc_legend(
+    align = "left",
+    x = 70,
+    verticalAlign = "top",
+    y = 70,
+    floating = TRUE,
+    backgroundColor = "white",
+    borderColor = "#CCC",
+    borderWidth = 1,
+    shadow = FALSE
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "<b>{point.key}</b><br/>",
+    pointFormat = "{series.name}: {point.y}<br/>Total: {point.stackTotal}"
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      stacking = "normal",
+      dataLabels = list(
+        enabled = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "column",
+    hcaes(x = team, y = count, group = trophy)
+  ) 
+```

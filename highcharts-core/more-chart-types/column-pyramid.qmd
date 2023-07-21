@@ -1,0 +1,100 @@
+---
+title: "Column Pyramid Chart Demo"
+---
+
+This is a demo of a basic column pyramid chart.
+
+Highcharts Demos: [Column pyramid chart](https://www.highcharts.com/demo/column-pyramid)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  pyramid = c(
+    "Pyramid of Khufu", 
+    "Pyramid of Khafre", 
+    "Red Pyramid", 
+    "Bent Pyramid", 
+    "Pyramid of the Sun"
+  ),
+  height = c(
+    138.8, 136.4, 104, 101.1, 75
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of the pyramid series type to visualize heights of pyramids. A pyramid series is similar to a column series, but with a different shape."
+    )
+  )
+)
+```
+
+# Column pyramid chart
+
+```{r}
+#| label: column-pyramid
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "The 5 highest pyramids in the World"
+  ) %>% 
+  hc_colors(
+    colors = c(
+      "#C79D6D", "#B5927B", "#CE9B84", "#B7A58C", "#C7A58C"
+    )
+  ) %>% 
+  hc_xAxis(
+    crosshair = TRUE, 
+    labels = list(
+      style = list(
+        fontSize = "14px"
+      )
+    ),
+    type = "category",
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0, 
+    title = list(
+      text = "Height (m)"
+    )
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = " m"
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "columnpyramid", 
+    hcaes(x = pyramid, y = height),
+    name = "Height",
+    colorByPoint = TRUE,
+    showInLegend = FALSE
+  ) 
+```

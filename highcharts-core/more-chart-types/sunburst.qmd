@@ -1,0 +1,146 @@
+---
+title: "Sunburst Chart Demo"
+---
+
+This is a demo of a sunburst chart.
+
+Highcharts Demos: [Sunburst](https://www.highcharts.com/demo/sunburst)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(jsonlite)
+library(magrittr)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/world_population_2017.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Sunburst charts are used to visualize hierarchical data in a circular shape. The inner elements are parent nodes, with child nodes distributed on the outer rings. Click on a parent node to drill down and inspect the tree in more detail."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+```{r}
+# adjustcolor(col = "#FFFFFF", alpha.f = 0)
+# 
+# append(x = colors_v11, values = adjustcolor(col = "#FFFFFF", alpha.f = 0), after = 0)
+```
+
+# Sunburst chart
+
+Issues:
+
+-   Fix center circle transparent
+
+```{r}
+#| label: sunburst
+
+highchartzero() %>% 
+  hc_add_dependency("modules/sunburst.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    height = "100%"
+  ) %>% 
+  # Let the center circle be transparent
+  # hc_colors(
+  #   colors = JS(
+  #     "['transparent'].concat(Highcharts.getOptions().colors)"
+  #   )
+  # ) %>% 
+  hc_colors(
+    colors = append(
+      x = colors_v11, 
+      values = adjustcolor(col = "#FFFFFF", alpha.f = 0), 
+      after = 0
+    )
+  ) %>% 
+  hc_title(
+    text = "World population 2017"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)'>Wikipedia</a>"
+  ) %>% 
+  hc_add_series(
+    type = "sunburst",
+    data = df,
+    hcaes(id = id, parent = parent, name = name, value = value),
+    name = "Root",
+    allowDrillToNode = TRUE,
+    borderRadius = 3,
+    cursor = "pointer",
+    dataLabels = list(
+      format = "{point.name}",
+      filter = list(
+        property = "innerArcLength",
+        operator = ">",
+        value = 16
+      ),
+      rotationMode = "circular"
+    ),
+    levels = list(
+      list(
+        level = 1,
+        levelIsConstant = FALSE,
+        dataLabels = list(
+          filter = list(
+            property = "outerArcLength",
+            operator = ">",
+            value = 64
+          )
+        )
+      ),
+      list(
+        level = 2,
+        colorByPoint = TRUE
+      ),
+      list(
+        level = 3,
+        colorVariation = list(
+          key = "brightness",
+          to = -0.5
+        )
+      ),
+      list(
+        level = 4,
+        colorVariation = list(
+          key = "brightness",
+          to = 0.5
+        )
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = "",
+    pointFormat = "The population of <b>{point.name}</b> is <b>{point.value}</b>"
+  )
+```

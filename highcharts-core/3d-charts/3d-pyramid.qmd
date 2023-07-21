@@ -1,0 +1,113 @@
+---
+title: "3D Pyramid Chart Demo"
+---
+
+This is a demo of a 3D pyramid chart.
+
+Highcharts Demos: [3D pyramid](https://www.highcharts.com/demo/pyramid3d)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Website visits", 15654),
+  c("Downloads", 4064),
+  c("Requested price list", 1987),
+  c("Invoice sent", 976),
+  c("Finalized", 846)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    stage = V1,
+    leads = V2
+  ) %>% 
+  mutate(
+    stage = as_factor(stage),
+    leads = as.integer(leads)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Highcharts supports drawing pyramid charts in 3D as well as 2D. While the 2D version is typically easier to read, the 3D version is sometimes used for decorative effect."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D pyramid chart
+
+```{r}
+#| label: 3d-pyramid
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/cylinder.js") %>% 
+  hc_add_dependency("modules/funnel3d.js") %>% 
+  hc_add_dependency("modules/pyramid3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    options3d = list(
+      enabled = TRUE,
+      alpha = 10,
+      depth = 50,
+      viewDistance = 50
+    )
+  ) %>%
+  hc_title(
+    text = "Highcharts Pyramid3D Chart"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b> ({point.y:,.0f})",
+        allowOverlap = TRUE,
+        x = 10,
+        y = -5
+      ),
+      width = "60%",
+      height = "80%",
+      center = c("50%", "45%")
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Unique users",
+    data = df,
+    type = "pyramid3d",
+    hcaes(x = stage, y = leads)
+  )
+```

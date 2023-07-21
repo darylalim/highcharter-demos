@@ -1,0 +1,115 @@
+---
+title: "Dumbbell Chart Demo"
+---
+
+This is a demo of a dumbbell chart.
+
+Highcharts Demos: [Dumbbell series](https://www.highcharts.com/demo/dumbbell)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  name = c(
+    "Austria", "Belgium", "Czechia", "Estonia", "Greece",
+    "Hungary", "Iceland", "Lithuania", "Norway", "Portugal",
+    "Romania", "Slovakia", "Sweden", "Switzerland"
+  ),
+  low = c(
+    70.1, 71.0, 69.6, 70.4, 73.8,
+    69.2, 73.8, 71.1, 74.3, 66.7,
+    68.2, 69.8, 74.7, 73.2
+  ),
+  high = c(
+    81.3, 81.9, 77.4, 76.9, 80.3,
+    74.5, 83.2, 74.5, 83.2, 81.2, 
+    72.9, 74.8, 83.2, 84.0
+  )
+) %>% 
+  mutate(
+    name = as_factor(name)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Dumbbell charts are variants of columnrange charts, where a low and a high value is given for each data point. The points are visualized as markers with a line between them, resembling a dumbbell."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Dumbbell chart
+
+```{r}
+#| label: dumbbell-series
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/dumbbell.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "Change in Life Expectancy"
+  ) %>% 
+  hc_subtitle(
+    text = "1970 vs 2021 Source: <a href='https://ec.europa.eu/eurostat/en/web/main/data/database'>Eurostat</a>"
+  ) %>% 
+  hc_xAxis(
+    type = "category",
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Life Expectancy (years)"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "dumbbell",
+    hcaes(x = name, low = low, high = high),
+    name = "Life expectancy change"
+  ) 
+```

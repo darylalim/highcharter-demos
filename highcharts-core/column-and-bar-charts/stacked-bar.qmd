@@ -1,0 +1,114 @@
+---
+title: "Stacked Bar Chart Demo"
+---
+
+This is a demo of a stacked bar chart.
+
+Highcharts Demos: [Stacked bar](https://www.highcharts.com/demo/bar-stacked)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [UEFA Champions League History](https://www.uefa.com/uefachampionsleague/history/)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  season = c("2020/21", "2019/20", "2018/19", "2017/18", "2016/17"),
+  `Cristiano Ronaldo` = c(4, 4, 6, 15, 12),
+  `Lionel Messi` = c(5, 3, 12, 6, 11),
+  `Robert Lewandowski` = c(5, 15, 8, 5, 8)
+) %>% 
+  pivot_longer(
+    cols = !season,
+    names_to = "player",
+    values_to = "goals"
+  ) %>% 
+  mutate(
+    season = as_factor(season),
+    player = as_factor(player),
+    goals = as.integer(goals)
+  )
+
+# Categories for x-axis
+categories <- unique(df$season)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing stacked horizontal bars. This type of visualization is great for comparing data that accumulates up to a sum."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Stacked bar chart
+
+```{r}
+#| label: stacked-bar
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "UEFA CL top scorers by season"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = FALSE
+    ),
+    categories = categories
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    title = list(
+      text = "Goals"
+    )
+  ) %>% 
+  hc_legend(
+    reversed = TRUE
+  ) %>%
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5,
+      stacking = "normal",
+      dataLabels = list(
+        enabled = TRUE
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "bar", 
+    hcaes(x = season, y = goals, group = player)
+  )
+```

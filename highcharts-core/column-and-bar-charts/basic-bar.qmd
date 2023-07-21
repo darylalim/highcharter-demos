@@ -1,0 +1,136 @@
+---
+title: "Basic Bar Chart Demo"
+---
+
+This is a demo of a basic bar chart.
+
+Highcharts Demos: [Basic bar](https://www.highcharts.com/demo/bar-basic)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  continent = c("Africa", "America", "Asia", "Europe", "Oceania"),
+  `Year 1990` = c(631, 727, 3202, 721, 26),
+  `Year 2000` = c(814, 841, 3714, 726, 31),
+  `Year 2010` = c(1044, 944, 4170, 735, 40),
+  `Year 2018` = c(1276, 1007, 4561, 746, 42)
+) %>% 
+  pivot_longer(
+    cols = !continent,
+    names_to = "year",
+    values_to = "population"
+  ) %>% 
+  mutate(
+    continent = as_factor(continent),
+    year = as_factor(year),
+    population = as.integer(population)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Bar chart showing horizontal columns. This chart type is often beneficial for smaller screens, as the user can scroll through the data vertically, and axis labels are easy to read."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Basic bar chart
+
+```{r}
+#| label: basic-bar
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Historic World Population by Region",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://en.wikipedia.org/wiki/List_of_continents_and_continental_subregions_by_population'>Wikipedia.org</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    categories = unique(df$continent),
+    title = list(
+      text = NULL
+    ),
+    gridLineWidth = 1,
+    lineWidth = 0
+  ) %>% 
+  hc_yAxis(
+    min = 0, 
+    title = list(
+      text = "Population (millions)",
+      align = "high"
+    ),
+    labels = list(
+      overflow = "justify"
+    ),
+    gridLineWidth = 0
+  ) %>% 
+  hc_tooltip(
+    valueSuffix = " millions"
+  ) %>% 
+  hc_plotOptions(
+    bar = list(
+      borderRadius = 5,
+      dataLabels = list(
+        enabled = TRUE
+      ),
+      groupPadding = 0.1
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "right",
+    verticalAlign = "top",
+    x = -40,
+    y = 80,
+    floating = TRUE,
+    borderWidth = 1,
+    backgroundColor = "#FFFFFF",
+    shadow = TRUE
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "bar", 
+    hcaes(x = continent, y = population, group = year)
+  ) 
+```

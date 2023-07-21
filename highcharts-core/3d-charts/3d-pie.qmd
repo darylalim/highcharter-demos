@@ -1,0 +1,121 @@
+---
+title: "3D Pie Chart Demo"
+---
+
+This is a demo of a 3D pie chart.
+
+Highcharts Demos: [3D pie](https://www.highcharts.com/demo/3d-pie)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    "Samsung", 23
+  ),
+  list(
+    "Apple", 18
+  ),
+  list(
+    name = "Xiaomi",
+    y = 12,
+    sliced = TRUE,
+    selected = TRUE
+  ),
+  list(
+    "Oppo*", 9
+  ),
+  list(
+    "Vivo", 8
+  ),
+  list(
+    "Others", 30
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart demonstrating the use of a 3D pie layout. The 'Xiaomi' slice has been selected, and is offset from the pie. Click on slices to select and unselect them. Note that 3D pies, while decorative, can be hard to read, and the viewing angles can make slices close to the user appear larger than they are.",
+      point = list(
+        valueSuffix = "%"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D pie
+
+```{r}
+#| label: 3d-pie
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "pie",
+    options3d = list(
+      enabled = TRUE,
+      alpha = 45,
+      beta = 0
+    )
+  ) %>%
+  hc_title(
+    text = "Global smartphone shipments market share, Q1 2022",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.counterpointresearch.com/global-smartphone-share/'>Counterpoint Research</a>",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "{series.name}: <b>{point.percentage:.1f}%</b>"
+  ) %>% 
+  hc_plotOptions(
+    pie = list(
+      allowPointSelect = TRUE,
+      cursor = "pointer",
+      depth = 35,
+      dataLabels = list(
+        enabled = TRUE,
+        format = "{point.name}"
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    type = "pie",
+    name = "Share",
+    data = df
+  )
+```

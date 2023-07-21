@@ -1,0 +1,147 @@
+---
+title: "Column Chart with Rotated Labels Demo"
+---
+
+This is a demo of a column chart with rotated labels.
+
+Highcharts Demos: [Column with rotated labels](https://www.highcharts.com/demo/column-rotated-labels)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Tokyo", 37.33),
+  c("Delhi", 31.18),
+  c("Shanghai", 27.79),
+  c("Sao Paulo", 22.23),
+  c("Mexico City", 21.91),
+  c("Dhaka", 21.74),
+  c("Cairo", 21.32),
+  c("Beijing", 20.89),
+  c("Mumbai", 20.67),
+  c("Osaka", 19.11),
+  c("Karachi", 16.45),
+  c("Chongqing", 16.38),
+  c("Istanbul", 15.41),
+  c("Buenos Aires", 15.25),
+  c("Kolkata", 14.974),
+  c("Kinshasa", 14.970),
+  c("Lagos", 14.86),
+  c("Manila", 14.16),
+  c("Tianjin", 13.79),
+  c("Guangzhou", 13.64)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    city = V1, 
+    population = V2
+  ) %>% 
+  mutate(
+    city = as_factor(city),
+    population = as.numeric(population) %>% 
+      round(digits = 1)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing use of rotated axis labels and data labels. This can be a way to include more labels in the chart, but note that more labels can sometimes make charts harder to read."
+    )
+  )
+)
+```
+
+# Column with rotated labels
+
+```{r}
+#| label: column-with-rotated-labels
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "World's largest cities per 2021"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://worldpopulationreview.com/world-cities'>World Population Review</a>"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    type = "category",
+    labels = list(
+      rotation = -45,
+      style = list(
+        fontSize = "13px",
+        fontFamily = "Verdana, sans-serif"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    title = list(
+      text = "Population (millions)"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "Population in 2021: <b>{point.y:.1f} millions</b>"
+  ) %>% 
+  hc_plotOptions(
+    column = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Population",
+    colors = list(
+      "#9b20d9", "#9215ac", "#861ec9", "#7a17e6", "#7010f9", "#691af3",
+      "#6225ed", "#5b30e7", "#533be1", "#4c46db", "#4551d5", "#3e5ccf",
+      "#3667c9", "#2f72c3", "#277dbd", "#1f88b7", "#1693b1", "#0a9eaa",
+      "#03c69b", "#00f194"
+    ),
+    colorByPoint = TRUE,
+    groupPadding = 0,
+    data = df,
+    type = "column",
+    hcaes(x = city, y = population),
+    dataLabels = list(
+      enabled = TRUE,
+      rotation = -90,
+      color = "#FFFFFF",
+      align = "right",
+      format = "{point.y:.1f}", # one decimal
+      y = 10, # 10 pixels down from the top
+      style = list(
+        fontSize = "13px",
+        fontFamily = "Verdana, sans-serif"
+      )
+    )
+  )
+```

@@ -1,0 +1,112 @@
+---
+title: "Lollipop Chart Demo"
+---
+
+This is a demo of a lollipop chart.
+
+Highcharts Demos: [Lollipop series](https://www.highcharts.com/demo/lollipop)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [World Population Review](https://worldpopulationreview.com/countries)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  country = c(
+    "China", "India", "United States", "Indonesia", "Pakistan", 
+    "Brazil", "Nigeria", "Bangladesh", "Russia", "Mexico"
+  ),
+  population = c(
+    1444216107, 1393409038, 332915073, 276361783, 225199937, 
+    213993437, 211400708, 166303498, 145912025, 130262216
+  )
+) %>% 
+  mutate(
+    country = as_factor(country),
+    population = as.integer(population)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Lollipop charts are variants of column charts, with a circle marker for the data value and a line extending to the axis.",
+      point = list(
+        valueDescriptionFormat = "{index}. {xDescription}, {point.y}."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Lollipop chart
+
+```{r}
+#| label: lollipop-series
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/dumbbell.js") %>% 
+  hc_add_dependency("modules/lollipop.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Top 10 Countries by Population in 2021"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://worldpopulationreview.com/countries'>World Population Review</a>"
+  ) %>% 
+  hc_xAxis(
+    type = "category",
+    title = list(
+      text = NULL
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Population"
+    )
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "lollipop", 
+    hcaes(x = country, y = population),
+    name = "Population"
+  )
+```

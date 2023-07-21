@@ -1,0 +1,139 @@
+---
+title: "Map with Categorized Areas Demo"
+---
+
+This is a demo of a map with categorized areas.
+
+Highcharts Maps Demos: [Categorized areas](https://www.highcharts.com/demo/maps/category-map)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  country = c(
+    "IE", "IS", "GB", "PT",
+      
+    "NO", "SE", "DK", "DE", "NL", "BE", "LU", "ES", "FR", "PL", 
+    "CZ", "AT", "CH", "LI", "SK", "HU", "SI", "IT", "SM", "HR", 
+    "BA", "YF", "ME", "AL", "MK",
+      
+    "FI", "EE", "LV", "LT", "BY", "UA", "MD", "RO", "BG", "GR", 
+    "TR", "CY",
+      
+    "RU"
+  ),
+  time_zone = c(
+    rep("UTC", 4),
+    rep("UTC + 1", 25),
+    rep("UTC + 2", 12),
+    "UTC + 3"
+  )
+)
+
+# Auxiliary variable
+df <- df %>% 
+  mutate(value = cumsum(!duplicated(time_zone)))
+
+# Create data class
+data_class <- df %>% 
+  mutate(value = cumsum(!duplicated(time_zone))) %>% 
+  group_by(time_zone) %>% 
+  summarise(value = unique(value)) %>% 
+  arrange(value) %>% 
+  rename(name = time_zone, from = value) %>% 
+  mutate(to = from + 1) %>% 
+  list_parse()
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with categorized areas.",
+      series = list(
+        descriptionFormat = "Timezone {series.name} with {series.points.length} countries."
+      ),
+      point = list(
+        valueDescriptionFormat = "{point.name}."
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Categorized areas
+
+```{r}
+#| label: categorized-areas
+
+hcmap(
+  map = "custom/europe",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = df,
+  joinBy = c("iso-a2", "country"),
+  value = "value",
+  # name = "Time Zone",
+  dataLabels = list(
+    enabled = TRUE,
+    format = "{point.country}"
+  )
+) %>% 
+  hc_colorAxis(
+    dataClassColor = "category",
+    dataClasses = data_class
+  ) %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    spacingBottom = 20
+  ) %>% 
+  hc_title(
+    text = "Europe time zones"
+  ) %>% 
+  hc_legend(
+    enabled = TRUE
+  ) %>% 
+  hc_plotOptions(
+    map = list(
+      allAreas = FALSE,
+      joinBy = list("iso-a2", "code"),
+      dataLabels = list(
+        enabled = TRUE,
+        color = "#FFFFFF",
+        style = list(
+          fontWeight = "bold"
+        ),
+        # Only show dataLabels for areas with high level rank
+        format = "{#if (lt point.properties.labelrank 5)} {point.properties.iso-a2} {/if}"
+      ),
+      tooltip = list(
+        headerFormat = "",
+        pointFormat = "{point.name}: <b>{point.time_zone}</b>"
+      )
+    )
+  )
+```

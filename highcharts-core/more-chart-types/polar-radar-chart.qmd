@@ -1,0 +1,103 @@
+---
+title: "Polar (Radar) Chart Demo"
+---
+
+This is a demo of a polar (radar) chart.
+
+Highcharts Demos: [Polar (radar) chart](https://www.highcharts.com/demo/polar)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A polar chart showing different series types on a radial axis. Polar charts, also known as a radar charts, are often used to compare multivariate data sets. A polar chart in Highcharts is simply a cartesian chart where the X axis is wrapped around the perimeter. It can render common cartesian series types like line, column, area or arearange."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Polar (radar) chart
+
+```{r}
+#| label: polar-radar-chart
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    polar = TRUE
+  ) %>% 
+  hc_title(
+    text = "Highcharter Polar Chart"
+  ) %>% 
+  hc_subtitle(
+    text = "Also known as Radar Chart"
+  ) %>% 
+  hc_pane(
+    startAngle = 0,
+    endAngle = 360
+  ) %>% 
+  hc_xAxis(
+    tickInterval = 45,
+    min = 0,
+    max = 360,
+    labels = list(
+      format = "{value}°"
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = 0,
+      pointInterval = 45
+    ),
+    column = list(
+      pointPadding = 0,
+      groupPadding = 0
+    )
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "Column",
+    data = c(8, 7, 6, 5, 4, 3, 2, 1),
+    pointPlacement = "between"
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "Line",
+    data = c(1, 2, 3, 4, 5, 6, 7, 8)
+  ) %>% 
+  hc_add_series(
+    type = "area",
+    name = "Area",
+    data = c(1, 8, 2, 7, 3, 6, 4, 5)
+  )
+```

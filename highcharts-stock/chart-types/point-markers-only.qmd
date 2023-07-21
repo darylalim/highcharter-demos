@@ -1,0 +1,82 @@
+---
+title: "Stock Chart with Point Markers Only Demo"
+---
+
+This is a demo of a stock chart with point markers only.
+
+Highcharts Stock Demos: [Point markers only](https://www.highcharts.com/demo/stock/markers-only)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A stock chart with point markers only showing Apple stock price."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Point markers only
+
+```{r}
+#| label: point-markers-only
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 2
+  ) %>% 
+  hc_title(
+    text = "AAPL Stock Price"
+  ) %>% 
+  hc_add_series(
+    type = "line",
+    name = "AAPL Stock Price",
+    data = aapl,
+    lineWidth = 0,
+    marker = list(
+      enabled = TRUE,
+      radius = 2
+    ),
+    tooltip = list(
+      valueDecimals = 2
+    ),
+    states = list(
+      hover = list(
+        lineWidthPlus = 0
+      )
+    )
+  )
+```

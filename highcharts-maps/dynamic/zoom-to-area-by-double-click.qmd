@@ -1,0 +1,93 @@
+---
+title: "Map with Zoom to Area by Double Click Demo"
+---
+
+This is a demo of a map with zoom to area by double click.
+
+Highcharts Maps Demos: [Zoom to area by double click](https://www.highcharts.com/demo/maps/doubleclickzoomto)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/world-population-density.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with zoom to area by double click."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Zoom to area by double click
+
+```{r}
+#| label: zoom-to-area-by-double-click
+
+hcmap(
+  map = "custom/world",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = df,
+  joinBy = list("iso-a3", "code3"),
+  name = "Population density",
+  tooltip = list(
+    valueSuffix = "/km²"
+  )
+) %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Zoom in on country by double click"
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE,
+    enableDoubleClickZoomTo = TRUE,
+    buttonOptions = list(
+      verticalAlign = "bottom"
+    )
+  ) %>% 
+  hc_mapView(
+    fitToGeometry = list(
+      type = "MultiPoint",
+      coordinates = list(
+        list(-164, 54), # Alaska west
+        list(-35, 84), # Greenland north
+        list(179, -38), # New Zealand east
+        list(-68, -55) # Chile south
+      )
+    )
+  ) %>% 
+  hc_colorAxis(
+    min = 1,
+    max = 1000,
+    type = "logarithmic"
+  )
+```

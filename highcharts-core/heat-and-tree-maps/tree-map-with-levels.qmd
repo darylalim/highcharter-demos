@@ -1,0 +1,173 @@
+---
+title: "Tree Map with Levels Demo"
+---
+
+This is a demo of a tree map with levels.
+
+Highcharts Demos: [Tree map with levels](https://www.highcharts.com/demo/treemap-with-levels)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    id = "A",
+    name = "Nord-Norge",
+    color = "#50FFB1"
+  ),
+  list(
+    id = "B",
+    name = "Trøndelag",
+    color = "#F5FBEF"
+  ),
+  list(
+    id = "C",
+    name = "Vestlandet",
+    color = "#A09FA8"
+  ),
+  list(
+    id = "D",
+    name = "Østlandet",
+    color = "#E7ECEF"
+  ),
+  list(
+    id = "E",
+    name = "Sørlandet",
+    color = "#A9B4C2"
+  ),
+  list(
+    name = "Troms og Finnmark",
+    parent = "A",
+    value = 70923
+  ),
+  list(
+    name = "Nordland",
+    parent = "A",
+    value = 35759
+  ),
+  list(
+    name = "Trøndelag",
+    parent = "B",
+    value = 39494
+  ),
+  list(
+    name = "Møre og Romsdal",
+    parent = "C",
+    value = 13840
+  ),
+  list(
+    name = "Vestland",
+    parent = "C",
+    value = 31969
+  ),
+  list(
+    name = "Rogaland",
+    parent = "C",
+    value = 8576
+  ),
+  list(
+    name = "Viken",
+    parent = "D",
+    value = 22768
+  ),
+  list(
+    name = "Innlandet",
+    parent = "D",
+    value = 49391
+  ),
+  list(
+    name = "Oslo",
+    parent = "D",
+    value = 454
+  ),
+  list(
+    name = "Vestfold og Telemark",
+    parent = "D",
+    value = 15925
+  ),
+  list(
+    name = "Agder",
+    parent = "E",
+    value = 14981
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "This chart shows a tree map with a hierarchy, where the groups are labelled with a different text style from the child nodes, and the nodes are grouped together by color."
+    )
+  )
+)
+```
+
+# Tree map with levels
+
+```{r}
+#| label: tree-map-levels
+
+highchartzero() %>% 
+  hc_add_dependency("modules/treemap.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_title(
+    text = "Norwegian regions and counties by area",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://snl.no/Norge'>SNL</a>",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    useHTML = TRUE,
+    pointFormat = "The area of <b>{point.name}</b> is <b>{point.value} km<sup>2</sup></b>"
+  ) %>% 
+  hc_add_series(
+    type = "treemap",
+    layoutAlgorithm = "stripes",
+    alternateStartingDirection = TRUE,
+    borderColor = "#fff",
+    borderRadius = 6,
+    borderWidth = 2,
+    dataLabels = list(
+      style = list(
+        textOutline = "none"
+      )
+    ),
+    levels = list(
+      list(
+        level = 1,
+        layoutAlgorithm = "sliceAndDice",
+        dataLabels = list(
+          enabled = TRUE,
+          align = "left",
+          verticalAlign = "top",
+          style = list(
+            fontSize = "15px",
+            fontWeight = "bold"
+          )
+        )
+      )
+    ),
+    data = df
+  )
+```

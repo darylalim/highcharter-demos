@@ -1,0 +1,166 @@
+---
+title: "3D Scatter Chart Demo"
+---
+
+This is a demo of a 3D scatter chart.
+
+Highcharts Demos: [3D scatter chart](https://www.highcharts.com/demo/3d-scatter-draggable)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df = tibble(
+  c(1, 6, 5), c(8, 7, 9), c(1, 3, 4), c(4, 6, 8), c(5, 7, 7), 
+  c(6, 9, 6), c(7, 0, 5), c(2, 3, 3), c(3, 9, 8), c(3, 6, 5), 
+  c(4, 9, 4), c(2, 3, 3), c(6, 9, 9), c(0, 7, 0), c(7, 7, 9), 
+  c(7, 2, 9), c(0, 6, 2), c(4, 6, 7), c(3, 7, 7), c(0, 1, 7), 
+  c(2, 8, 6), c(2, 3, 7), c(6, 4, 8), c(3, 5, 9), c(7, 9, 5), 
+  c(3, 1, 7), c(4, 4, 2), c(3, 6, 2), c(3, 1, 6), c(6, 8, 5),
+  c(6, 6, 7), c(4, 1, 1), c(7, 2, 7), c(7, 7, 0), c(8, 8, 9), 
+  c(9, 4, 1), c(8, 3, 4), c(9, 8, 9), c(3, 5, 3), c(0, 2, 4), 
+  c(6, 0, 2), c(2, 1, 3), c(5, 8, 9), c(2, 1, 1), c(9, 7, 6), 
+  c(3, 0, 2), c(9, 9, 0), c(3, 4, 8), c(2, 6, 1), c(8, 9, 2), 
+  c(7, 6, 5), c(6, 3, 1), c(9, 3, 1), c(8, 9, 3), c(9, 1, 0), 
+  c(3, 8, 7), c(8, 0, 0), c(4, 9, 7), c(8, 6, 2), c(4, 3, 0),
+  c(2, 3, 5), c(9, 1, 4), c(1, 1, 4), c(6, 0, 2), c(6, 1, 6), 
+  c(3, 8, 8), c(8, 8, 7), c(5, 5, 0), c(3, 9, 6), c(5, 4, 3), 
+  c(6, 8, 3), c(0, 1, 5), c(6, 7, 3), c(8, 3, 2), c(3, 8, 3), 
+  c(2, 1, 6), c(4, 6, 7), c(8, 9, 9), c(5, 4, 2), c(6, 1, 3), 
+  c(6, 9, 5), c(4, 8, 2), c(9, 7, 4), c(5, 4, 2), c(9, 6, 1), 
+  c(2, 7, 3), c(4, 5, 4), c(6, 8, 1), c(3, 4, 0), c(2, 2, 6),
+  c(5, 1, 2), c(9, 9, 7), c(6, 9, 9), c(8, 4, 3), c(4, 1, 7), 
+  c(6, 2, 5), c(0, 4, 9), c(3, 5, 9), c(6, 9, 1), c(1, 9, 2),
+  .name_repair = "minimal"
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    x = V1,
+    y = V2,
+    z = V3
+  ) %>% 
+  mutate(
+    across(
+      .cols = everything(), 
+      .fns = ~ as.integer(.))
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart demonstrating a 3D scatter plot, where the chart can be rotated to inspect points from different angles. Each point has an x, y, and z coordinate value."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D scatter chart
+
+Issues:
+
+-   Add mouse and touch events for rotation with JavaScript functions
+-   Add radial gradient to marker fill color for 3D visual
+
+```{r}
+#| label: 3d-scatter
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    renderTo = "container",
+    margin = 100,
+    animation = FALSE,
+    options3d = list(
+      enabled = TRUE,
+      alpha = 10,
+      beta = 30,
+      depth = 250,
+      viewDistance = 5,
+      fitToPlot = FALSE,
+      frame = list(
+        bottom = list(
+          size = 1,
+          color = "rgba(0, 0, 0, 0.02)"
+        ),
+        back = list(
+          size = 1,
+          color = "rgba(0, 0, 0, 0.04)"
+        ),
+        side = list(
+          size = 1,
+          color = "rgba(0, 0, 0, 0.06)"
+        )
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "Draggable box"
+  ) %>% 
+  hc_subtitle(
+    text = "Click and drag the plot area to rotate in space"
+  ) %>% 
+  hc_plotOptions(
+    scatter = list(
+      width = 10,
+      height = 10,
+      depth = 10
+    )
+  ) %>% 
+  hc_yAxis(
+    min = 0,
+    max = 10,
+    title = NULL
+  ) %>% 
+  hc_xAxis(
+    min = 0,
+    max = 10,
+    gridLineWidth = 1
+  ) %>% 
+  hc_zAxis(
+    min = 0,
+    max = 10,
+    showFirstLabel = FALSE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    name = "Data",
+    colorByPoint = TRUE,
+    data = df,
+    type = "scatter3d",
+    hcaes(x = x, y = y, z = z),
+  )
+```

@@ -1,0 +1,141 @@
+---
+title: "Gauge with Dual Axes Demo"
+---
+
+This is a demo of a chart showing multiple axes with a gauge series.
+
+Highcharts Demos: [Gauge with dual axes](https://www.highcharts.com/demo/gauge-dual)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing multiple axes with a gauge series. The axes are positioned to display an outer and inner axis. The chart is dynamically updated every few seconds with a new value."
+    )
+  )
+)
+```
+
+# Gauge with dual axes
+
+Issues:
+
+-   Add dataLabels for mph (kmh \* 0.621)
+    -   format = "[{y} mph]{style="color:#933"}"
+
+```{r}
+#| label: gauge-with-dual-axes
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "gauge",
+    alignTicks = FALSE,
+    plotBackgroundColor = NULL,
+    plotBackgroundImage = NULL,
+    plotBorderWidth = 0,
+    plotShadow = FALSE,
+    events = list(
+      load = JS(
+        "function() {
+          var chart = this;
+          setInterval(function() {
+            if (chart && !chart.renderer.forExport) {
+              var point = chart.series[0].points[0],
+              inc = Math.round((Math.random() - 0.5) * 20);
+                var newVal = point.y + inc;
+              if (newVal < 0 || newVal > 200) {
+                newVal = point.y - inc;
+              }
+                point.update(newVal);
+            }
+          }, 3000);
+        }"
+      )
+    )
+  ) %>% 
+  hc_title(
+    text = "Speedometer with dual axes"
+  ) %>% 
+  hc_pane(
+    startAngle = -150,
+    endAngle = 150
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      min = 0,
+      max = 200,
+      lineColor = "#399",
+      tickColor = "#399",
+      minorTickColor = "#399",
+      offset = -25,
+      lineWidth = 2,
+      labels = list(
+        distance = -20,
+        rotation = "auto"
+      ),
+      tickLength = 5,
+      minorTickLength = 5,
+      endOnTick = FALSE
+    ),
+    list(
+      min = 0,
+      max = 124,
+      tickPosition = "outside",
+      lineColor = "#933",
+      lineWidth = 2,
+      minorTickPosition = "outside",
+      tickColor = "#933",
+      minorTickColor = "#933",
+      tickLength = 5,
+      minorTickLength = 5,
+      labels = list(
+        distance = 12,
+        rotation = "auto"
+      ),
+      offset = -20,
+      endOnTick = FALSE
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Speed",
+    data = c(80),
+    dataLabels = list(
+      enabled = TRUE,
+      format = "<span style='color:#339'>{y} km/h</span><br>",
+      backgroundColor = list(
+        linearGradient = list(
+          x1 = 0,
+          y1 = 0,
+          x2 = 0,
+          y2 = 1
+        ),
+        stops = list(
+          list(0, "#DDD"),
+          list(1, "#FFF")
+        )
+      )
+    ),
+    tooltip = list(
+      valueSuffix = " km/h"
+    )
+  )
+```

@@ -1,0 +1,114 @@
+---
+title: "3D Funnel Chart Demo"
+---
+
+This is a demo of a 3D funnel chart.
+
+Highcharts Demos: [3D funnel](https://www.highcharts.com/demo/funnel3d)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("Website visits", 15654),
+  c("Downloads", 4064),
+  c("Requested price list", 1987),
+  c("Invoice sent", 976),
+  c("Finalized", 846)
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    stage = V1,
+    leads = V2
+  ) %>% 
+  mutate(
+    stage = as_factor(stage),
+    leads = as.integer(leads)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing a 3D sales funnel. The 3D funnel is similar in functionality and use to the 2D funnel, with a different decorative rendering.",
+      screenReaderSection = list(
+        beforeChartFormat = "<{headingTagName}>{chartTitle}</{headingTagName}><div>{typeDescription}</div><div>{chartSubtitle}</div><div>{chartLongdesc}</div>"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# 3D funnel chart
+
+```{r}
+#| label: 3d-funnel
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-3d.js") %>% 
+  hc_add_dependency("modules/cylinder.js") %>% 
+  hc_add_dependency("modules/funnel3d.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    options3d = list(
+      enabled = TRUE,
+      alpha = 10,
+      depth = 50,
+      viewDistance = 50
+    )
+  ) %>%
+  hc_title(
+    text = "Highcharts Funnel3D Chart"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b> ({point.y:,.0f})",
+        allowOverlap = TRUE,
+        y = 10
+      ),
+      neckWidth = "30%",
+      neckHeight = "25%",
+      width = "80%",
+      height = "80%"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Unique users",
+    data = df,
+    type = "funnel3d",
+    hcaes(x = stage, y = leads)
+  )
+```

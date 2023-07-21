@@ -1,0 +1,116 @@
+---
+title: "Map Fixed Tooltip with HTML Demo"
+---
+
+This is a demo of a map featuring a fixed tooltip with HTML.
+
+Highcharts Maps Demos: [Fixed tooltip with HTML](https://www.highcharts.com/demo/maps/tooltip)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(jsonlite)
+library(htmlwidgets)
+library(htmltools)
+library(highcharter)
+```
+
+The `htmlwidgets` and `htmltools` packages contain functions to add CSS (style sheet) to a chart.
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/world-population-density.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map featuring a fixed tooltip with HTML."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Fixed tooltip with HTML
+
+```{r}
+#| label: fixed-tooltip-with-html
+
+demo_map <- hcmap(
+  map = "custom/world",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = df,
+  joinBy = list("iso-a3", "code3"),
+  name = "Population density",
+) %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Fixed tooltip with HTML"
+  ) %>% 
+  hc_legend(
+    title = list(
+      text = "Population density per km²",
+      style = list(
+        color = "black"
+      )
+    )
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE,
+    buttonOptions = list(
+      verticalAlign = "bottom"
+    )
+  ) %>% 
+  hc_tooltip(
+    backgroundColor = "none",
+    borderWidth = 0,
+    shadow = FALSE,
+    useHTML = TRUE,
+    padding = 0,
+    pointFormat = "<span class='f32'><span class='flag {point.properties.hc-key}'></span></span> {point.name}<br><span style='font-size:30px'>{point.value}/km²</span>",
+    positioner = JS(
+      "function () {
+        return {x: 0, y: 250};
+      }"
+    )
+  ) %>% 
+  hc_colorAxis(
+    min = 1,
+    max = 1000,
+    type = "logarithmic"
+  )
+```
+
+# Add flags to map
+
+[World flags sprites service](https://github.com/lafeber/world-flags-sprite) provided by [Martijn Lafeber](https://github.com/lafeber/world-flags-sprite/blob/master/LICENSE)
+
+```{r}
+#| label: add-flags
+
+prependContent(
+  demo_map, 
+  HTML('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lafeber/world-flags-sprite/stylesheets/flags32-both.css" />')
+)
+```

@@ -1,0 +1,82 @@
+---
+title: "Cumulative Sum Stock Chart Demo"
+---
+
+This is a demo of a stock chart showing cumulative sum.
+
+Highchart Stock Demos: [Cumulative Sum](https://www.highcharts.com/demo/stock/cumulative-sum)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A stock chart showing cumulative sum. The cumulative sum displays the sum of all the previous values and the current value (only within visible range)."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Cumulative sum
+
+```{r}
+#| label: cumulative-sum
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Cumulative Sum",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Displays the sum of all the previous values and the current value (only within visible range)",
+    align = "left"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      cumulative = TRUE,
+      pointStart = JS("Date.UTC(2021, 0, 1)"),
+      pointIntervalUnit = "day"
+    )
+  ) %>% 
+  hc_rangeSelector(
+    enabled = FALSE
+  ) %>% 
+  hc_tooltip(
+    pointFormat = "<span style='color:{series.color}'>{series.name}</span>: <b>{point.y}</b> ({point.cumulativeSum})<br>",
+    changeDecimals = 2,
+    valueDecimals = 2
+  ) %>% 
+  hc_xAxis(
+    minrange = 3 * 24 * 36e5,
+    max = JS("Date.UTC(2021, 0, 6)")
+  ) %>% 
+  hc_add_series(
+    data = c(1, 2, 5, 10, 20, 50, 100, -100, 100, -100)
+  ) %>% 
+  hc_add_series(
+    data = c(100, -50, -15, 15, -50, -20, -30, 100, -100, 100)
+  )
+```

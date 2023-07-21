@@ -1,0 +1,111 @@
+---
+title: "Map with Color Axis and Data Labels Demo"
+---
+
+This is a demo of a map with color axis and data labels.
+
+Highcharts Maps Demos: [Color axis and data labels](https://www.highcharts.com/demo/maps/color-axis)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(dplyr)
+library(stringr)
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/us-population-density.json")
+```
+
+# Make codes uppercase to match the map data
+
+```{r}
+#| label: codes-uppercase
+
+df <- df %>% 
+  mutate(code = str_to_upper(code))
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with color axis and data labels."
+    )
+  )
+)
+```
+
+# Color axis and data labels
+
+```{r}
+#| label: color-axis-and-data-labels
+
+hcmap(
+  map = "countries/us/us-all",
+  download_map_data = getOption("highcharter.download_map_data"),
+  data = df,
+  joinBy = c("postal-code", "code"),
+  accessibility = list(
+    point = list(
+      valueDescriptionFormat = "{xDescription}, {point.value} people per square kilometer."
+    )
+  ),
+  animation = list(
+    duration = 1000
+  ),
+  dataLabels = list(
+    enabled = TRUE,
+    color = "#FFFFFF",
+    format = "{point.code}"
+  ),
+  name = "Population density",
+  tooltip = list(
+    pointFormat = "{point.code}: {point.value}/km²"
+  )
+) %>% 
+  hc_title(
+    text = "US per density (/km²)"
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE,
+    sourceWidth = 600,
+    sourceHeight = 500
+  ) %>% 
+  hc_legend(
+    layout = "horizontal",
+    borderWidth = 0,
+    backgroundColor = "rgba(255,255,255,0.85)",
+    floating = TRUE,
+    verticalAlign = "top",
+    y = 25
+  ) %>% 
+  hc_mapNavigation(
+    enabled = TRUE
+  ) %>% 
+  hc_colorAxis(
+    min = 1,
+    type = "logarithmic",
+    minColor = "#EEEEFF",
+    maxColor = "#000022",
+    stops = list(
+      c(0, "#EFEFFF"),
+      c(0.67, "#4444FF"),
+      c(1, "#000022")
+    )
+  )
+```

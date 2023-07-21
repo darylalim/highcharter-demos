@@ -1,0 +1,128 @@
+---
+title: "Box Plot Demo"
+---
+
+This is a demo of a box plot.
+
+Highcharts Demos: [Box plot](https://www.highcharts.com/demo/box-plot)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  c(760, 801, 848, 895, 965),
+  c(733, 853, 939, 980, 1080),
+  c(714, 762, 817, 870, 918),
+  c(724, 802, 806, 871, 950),
+  c(834, 836, 864, 882, 910)
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing the use of box plots with outliers. The chart makes use of a plot line to show the theoretical mean value across the y-axis."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Box plot
+
+```{r}
+#| label: box-plot
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "boxplot"
+  ) %>% 
+  hc_title(
+    text = "Highcharts Box Plot Example"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_xAxis(
+    categories = c("1", "2", "3", "4", "5"),
+    title = list(
+      text = "Experiment No."
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Observations"
+    ),
+    plotLines = list(
+      list(
+        value = 932,
+        color = "red",
+        width = 1,
+        label = list(
+          text = "Theoretical mean: 932",
+          align = "center",
+          style = list(
+            color = "gray"
+          )
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Observations",
+    data = df,
+    tooltip = list(
+      headerFormat = "<em>Experiment No {point.key}</em><br>"
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Outliers",
+    color = colors_v11[1],
+    type = "scatter",
+    # x, y positions where 0 is the first category
+    data = list(
+      c(0, 644),
+      c(4, 718),
+      c(4, 951),
+      c(4, 969)
+    ),
+    marker = list(
+      fillColor = "white",
+      lineWidth = 1,
+      lineColor = colors_v11[1]
+    ),
+    tooltip = list(
+      pointFormat = "Observation: {point.y}"
+    )
+  )
+```

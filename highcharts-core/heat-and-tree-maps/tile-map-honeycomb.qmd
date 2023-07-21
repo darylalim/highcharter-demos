@@ -1,0 +1,132 @@
+---
+title: "Tile Map Honeycomb Demo"
+---
+
+This is a demo of a honeycomb tile map.
+
+Highcharts Maps Demos: [Tile map, honeycomb](https://www.highcharts.com/demo/maps/honeycomb-usa)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(jsonlite)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- fromJSON("data/honeycomb_usa_population_2016.json")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A tile map represents the states of the USA by population in 2016. The hexagonal tiles are positioned to geographically echo the map of the USA. A color-coded legend states the population levels as below 1 million (beige), 1 to 5 million (orange), 5 to 20 million (pink) and above 20 million (hot pink). The chart is interactive, and the individual state data points are displayed upon hovering. Three states have a population of above 20 million: California (39.3 million), Texas (27.9 million) and Florida (20.6 million). The northern US region from Massachusetts in the Northwest to Illinois in the Midwest contains the highest concentration of states with a population of 5 to 20 million people. The southern US region from South Carolina in the Southeast to New Mexico in the Southwest contains the highest concentration of states with a population of 1 to 5 million people. 6 states have a population of less than 1 million people; these include Alaska, Delaware, Wyoming, North Dakota, South Dakota and Vermont. The state with the lowest population is Wyoming in the Northwest with 584,153 people.",
+      screenReaderSection = list(
+        beforeChartFormat = 
+          "'<h5>{chartTitle}</h5>' +
+          '<div>{chartSubtitle}</div>' +
+          '<div>{chartLongdesc}</div>' +
+          '<div>{viewTableButton}</div>'"
+      ),
+      point = list(
+        valueDescriptionFormat = "{index}. {xDescription}, {point.value}."
+      )
+    )
+  )
+)
+```
+
+# Tile map honeycomb
+
+```{r}
+#| label: tile-map-honeycomb
+
+highchartzero() %>% 
+  hc_add_dependency("modules/heatmap.js") %>% 
+  hc_add_dependency("modules/tilemap.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "tilemap",
+    inverted = TRUE
+  ) %>% 
+  hc_title(
+    text = "U.S. states by population in 2016",
+    style = list(
+      fontSize = "1em"
+    )
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://simple.wikipedia.org/wiki/List_of_U.S._states_by_population'>Wikipedia</a>"
+  ) %>% 
+  hc_caption(
+    text = "Hexagonal tilemap, sometimes referred to as a honeycomb or hexbin chart, showing population data in the US. In this case the map is used to show each US state with the same size - which removes some of the bias associated with traditional maps."
+  ) %>% 
+  hc_xAxis(
+    visible = FALSE
+  ) %>% 
+  hc_yAxis(
+    visible = FALSE
+  ) %>% 
+  hc_colorAxis(
+    dataClasses = list(
+      list(
+        from = 0,
+        to = 1000000,
+        color = "#F9EDB3",
+        name = "< 1M"
+      ),
+      list(
+        from = 1000000,
+        to = 5000000,
+        color = "#FFC428",
+        name = "1M - 5M"
+      ),
+      list(
+        from = 5000000,
+        to = 20000000,
+        color = "#FF7987",
+        name = "5M - 20M"
+      ),
+      list(
+        from = 20000000,
+        color = "#FF2371",
+        name = "> 20M"
+      )
+    )
+  ) %>% 
+  hc_tooltip(
+    headerFormat = NULL,
+    pointFormat = "The population of <b> {point.name}</b> is <b>{point.value}</b>"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "{point.hc-a2}",
+        color = "#000000",
+        style = list(
+          textOutline = FALSE
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    name = NULL,
+    data = df
+  )
+```

@@ -1,0 +1,185 @@
+---
+title: "Gantt Chart with Navigation Demo"
+---
+
+This is a demo of a Gantt chart with navigation.
+
+Highcharts Gantt Demos: [With navigation](https://www.highcharts.com/demo/gantt/with-navigation)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+# Set language object options
+options(
+  highcharter.lang = list(
+    accessibility = list(
+      axis = list(
+        xAxisDescriptionPlural = "The chart has a two-part X axis showing time in both week numbers and days.",
+        yAxisDescriptionPlural = "The chart has one Y axis showing task categories."
+      )
+    )
+  )
+)
+
+# Set chart options
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      point = list(
+        descriptionFormatter = JS(
+          "function(point) {
+            var completedValue = point.completed ?
+                  point.completed.amount || point.completed:null,
+                completed = completedValue ?
+                  ' Task ' + Math.round(completedValue * 1000) / 10 + '% completed.':'';
+            return Highcharts.format(
+              '{point.yCategory}.{completed} Start {point.x:%Y-%m-%d}, end {point.x2:%Y-%m-%d}.',
+              {point, completed}
+            );
+          }"
+        )
+      ),
+      series = list(
+        descriptionFormatter = JS(
+          "function(series){
+            return series.name;
+          }"
+        )
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Gantt chart with navigation
+
+```{r}
+#| label: gantt-chart-navigation
+
+highchartzero() %>% 
+  hc_add_dependency("modules/gantt.js") %>%
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Gantt Chart with Navigation"
+  ) %>% 
+  hc_xAxis_multiples(
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE
+    ),
+    list(
+      grid = list(
+        enabled = TRUE
+      ),
+      type = "datetime",
+      opposite = TRUE,
+      linkedTo = 0
+    )
+  ) %>% 
+  hc_yAxis(
+    title = FALSE,
+    type = "treegrid",
+    uniqueNames = TRUE
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      borderRadius = 5
+    )
+  ) %>% 
+  hc_navigator(
+    enabled = TRUE,
+    liveRedraw = TRUE,
+    series = list(
+      type = "gantt",
+      pointPlacement = 0.5,
+      pointPadding = 0.25,
+      accessibility = list(
+        enabled = FALSE
+      )
+    ),
+    yAxis = list(
+      min = 0,
+      max = 3,
+      reversed = TRUE,
+      categories = list()
+    )
+  ) %>% 
+  hc_scrollbar(
+    enabled = TRUE
+  ) %>% 
+  hc_rangeSelector(
+    enabled = TRUE,
+    selected = 0
+  ) %>% 
+  hc_add_series(
+    type = "gantt",
+    name = "Project 1",
+    data = list(
+      list(
+        start = JS("Date.UTC(2017, 11, 1)"),
+        end = JS("Date.UTC(2018, 1, 2)"),
+        completed = 0.95,
+        name = "Prototyping"
+      ),
+      list(
+        start = JS("Date.UTC(2018, 1, 2)"),
+        end = JS("Date.UTC(2018, 11, 5)"),
+        completed = 0.5,
+        name = "Development"
+      ),
+      list(
+        start = JS("Date.UTC(2018, 11, 8)"),
+        end = JS("Date.UTC(2018, 11, 9)"),
+        completed = 0.15,
+        name = "Testing"
+      ),
+      list(
+        start = JS("Date.UTC(2018, 11, 9)"),
+        end = JS("Date.UTC(2018, 11, 19)"),
+        completed = list(
+          amount = 0.3,
+          fill = "#fa0"
+        ),
+        name = "Development"
+      ),
+      list(
+        start = JS("Date.UTC(2018, 11, 10)"),
+        end = JS("Date.UTC(2018, 11, 23)"),
+        name = "Testing"
+      ),
+      list(
+        start = JS("Date.UTC(2018, 11, 25, 8)"),
+        end = JS("Date.UTC(2018, 11, 25, 16)"),
+        name = "Release"
+      )
+    )
+  )
+```

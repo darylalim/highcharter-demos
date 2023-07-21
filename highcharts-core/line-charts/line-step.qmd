@@ -1,0 +1,86 @@
+---
+title: "Step Line Types Demo"
+---
+
+This is a demo of a line chart with step types.
+
+Highcharts Docs: [Step](https://www.highcharts.com/docs/chart-and-series-types/line-chart#step)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  month = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"),
+  right = c(1, 2, 3, 4, NA, 6, 7, NA, 9),
+  center = right + 4,
+  left = center + 4
+) %>% 
+  mutate(
+    month = as_factor(month),
+    across(
+      .cols = !month, 
+      .fns = ~ as.integer(.x)
+    )
+  )
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Line chart with step types
+
+```{r}
+#| label: line-step
+
+highchart() %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "line"
+  ) %>% 
+  hc_title(
+    text = "Step line types, with null values in the series"
+  ) %>% 
+  hc_xAxis(
+    categories = df$month
+  ) %>% 
+  hc_add_series(
+    data = df$right,
+    name = "Right",
+    step = "right"
+  ) %>% 
+  hc_add_series(
+    data = df$center,
+    name = "Center",
+    step = "center"
+  ) %>% 
+  hc_add_series(
+    data = df$left,
+    name = "Left",
+    step = "left"
+  ) %>% 
+  hc_credits(
+    enabled = TRUE
+  ) %>% 
+  hc_exporting(
+    enabled = TRUE
+  )
+```

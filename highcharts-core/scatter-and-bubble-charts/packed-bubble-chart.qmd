@@ -1,0 +1,102 @@
+---
+title: "Packed Bubble Chart Demo"
+---
+
+This is a demo of a packed bubble chart.
+
+Highcharts Demos: [Packed bubble chart](https://www.highcharts.com/demo/packed-bubble)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(readr)
+library(magrittr)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+df <- read_csv("data/global_carbon_emissions_2014.csv")
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Packed bubble charts are visualizations where the size and optionally the color of the bubbles are used to visualize the data. The positioning of the bubbles is not significant, but is optimized for compactness. Try dragging the bubbles in this chart around, and see the effects."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Packed bubble chart
+
+```{r}
+#| label: packed-bubble-chart
+
+highchartzero() %>% 
+  hc_add_dependency("highcharts-more.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Carbon emissions around the world (2014)",
+    align = "left"
+  ) %>% 
+  hc_tooltip(
+    useHTML = TRUE,
+    pointFormat = "<b>{point.name}:</b> {point.value}m CO<sub>2</sub>"
+  ) %>% 
+  hc_plotOptions(
+    packedbubble = list(
+      minSize = "30%",
+      maxSize = "120%",
+      zMin = 0,
+      zMax = 1000,
+      layoutAlgorithm = list(
+        splitSeries = FALSE,
+        gravitationalConstant = 0.02
+      ),
+      dataLabels = list(
+        enabled = TRUE,
+        format = "{point.name}",
+        filter = list(
+          property = "y",
+          operator = ">",
+          value = 250
+        ),
+        style = list(
+          color = "black",
+          textOutline = "none",
+          fontWeight = "normal"
+        )
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "packedbubble", 
+    hcaes(name = country, value = carbon_emissions, group = continent),
+    height = "100%"
+  ) 
+```

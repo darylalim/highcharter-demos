@@ -1,0 +1,119 @@
+---
+title: "Pie Chart with Legend Demo"
+---
+
+This is a demo of a pie chart with legend.
+
+Highcharts Demos: [Pie with legend](https://www.highcharts.com/demo/pie-legend)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [NetMarketShare](https://netmarketshare.com/)
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list(
+    name = "Chrome",
+    y = 74.77,
+    sliced = TRUE,
+    selected = TRUE
+  ),
+  list(
+    name = "Edge",
+    y = 12.82
+  ),
+  list(
+    name = "Firefox",
+    y = 4.63
+  ),
+  list(
+    name = "Safari",
+    y = 2.44
+  ),
+  list(
+    name = "Internet Explorer",
+    y = 2.02
+  ),
+  list(
+    name = "Other",
+    y = 3.28
+  )
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "This pie chart shows how the chart legend can be used to provide information about the individual slices.",
+      point = list(
+        valueSuffix = "%"
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Pie chart with legend
+
+```{r}
+#| label: pie-with-legend
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "pie",
+    plotBackgroundColor = NULL,
+    plotBorderWidth = NULL,
+    plotShadow = FALSE
+  ) %>% 
+  hc_title(
+    text = "Browser market shares in March, 2022",
+    align = "left") %>% 
+  hc_tooltip(
+    pointFormat = "{series.name}: <b>{point.percentage:.1f}%</b>"
+  ) %>% 
+  hc_plotOptions(
+    pie = list(
+      allowPointSelect = TRUE,
+      cursor = "pointer",
+      dataLabels = list(
+        enabled = FALSE
+      ),
+      showInLegend = TRUE
+    )
+  ) %>% 
+  hc_add_series(
+    name = "Brands",
+    colorByPoint = TRUE,
+    data = df
+  )
+```

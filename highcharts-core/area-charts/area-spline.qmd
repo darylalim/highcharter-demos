@@ -1,0 +1,141 @@
+---
+title: "Area Spline Chart Demo"
+---
+
+This is a demo of an area spline chart.
+
+Highcharts Demos: [Area spline](https://www.highcharts.com/demo/areaspline)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidyr)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+Data retrieved from [SSB](https://www.ssb.no/jord-skog-jakt-og-fiskeri/jakt)
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  year = seq.int(from = 2000, to = 2020, by = 1),
+  Moose = c(
+    38000, 37300, 37892, 38564, 36770, 36026, 34978, 35657, 35620, 35971,
+    36409, 36435, 34643, 34956, 33199, 31136, 30835, 31611, 30666, 30319,
+    31766
+  ),
+  Deer = c(
+    22534, 23599, 24533, 25195, 25896, 27635, 29173, 32646, 35686, 37709, 
+    39143, 36829, 35031, 36202, 35140, 33718, 37773, 42556, 43820, 46445,
+    50048
+  )
+) %>% 
+  pivot_longer(
+    cols = !year,
+    names_to = "animal",
+    values_to = "quantity"
+  ) %>% 
+  mutate(
+    year = as.integer(year),
+    animal = as_factor(animal),
+    quantity = as.integer(quantity)
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessiblility = list(
+      enabled = TRUE,
+      linkedDescription = "This demo shows a smoothed area chart with an x-axis plot band highlighting an area of interest at the last two points. Plot bands and plot lines are commonly used to draw attention to certain areas or thresholds."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Area spline
+
+```{r}
+#| label: area-spline
+
+highchartzero() %>% 
+  hc_add_dependency("modules/exporting.js") %>%
+  hc_add_dependency("modules/export-data.js") %>%
+  hc_add_dependency("modules/accessibility.js") %>%
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Moose and deer hunting in Norway, 2000 - 2021",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Source: <a href='https://www.ssb.no/jord-skog-jakt-og-fiskeri/jakt'>SSB</a>",
+    align = "left"
+  ) %>% 
+  hc_xAxis(
+    title = list(
+      text = NULL
+    ),
+    plotBands = list(
+      list(
+        from = 2019,
+        to = 2020,
+        color = "rgba(68, 170, 213, 0.2)"
+      )
+    )
+  ) %>% 
+  hc_yAxis(
+    title = list(
+      text = "Quantity"
+    )
+  ) %>% 
+  hc_legend(
+    layout = "vertical",
+    align = "left",
+    verticalAlign = "top",
+    x = 120,
+    y = 70,
+    floating = TRUE,
+    borderWidth = 1,
+    backgroundColor = "#FFFFFF"
+  ) %>% 
+  hc_tooltip(
+    shared = TRUE,
+    headerFormat = "<b>Hunting season starting autumn {point.x}</b><br>"
+  ) %>% 
+  hc_plotOptions(
+    series = list(
+      pointStart = 2000
+    ),
+    areaspline = list(
+      fillOpacity = 0.5
+    )
+  ) %>% 
+  hc_credits(
+    enabled = FALSE
+  ) %>% 
+  hc_add_series(
+    data = df,
+    type = "areaspline", 
+    hcaes(x = year, y = quantity, group = animal)
+  ) 
+```

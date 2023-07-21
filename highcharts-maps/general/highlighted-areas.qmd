@@ -1,0 +1,92 @@
+---
+title: "Map with Highlighted Areas Demo"
+---
+
+This is a demo of a map with highlighted areas.
+
+Highcharts Maps Demos: [Highlighted areas](https://www.highcharts.com/demo/maps/all-areas-as-null)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  `hc-key` = c("is", "no", "se", "dk", "fi"),
+  value = c(1, 1, 1, 1, 1)
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A map with highlighted areas.",
+      typeDescription = "Map of Europe.",
+      point = list(
+        describeNull = FALSE
+      )
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Highlighted areas
+
+```{r}
+#| label: highlighted-areas
+
+hcmap(
+  map = "custom/europe",
+  download_map_data = getOption("highcharter.download_map_data"),
+  name = "Country",
+  data = df,
+  joinBy = c("hc-key", "hc-key"),
+  value = "value",
+  dataLabels = list(
+    enabled = TRUE,
+    color = "#FFFFFF",
+    format = "{point.name}",
+    nullFormat = ""
+  ),
+  tooltip = list(
+    headerFormat = "",
+    pointFormat = "{point.name}"
+  )
+) %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_title(
+    text = "Nordic countries",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "Demo of drawing all areas in the map, only highlighting partial data",
+    align = "left"
+  ) %>% 
+  hc_legend(
+    enabled = FALSE
+  )
+```

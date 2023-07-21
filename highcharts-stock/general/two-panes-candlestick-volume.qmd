@@ -1,0 +1,111 @@
+---
+title: "Candlestick and Volume Stock Chart Demo"
+---
+
+This is a demo of a stock chart showing candlestick and volume series in two panes.
+
+Highcharts Stock Demos: [Two panes, candlestick and volume](https://www.highcharts.com/demo/stock/candlestick-and-volume)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(quantmod)
+library(highcharter)
+```
+
+# Import data
+
+```{r}
+#| label: import-data
+
+aapl <- getSymbols("AAPL", auto.assign = FALSE)
+aapl <- adjustOHLC(aapl)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "A stock chart showing candlestick and volume series in two panes."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Two panes candlestick and volume
+
+```{r}
+#| label: two-panes-candlestick-volume
+
+highchart(type = "stock") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_rangeSelector(
+    selected = 1
+  ) %>% 
+  hc_title(
+    text = "AAPL Historical"
+  ) %>% 
+  hc_yAxis_multiples(
+    list(
+      labels = list(
+        align = "right",
+        x = -3
+      ),
+      title = list(
+        text = "OHLC"
+      ),
+      height = "60%",
+      lineWidth = 2,
+      resize = list(
+        enabled = TRUE
+      )
+    ),
+    list(
+      labels = list(
+        align = "right",
+        x = -3
+      ),
+      title = list(
+        text = "Volume"
+      ),
+      top = "65%",
+      height = "35%",
+      offset = 0,
+      lineWidth = 2
+    )
+  ) %>% 
+  hc_tooltip(
+    split = TRUE
+  ) %>% 
+  hc_add_series(
+    type = "candlestick",
+    name = "AAPL",
+    data = aapl,
+    tooltip = list(
+      valueDecimals = 2
+    )
+  ) %>% 
+  hc_add_series(
+    type = "column",
+    name = "Volume",
+    data = aapl$AAPL.Volume,
+    yAxis = 1
+  )
+```

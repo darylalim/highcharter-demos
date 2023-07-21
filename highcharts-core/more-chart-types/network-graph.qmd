@@ -1,0 +1,226 @@
+---
+title: "Network Graph (Force Directed Graph) Demo"
+---
+
+This is a demo of a network graph (force directed graph).
+
+Highcharts Demos: [Network graph (force directed graph)](https://www.highcharts.com/demo/network-graph)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(magrittr)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- list(
+  list("Proto Indo-European", "Balto-Slavic"),
+  list("Proto Indo-European", "Germanic"),
+  list("Proto Indo-European", "Celtic"),
+  list("Proto Indo-European", "Italic"),
+  list("Proto Indo-European", "Hellenic"),
+  list("Proto Indo-European", "Anatolian"),
+  list("Proto Indo-European", "Indo-Iranian"),
+  list("Proto Indo-European", "Tocharian"),
+  list("Indo-Iranian", "Dardic"),
+  list("Indo-Iranian", "Indic"),
+  list("Indo-Iranian", "Iranian"),
+  list("Iranian", "Old Persian"),
+  list("Old Persian", "Middle Persian"),
+  list("Indic", "Sanskrit"),
+  list("Italic", "Osco-Umbrian"),
+  list("Italic", "Latino-Faliscan"),
+  list("Latino-Faliscan", "Latin"),
+  list("Celtic", "Brythonic"),
+  list("Celtic", "Goidelic"),
+  list("Germanic", "North Germanic"),
+  list("Germanic", "West Germanic"),
+  list("Germanic", "East Germanic"),
+  list("North Germanic", "Old Norse"),
+  list("North Germanic", "Old Swedish"),
+  list("North Germanic", "Old Danish"),
+  list("West Germanic", "Old English"),
+  list("West Germanic", "Old Frisian"),
+  list("West Germanic", "Old Dutch"),
+  list("West Germanic", "Old Low German"),
+  list("West Germanic", "Old High German"),
+  list("Old Norse", "Old Icelandic"),
+  list("Old Norse", "Old Norwegian"),
+  list("Old Norwegian", "Middle Norwegian"),
+  list("Old Swedish", "Middle Swedish"),
+  list("Old Danish", "Middle Danish"),
+  list("Old English", "Middle English"),
+  list("Old Dutch", "Middle Dutch"),
+  list("Old Low German", "Middle Low German"),
+  list("Old High German", "Middle High German"),
+  list("Balto-Slavic", "Baltic"),
+  list("Balto-Slavic", "Slavic"),
+  list("Slavic", "East Slavic"),
+  list("Slavic", "West Slavic"),
+  list("Slavic", "South Slavic"),
+  # Leaves:
+  list("Proto Indo-European", "Phrygian"),
+  list("Proto Indo-European", "Armenian"),
+  list("Proto Indo-European", "Albanian"),
+  list("Proto Indo-European", "Thracian"),
+  list("Tocharian", "Tocharian A"),
+  list("Tocharian", "Tocharian B"),
+  list("Anatolian", "Hittite"),
+  list("Anatolian", "Palaic"),
+  list("Anatolian", "Luwic"),
+  list("Anatolian", "Lydian"),
+  list("Iranian", "Balochi"),
+  list("Iranian", "Kurdish"),
+  list("Iranian", "Pashto"),
+  list("Iranian", "Sogdian"),
+  list("Old Persian", "Pahlavi"),
+  list("Middle Persian", "Persian"),
+  list("Hellenic", "Greek"),
+  list("Dardic", "Dard"),
+  list("Sanskrit", "Sindhi"),
+  list("Sanskrit", "Romani"),
+  list("Sanskrit", "Urdu"),
+  list("Sanskrit", "Hindi"),
+  list("Sanskrit", "Bihari"),
+  list("Sanskrit", "Assamese"),
+  list("Sanskrit", "Bengali"),
+  list("Sanskrit", "Marathi"),
+  list("Sanskrit", "Gujarati"),
+  list("Sanskrit", "Punjabi"),
+  list("Sanskrit", "Sinhalese"),
+  list("Osco-Umbrian", "Umbrian"),
+  list("Osco-Umbrian", "Oscan"),
+  list("Latino-Faliscan", "Faliscan"),
+  list("Latin", "Portugese"),
+  list("Latin", "Spanish"),
+  list("Latin", "French"),
+  list("Latin", "Romanian"),
+  list("Latin", "Italian"),
+  list("Latin", "Catalan"),
+  list("Latin", "Franco-Provençal"),
+  list("Latin", "Rhaeto-Romance"),
+  list("Brythonic", "Welsh"),
+  list("Brythonic", "Breton"),
+  list("Brythonic", "Cornish"),
+  list("Brythonic", "Cuymbric"),
+  list("Goidelic", "Modern Irish"),
+  list("Goidelic", "Scottish Gaelic"),
+  list("Goidelic", "Manx"),
+  list("East Germanic", "Gothic"),
+  list("Middle Low German", "Low German"),
+  list("Middle High German", "(High) German"),
+  list("Middle High German", "Yiddish"),
+  list("Middle English", "English"),
+  list("Middle Dutch", "Hollandic"),
+  list("Middle Dutch", "Flemish"),
+  list("Middle Dutch", "Dutch"),
+  list("Middle Dutch", "Limburgish"),
+  list("Middle Dutch", "Brabantian"),
+  list("Middle Dutch", "Rhinelandic"),
+  list("Old Frisian", "Frisian"),
+  list("Middle Danish", "Danish"),
+  list("Middle Swedish", "Swedish"),
+  list("Middle Norwegian", "Norwegian"),
+  list("Old Norse", "Faroese"),
+  list("Old Icelandic", "Icelandic"),
+  list("Baltic", "Old Prussian"),
+  list("Baltic", "Lithuanian"),
+  list("Baltic", "Latvian"),
+  list("West Slavic", "Polish"),
+  list("West Slavic", "Slovak"),
+  list("West Slavic", "Czech"),
+  list("West Slavic", "Wendish"),
+  list("East Slavic", "Bulgarian"),
+  list("East Slavic", "Old Church Slavonic"),
+  list("East Slavic", "Macedonian"),
+  list("East Slavic", "Serbo-Croatian"),
+  list("East Slavic", "Slovene"),
+  list("South Slavic", "Russian"),
+  list("South Slavic", "Ukrainian"),
+  list("South Slavic", "Belarusian"),
+  list("South Slavic", "Rusyn")
+)
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "This force directed graph shows an example of a network graph, where the nodes represent languages and the language families they belong to. The nodes can be dragged around and will be repositioned dynamically. Network graphs are typically used to show relations in data. In this case, we are showing a hierarchical structure."
+    )
+  )
+)
+```
+
+# Highcharts Version 11 default color palette
+
+```{r}
+#| label: version-11-colors
+
+colors_v11 <- c("#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb", "#2ee0ca", "#fa4b42", "#feb56a", "#91e8e1")
+```
+
+# Network graph (force directed graph)
+
+Issues:
+
+-   Add nodes option with event call
+    -   Start with parent item
+    -   Apply separate colors to each child element
+    -   Apply same color to grandchildren
+
+```{r}
+#| label: network-graph
+
+highchartzero() %>% 
+  hc_add_dependency("modules/networkgraph.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_colors(colors = colors_v11) %>% 
+  hc_chart(
+    type = "networkgraph",
+    height = "100%"
+  ) %>% 
+  hc_title(
+    text = "The Indo-European Language Tree",
+    align = "left"
+  ) %>% 
+  hc_subtitle(
+    text = "A Force-Directed Network Graph in Highcharter",
+    align = "left"
+  ) %>% 
+  hc_plotOptions(
+    networkgraph = list(
+      keys = list("from", "to"),
+      layoutAlgorithm = list(
+        enableSimulation = TRUE,
+        friction = -0.9
+      )
+    )
+  ) %>% 
+  hc_add_series(
+    dataLabels = list(
+      enabled = TRUE,
+      linkFormat = "",
+      style = list(
+        fontSize = "0.8em",
+        fontWeight = "normal"
+      )
+    ),
+    id = "lang-tree",
+    data = df
+  )
+```

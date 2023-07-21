@@ -1,0 +1,121 @@
+---
+title: "Parliament (Item) Chart Demo"
+---
+
+This is a demo of a parliament (item) chart.
+
+Highcharts Demos: [Parliament (item) chart](https://www.highcharts.com/demo/parliament-chart)
+
+# Load packages
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tibble)
+library(dplyr)
+library(forcats)
+library(highcharter)
+```
+
+# Build data
+
+```{r}
+#| label: build-data
+
+df <- tibble(
+  c("The Left", 39, "#CC0099", "DIE LINKE"),
+  c("Social Democratic Party", 206, "#EE0011", "SPD"),
+  c("Alliance 90/The Greens", 118, "#448833", "GRÜNE"),
+  c("Free Democratic Party", 92, "#FFCC00", "FDP"),
+  c("Christian Democratic Union", 152, "#000000", "CDU"),
+  c("Christian Social Union in Bavaria", 45, "#3366CC", "CSU"),
+  c("Alternative for Germany", 83, "#3399FF", "AfD"),
+  c("South Schleswig Voters\" Association", 1, "#000099", "SSW")
+) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(
+    name = V1,
+    y = V2,
+    color = V3,
+    label = V4
+  ) %>% 
+  mutate(
+    name = as_factor(name),
+    y = as.integer(y),
+  )
+```
+
+# Set options
+
+```{r}
+#| label: set-options
+
+options(
+  highcharter.chart = list(
+    accessibility = list(
+      enabled = TRUE,
+      linkedDescription = "Chart showing representatives in the German Parliament. The chart is using the `item` series type with a semi circle layout. Item charts create a number of items corresponding to the value of each data point."
+    )
+  )
+)
+```
+
+# Parliament (item) chart
+
+```{r}
+#| label: parliament-item-chart
+
+highchartzero() %>% 
+  hc_add_dependency("modules/item-series.js") %>% 
+  hc_add_dependency("modules/exporting.js") %>% 
+  hc_add_dependency("modules/export-data.js") %>% 
+  hc_add_dependency("modules/accessibility.js") %>% 
+  hc_chart(
+    type = "item"
+  ) %>%
+  hc_title(
+    text = "Distribution of seats"
+  ) %>% 
+  hc_subtitle(
+    text = "Bundestag election 2021. Source: <a href='https://www.bundeswahlleiter.de/en/bundeswahlleiter.html'>Bundeswahlleiter</a>") %>% 
+  hc_legend(
+    labelFormat = "{name} <span style='opacity:0.4'>{y}</span>"
+  ) %>% 
+  hc_add_series(
+    name = "Representatives",
+    data = df,
+    keys = list("name", "y", "color", "label"),
+    dataLabels = list(
+      enabled = TRUE,
+      format = "{point.label}",
+      style = list(
+        textOutline = "3px contrast"
+      )
+    ),
+    # Circular options
+    center = c("50%", "88%"),
+    startAngle = -100,
+    endAngle = 100,
+    size = "170%"
+  ) %>% 
+  hc_responsive(
+    rules = list(
+      list(
+        condition = list(
+          maxWidth = 600
+        ),
+        chartOptions = list(
+          series = list(
+            list(
+              dataLabels = list(
+                distance = -30
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+```
